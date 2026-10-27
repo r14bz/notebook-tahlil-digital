@@ -171,7 +171,7 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .arabic.compact{font-size:clamp(19px,4.8vw,23px);line-height:1.75}
  .page-note{display:none}
  .page-number{bottom:9px;font-size:10px}
- .controls{flex:0 0 auto;position:static;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px;margin:0;padding:4px;border-radius:10px;box-shadow:none}
+ .controls{flex:0 0 auto;position:static;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:6px;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;align-items:stretch}
  .controls button{min-width:0;min-height:34px;padding:6px 4px;font-size:10px;line-height:1.15}
  .counter{font-size:9px;white-space:nowrap}
  .playbar{flex:0 0 auto;display:flex;flex-wrap:nowrap;align-items:center;gap:7px;margin:0;padding:6px 8px;border-radius:10px;min-height:48px}
@@ -200,14 +200,13 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="seal">۞</div><div><h1>Notebook Tahlil Digital</h1><small>Kitab doa & zikir • edisi digital</small></div></div><button class="header-btn" id="contentsBtn" aria-expanded="false">☰ Daftar isi</button><button class="header-btn" id="settingsBtn">Aa</button></header>
+<header><div class="brand"><div class="seal">۞</div><div><h1>Notebook Tahlil Digital</h1><small>Kitab doa & zikir • edisi digital</small></div></div><button class="header-btn icon-btn" id="contentsBtn" aria-label="Daftar isi" title="Daftar isi" aria-expanded="false">☰</button><select id="fontSize" class="header-select" aria-label="Ukuran tulisan" title="Ukuran tulisan"><option value="small">A−</option><option value="normal" selected>A</option><option value="large">A+</option></select><button class="header-btn icon-btn" id="fullBtn" aria-label="Layar penuh" title="Layar penuh">⛶</button><button class="header-btn icon-btn" id="settingsBtn" aria-label="Pengaturan bacaan" title="Pengaturan bacaan">⚙</button></header>
 <main>
 <aside class="sidebar"><div class="eyebrow">Daftar isi</div><h2>Rangkaian Tahlil</h2><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
 <section class="reader">
-<div class="toolbar"><div class="toolbar-group"><button class="soft-btn" id="prevTop">← Sebelumnya</button><button class="soft-btn" id="nextTop">Berikutnya →</button></div><div class="toolbar-group"><select id="fontSize" class="small-select" aria-label="Ukuran tulisan"><option value="small">Tulisan kecil</option><option value="normal" selected>Tulisan normal</option><option value="large">Tulisan besar</option></select><button class="soft-btn" id="fullBtn">⛶ Layar penuh</button></div></div>
+
 <div class="book"><article class="paper" id="paper"><div class="page-top"><span>Majelis Tahlil</span><span>بِسْمِ اللّٰهِ</span></div><div class="ornament">۞ ❧ ۞</div><h2 class="page-title" id="pageTitle"></h2><div class="arabic" id="arabicText" lang="ar" dir="rtl"></div><div class="page-note" id="pageNote">اقْرَؤُوا بِتَأَنٍّ وَحُضُورِ الْقَلْبِ</div><div class="page-number" id="pageNumber"></div></article></div>
-<div class="controls"><button class="soft-btn" id="prevBtn">‹ Halaman sebelumnya</button><span class="counter" id="counter">Halaman 1 dari 1</span><button class="primary" id="nextBtn">Halaman berikutnya ›</button></div>
-<div class="playbar"><button class="play-icon" id="ttsBtn" aria-label="Putar TTS">▶</button><div class="play-info"><strong>Lantunan bacaan</strong><small id="audioModeLabel">TTS bahasa Arab dari perangkat</small></div><div class="play-actions"><button class="soft-btn" id="modeBtn">Pilih audio</button><button class="soft-btn" id="repeatBtn">Ulangi halaman</button><button class="gold-btn" id="stopBtn">■ Berhenti</button></div><div class="audio-status" id="audioStatus">Tekan putar untuk mendengarkan bacaan halaman ini.</div><audio id="qariAudio" controls style="display:none;width:100%"></audio></div>
+<div class="controls"><button class="soft-btn nav-page" id="prevBtn" aria-label="Halaman sebelumnya">‹ Sebelumnya</button><div class="playbar"><button class="play-icon" id="ttsBtn" aria-label="Putar TTS">▶</button><div class="play-info"><strong>Lantunan</strong><small id="audioModeLabel">TTS bahasa Arab dari perangkat</small></div><div class="play-actions"><button class="soft-btn" id="modeBtn">Audio</button><button class="gold-btn" id="stopBtn" aria-label="Berhenti">■</button></div><div class="audio-status" id="audioStatus">Tekan putar untuk mendengarkan bacaan halaman ini.</div><audio id="qariAudio" controls style="display:none;width:100%"></audio></div><button class="primary nav-page" id="nextBtn" aria-label="Halaman berikutnya">Berikutnya ›</button></div>
 </section></main>
 <footer>Notebook Tahlil Digital • Bacaan mengikuti teks yang dimasukkan pengguna. Periksa kembali teks dan tajwid bersama guru/ustaz setempat.</footer>
 <div class="modal" id="settingsModal"><div class="modal-card"><h3>Pengaturan bacaan</h3><label for="voiceGender">Preferensi suara TTS</label><select id="voiceGender"><option value="male">Laki-laki (jika tersedia)</option><option value="auto">Otomatis</option></select><label for="voiceSelect">Suara Arab perangkat</label><select id="voiceSelect"><option value="">Otomatis sesuai preferensi</option></select><label for="speedSelect">Kecepatan TTS</label><select id="speedSelect"><option value="0.7">Pelan</option><option value="0.85" selected>Tenang</option><option value="1">Normal</option></select><label for="qariSelect">Audio qari (bacaan Al-Qur'an)</label><select id="qariSelect"><option value="Alafasy_128kbps">Mishary Rashid Alafasy</option><option value="Abdurrahmaan_As-Sudais_192kbps">Abdurrahman As-Sudais</option><option value="Husary_128kbps">Mahmoud Khalil Al-Husary</option></select><p style="font-size:11px;color:#887c68;line-height:1.6">Audio qari memakai rekaman surah Al-Ikhlas, Al-Falaq, An-Nas, dan Al-Fatihah dari layanan audio eksternal. Bagian doa/tahlil selain surah dibacakan melalui TTS atau perlu rekaman khusus.</p><div class="modal-actions"><button class="soft-btn" id="closeSettings">Tutup</button><button class="primary" id="saveSettings">Simpan</button></div></div></div>
@@ -264,16 +263,16 @@ function buildPages(){
  index=Math.min(saved,pages.length-1);showPage(index);
 }
 const renderContents=()=>{$('contents').innerHTML='';sections.forEach((s,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0')+' · '+s.title;b.className=pages[index]?.sectionIndex===i?'active':'';b.onclick=()=>{showPage(Math.max(0,sectionStarts[i]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};$('contents').appendChild(b)})};
-function showPage(i,animate=''){if(!pages.length)return;index=Math.max(0,Math.min(i,pages.length-1));const p=$('paper'),s=pages[index];p.classList.remove('turn-next','turn-prev');if(animate)p.classList.add(animate);$('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');$('arabicText').textContent=s.text;$('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';$('counter').textContent=`Halaman ${index+1} dari ${pages.length}`;$('prevBtn').disabled=$('prevTop').disabled=index===0;$('nextBtn').disabled=$('nextTop').disabled=index===pages.length-1;$('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';$('progressBar').style.width=((index+1)/pages.length*100)+'%';localStorage.setItem('tahlil-page',index);renderContents();$('audioStatus').textContent='Halaman siap dibaca.';if(audioMode==='qari')setQariTrack();setTimeout(()=>p.classList.remove('turn-next','turn-prev'),360)}
+function showPage(i,animate=''){if(!pages.length)return;index=Math.max(0,Math.min(i,pages.length-1));const p=$('paper'),s=pages[index];p.classList.remove('turn-next','turn-prev');if(animate)p.classList.add(animate);$('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');$('arabicText').textContent=s.text;$('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';$('counter').textContent=`Halaman ${index+1} dari ${pages.length}`;$('prevBtn').disabled=index===0;$('nextBtn').disabled=index===pages.length-1;$('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';$('progressBar').style.width=((index+1)/pages.length*100)+'%';localStorage.setItem('tahlil-page',index);renderContents();$('audioStatus').textContent='Halaman siap dibaca.';if(audioMode==='qari')setQariTrack();setTimeout(()=>p.classList.remove('turn-next','turn-prev'),360)}
 function next(){if(index<pages.length-1)showPage(index+1,'turn-next')}function prev(){if(index>0)showPage(index-1,'turn-prev')}
-$('nextBtn').onclick=$('nextTop').onclick=next;$('prevBtn').onclick=$('prevTop').onclick=prev;
+$('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 function isArabicVoice(v){return /^ar([-_]|$)/i.test(v.lang)}
 function isLikelyMaleVoice(v){return /male|masculine|maged|hamed|hamdan|tarik|tareq|naayf|naif|mohammed|ahmed|abdul|fahad|mansour|yousef/i.test(v.name)}
 function getArabicVoice(){const selected=$('voiceSelect').value;if(selected){const exact=voices.find(v=>v.name===selected);if(exact)return exact}const arabic=voices.filter(isArabicVoice);if($('voiceGender').value==='male'){return arabic.find(isLikelyMaleVoice)||arabic.find(v=>/ar-SA|ar-AE|ar-EG/i.test(v.lang))||arabic[0]||null}return arabic[0]||null}
 function speak(){if(!('speechSynthesis'in window)){ $('audioStatus').textContent='Browser ini tidak mendukung TTS. Coba Chrome Android.';return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pages[index].text.replace(/\(٣×\)|\(٣٣×\)|×٢/g,''));u.lang='ar-SA';u.rate=Number($('speedSelect').value||.85);const v=getArabicVoice();if(v)u.voice=v;u.onstart=()=>{$('ttsBtn').textContent='Ⅱ';$('audioStatus').textContent='Sedang melantunkan teks halaman ini.'};u.onend=()=>{if(isRepeating){speak()}else{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Lantunan selesai.'}};u.onerror=()=>{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Suara Arab tidak tersedia atau gagal diputar di perangkat ini.'};speechSynthesis.speak(u)}
 function stop(){isRepeating=false;if('speechSynthesis'in window)speechSynthesis.cancel();$('qariAudio').pause();$('ttsBtn').textContent='▶';$('audioStatus').textContent='Pemutaran dihentikan.'}
 $('ttsBtn').onclick=()=>{if(audioMode==='qari'&&pages[index].surah){const a=$('qariAudio');if(a.paused)a.play().catch(()=>{$('audioStatus').textContent='Audio belum bisa diputar. Periksa koneksi internet.'});else a.pause();return}if('speechSynthesis'in window&&speechSynthesis.speaking){speechSynthesis.pause();$('ttsBtn').textContent='▶';$('audioStatus').textContent='Dijeda. Tekan putar untuk melanjutkan.'}else speak()};
-$('stopBtn').onclick=stop;$('repeatBtn').onclick=()=>{isRepeating=!isRepeating;$('repeatBtn').textContent=isRepeating?'Ulangi: aktif':'Ulangi halaman';if(isRepeating)speak()};
+$('stopBtn').onclick=stop;
 function setQariTrack(){const s=pages[index],a=$('qariAudio');if(audioMode!=='qari'||!s.surah){a.style.display='none';$('audioModeLabel').textContent=audioMode==='qari'?'Audio qari tidak tersedia untuk bagian doa ini':'TTS bahasa Arab dari perangkat';$('ttsBtn').textContent='▶';return}const q=$('qariSelect').value||'Alafasy_128kbps';a.src=`https://everyayah.com/data/${q}/${s.surah}001.mp3`;a.style.display='block';$('audioModeLabel').textContent='Rekaman qari • Surah '+s.title;$('audioStatus').textContent='Audio qari memerlukan koneksi internet.'}
 $('modeBtn').onclick=()=>{audioMode=audioMode==='tts'?'qari':'tts';$('modeBtn').textContent=audioMode==='tts'?'Pilih audio':'Gunakan TTS';setQariTrack();$('audioStatus').textContent=audioMode==='qari'?'Mode audio qari aktif. Untuk bagian doa, gunakan TTS.':'Mode TTS Arab aktif.'};
 $('qariSelect').onchange=()=>{if(audioMode==='qari')setQariTrack()};
@@ -286,3 +285,46 @@ $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voi
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 buildPages();window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
 </script></body></html>
+/* Header controls and centered compact audio between page navigation */
+.header-btn.icon-btn{min-width:34px;width:36px;height:36px;min-height:36px;padding:5px;display:grid;place-items:center;font-size:18px;border-radius:10px;flex:0 0 36px}
+.header-select{height:36px;min-height:36px;width:42px;flex:0 0 42px;padding:4px 2px;border:1px solid #ffffff2b;border-radius:10px;background:#ffffff16;color:#fff7e7;text-align:center;font-size:13px;font-weight:700}
+.header-select option{color:#123d2e;background:#fff8e8}
+.toolbar{display:none!important}
+.controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,1.35fr) minmax(0,1fr);align-items:center;gap:10px;margin-top:14px}
+.controls .nav-page{height:48px;min-height:48px;padding:8px 12px;border-radius:14px;font-size:13px;line-height:1.2;box-shadow:0 3px 8px #123d2e12;transition:transform .15s,box-shadow .15s,background .15s}
+.controls .nav-page:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 14px #123d2e1c}
+.controls #prevBtn{background:#fffaf0;border:1px solid #d9c8a5;color:#24513c}
+.controls #nextBtn{background:linear-gradient(135deg,#174b38,#23684b);color:#fff8e8}
+.controls .playbar{min-width:0;width:100%;margin:0;padding:6px 8px;gap:7px;flex-wrap:nowrap;border-radius:13px;background:#f8f2e4;border-color:#dfd2b6;box-shadow:0 2px 8px #382c1b0d}
+.controls .play-icon{width:34px;height:34px;flex:0 0 34px;font-size:14px}
+.controls .play-info{min-width:0;flex:1 1 auto}
+.controls .play-info strong{font-size:10px;white-space:nowrap}
+.controls .play-info small{font-size:9px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.controls .play-actions{width:auto;flex:0 0 auto;display:flex;gap:4px;flex-wrap:nowrap}
+.controls .play-actions button{min-height:32px;padding:5px 7px;font-size:9px;white-space:nowrap}
+.controls .audio-status,.controls #qariAudio{display:none!important}
+@media(max-width:768px){
+ header{flex-wrap:nowrap}
+ .header-btn.icon-btn{width:32px;flex-basis:32px;height:34px;min-height:34px;font-size:16px}
+ .header-select{width:38px;flex-basis:38px;height:34px;min-height:34px;font-size:12px}
+ #settingsBtn{font-size:15px!important;padding:5px!important}
+ .controls{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:5px;margin-top:0}
+ .controls .nav-page{min-height:44px;height:100%;padding:7px 4px;font-size:11px;border-radius:11px}
+ .controls .playbar{padding:5px;gap:5px;min-height:44px;border-radius:11px}
+ .controls .play-icon{width:30px;height:30px;flex-basis:30px}
+ .controls .play-info strong{font-size:9px}
+ .controls .play-info small{font-size:8px}
+ .controls .play-actions button{padding:4px 5px;font-size:8px;min-height:29px}
+ #modeBtn{font-size:0!important}
+ #modeBtn:after{content:'♫';font-size:13px}
+}
+@media(max-width:380px){
+ header{gap:3px}
+ .header-btn.icon-btn{width:29px;flex-basis:29px;padding:3px}
+ .header-select{width:34px;flex-basis:34px;padding:3px 0}
+ .controls{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1fr);gap:3px}
+ .controls .nav-page{font-size:10px;padding:6px 2px}
+ .controls .playbar{gap:3px;padding:4px}
+ .controls .play-info small{max-width:48px}
+ .controls .play-actions button{padding:3px;font-size:8px}
+}
