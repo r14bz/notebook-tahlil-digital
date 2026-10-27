@@ -86,6 +86,59 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px s
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
 
+
+/* Responsive hardening: fit the complete reader to narrow phone screens */
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:clip;-webkit-text-size-adjust:100%}
+body{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+img,svg,video,canvas,iframe{max-width:100%}
+header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playbar,.play-info,.play-actions{min-width:0;max-width:100%}
+@media screen and (max-width:768px){
+ header{width:100%;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px}
+ .brand{flex:1 1 180px;min-width:0}
+ .brand h1{font-size:clamp(12px,3.8vw,15px);overflow-wrap:anywhere}
+ .brand small{font-size:10px}
+ #settingsBtn{flex:0 0 auto;max-width:100%;padding:9px 10px;font-size:12px}
+ main{width:100%;max-width:100%;margin:10px 0 16px;padding:0 10px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+ .sidebar{width:100%;position:static;padding:11px}
+ .contents{display:flex;width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;gap:6px;padding:2px 2px 7px;scrollbar-width:thin;overscroll-behavior-x:contain}
+ .contents button{flex:0 0 auto;white-space:nowrap;max-width:85vw}
+ .reader{width:100%;min-width:0}
+ .toolbar{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+ .toolbar-group{width:100%;display:flex;flex-wrap:wrap;gap:6px}
+ .toolbar-group button{flex:1 1 95px;min-width:0;max-width:100%;padding:10px 7px;font-size:12px}
+ .toolbar-group select,.small-select{flex:1 1 110px;min-width:0;width:auto;max-width:100%;font-size:12px}
+ .book{width:100%;min-width:0;perspective:none}
+ .paper{width:100%;min-width:0;min-height:60svh;height:auto;padding:24px 14px 54px;overflow-wrap:anywhere}
+ .paper:before{inset:7px}
+ .page-top{gap:6px;flex-wrap:wrap;font-size:9px;letter-spacing:.4px}
+ .page-title{font-size:clamp(22px,6vw,28px);overflow-wrap:anywhere}
+ .arabic{width:100%;max-width:100%;font-size:clamp(22px,6vw,28px);line-height:2.05;white-space:pre-line;overflow-wrap:anywhere;word-break:normal;text-align:center;text-align-last:center}
+ .arabic.compact{font-size:clamp(20px,5.3vw,24px);line-height:2}
+ .controls{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:5px;align-items:center}
+ .controls button{min-width:0;max-width:100%;padding:10px 5px;font-size:11px;white-space:normal}
+ .counter{font-size:10px;white-space:nowrap}
+ .playbar{width:100%;display:flex;flex-wrap:wrap;gap:9px;padding:11px}
+ .play-info{flex:1 1 150px;min-width:0;overflow-wrap:anywhere}
+ .play-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .play-actions button{min-width:0;max-width:100%;padding:9px 6px;font-size:11px;white-space:normal}
+ .audio-status{overflow-wrap:anywhere}
+ .modal{padding:10px}
+ .modal-card{width:100%;max-width:100%;max-height:88svh;overflow-y:auto}
+ footer{width:100%;padding-left:12px;padding-right:12px}
+}
+@media screen and (max-width:380px){
+ header{padding:9px}
+ .brand{flex-basis:150px;gap:7px}
+ .seal{width:32px;height:32px;flex-basis:32px;font-size:17px}
+ #settingsBtn{font-size:11px;padding:8px}
+ main{padding-left:7px;padding-right:7px}
+ .paper{padding-left:11px;padding-right:11px}
+ .page-top{font-size:8px}
+ .controls{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:3px}
+ .controls button{font-size:10px;padding:9px 3px}
+}
+
 </style>
 </head>
 <body>
