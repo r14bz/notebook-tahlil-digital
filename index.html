@@ -139,10 +139,68 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .controls button{font-size:10px;padding:9px 3px}
 }
 
+
+/* One-screen mobile reader with measured text pagination */
+@media (max-width: 768px) {
+ html,body{height:100%;height:100dvh;min-height:0;overflow:hidden}
+ body{display:flex;flex-direction:column}
+ header{flex:0 0 auto;min-height:54px;padding:7px 9px;gap:6px;flex-wrap:nowrap}
+ .brand{flex:1 1 auto;min-width:0}
+ .seal{width:30px;height:30px;flex:0 0 30px;font-size:16px}
+ .brand h1{font-size:12px;line-height:1.2}
+ .brand small{font-size:9px;margin-top:1px}
+ #contentsBtn,#settingsBtn{min-height:36px;padding:7px 9px;font-size:11px;white-space:nowrap}
+ main{position:relative;flex:1 1 auto;min-height:0;height:auto;width:100%;max-width:none;margin:0;padding:7px;display:flex;overflow:hidden;gap:0}
+ .sidebar{display:none;position:absolute;z-index:9;left:7px;right:7px;top:7px;width:auto;max-width:none;max-height:52%;overflow:auto;box-shadow:0 12px 30px #1a2c2240;border-radius:13px;padding:12px}
+ body.toc-open .sidebar{display:block}
+ .sidebar h2{margin:3px 0 7px;font-size:14px}
+ .contents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;max-height:32vh;overflow:auto}
+ .contents button{min-width:0;white-space:normal;text-align:left;padding:7px 8px;font-size:11px;line-height:1.25}
+ .reader{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+ .toolbar{flex:0 0 auto;display:flex;flex-direction:row;gap:5px;margin:0}
+ .toolbar-group{display:flex;flex:1 1 0;min-width:0;gap:5px;flex-wrap:nowrap}
+ .toolbar-group button{min-width:0;flex:1 1 0;padding:7px 5px;font-size:10px;min-height:34px}
+ .toolbar-group select,.small-select{min-width:0;max-width:100%;flex:1 1 0;padding:6px 4px;font-size:10px;min-height:34px}
+ .book{flex:1 1 auto;min-height:0;width:100%;overflow:hidden;perspective:none}
+ .paper{height:100%;min-height:0;width:100%;padding:13px 12px 29px;display:flex;flex-direction:column;overflow:hidden;border-radius:6px 11px 11px 6px;box-shadow:0 4px 12px #4a3b1e16,inset 6px 0 12px #d6c59b20}
+ .paper:before{inset:5px}.paper:after{width:6px}
+ .page-top{flex:0 0 auto;font-size:8px;letter-spacing:.3px;gap:5px}
+ .ornament{flex:0 0 auto;font-size:15px;line-height:1;margin:4px 0 1px}
+ .page-title{flex:0 0 auto;font-size:clamp(19px,5.2vw,24px);line-height:1.2;margin:2px 0 5px}
+ .arabic{flex:1 1 auto;min-height:0;width:100%;overflow:hidden;font-size:clamp(21px,5.4vw,26px);line-height:1.85;text-align:center;text-align-last:center;white-space:pre-line;overflow-wrap:anywhere}
+ .arabic.compact{font-size:clamp(19px,4.8vw,23px);line-height:1.75}
+ .page-note{display:none}
+ .page-number{bottom:9px;font-size:10px}
+ .controls{flex:0 0 auto;position:static;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px;margin:0;padding:4px;border-radius:10px;box-shadow:none}
+ .controls button{min-width:0;min-height:34px;padding:6px 4px;font-size:10px;line-height:1.15}
+ .counter{font-size:9px;white-space:nowrap}
+ .playbar{flex:0 0 auto;display:flex;flex-wrap:nowrap;align-items:center;gap:7px;margin:0;padding:6px 8px;border-radius:10px;min-height:48px}
+ .play-icon{width:34px;height:34px;flex:0 0 34px;font-size:14px}
+ .play-info{flex:1 1 auto;min-width:0}
+ .play-info strong{font-size:10px;line-height:1.15}
+ .play-info small{font-size:9px;line-height:1.2;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .play-actions{flex:0 1 auto;width:auto;display:flex;gap:4px;flex-wrap:nowrap}
+ .play-actions button{min-width:0;min-height:32px;padding:5px 6px;font-size:9px;white-space:nowrap}
+ .play-actions #repeatBtn{display:none}
+ .audio-status{display:none}
+ #qariAudio{display:none!important}
+ footer{display:none}
+}
+@media(max-width:380px){
+ header{padding-left:6px;padding-right:6px;gap:4px}
+ #contentsBtn,#settingsBtn{padding:6px;font-size:10px}
+ .brand{gap:5px}.brand h1{font-size:11px}.brand small{font-size:8px}
+ main{padding:5px}
+ .paper{padding-left:9px;padding-right:9px}
+ .toolbar-group button{font-size:9px}
+ .play-actions button{padding:4px;font-size:8px}
+ .play-info small{max-width:90px}
+}
+
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="seal">۞</div><div><h1>Notebook Tahlil Digital</h1><small>Kitab doa & zikir • edisi digital</small></div></div><button class="header-btn" id="settingsBtn">Aa Pengaturan</button></header>
+<header><div class="brand"><div class="seal">۞</div><div><h1>Notebook Tahlil Digital</h1><small>Kitab doa & zikir • edisi digital</small></div></div><button class="header-btn" id="contentsBtn" aria-expanded="false">☰ Daftar isi</button><button class="header-btn" id="settingsBtn">Aa</button></header>
 <main>
 <aside class="sidebar"><div class="eyebrow">Daftar isi</div><h2>Rangkaian Tahlil</h2><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
 <section class="reader">
@@ -178,27 +236,53 @@ const sections = [
 {title:"Doa untuk ahli kubur",text:`ثُمَّ إِلَى أَرْوَاحِ جَمِيعِ أَهْلِ الْقُبُورِ مِنَ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ، وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ مِنْ مَشَارِقِ الْأَرْضِ إِلَى مَغَارِبِهَا بَرِّهَا وَبَحْرِهَا، خُصُوصًا آبَاءَنَا وَأُمَّهَاتِنَا وَأَجْدَادَنَا وَجَدَّاتِنَا، وَنَخُصُّ خُصُوصًا إِلَى رُوحِ ... وَإِلَى رُوحِ ...\nاَللّٰهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ، اَللّٰهُمَّ أَنْزِلِ الرَّحْمَةَ وَالْمَغْفِرَةَ عَلَى أَهْلِ الْقُبُورِ مِنْ أَهْلِ لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُوْلُ اللهِ`},
 {title:"Doa penutup",text:`رَبَّنَا أَرِنَا الْحَقَّ حَقًّا وَّارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا الْبَاطِلَ بَاطِلًا وَّارْزُقْنَا اجْتِنَابَهُ، رَبَّنَا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَّفِي الْآخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَلَمِيْنَ، اَلْفَاتِحَة`}
 ];
-const $=id=>document.getElementById(id); let index=Number(localStorage.getItem('tahlil-page')||0); index=Math.max(0,Math.min(index,sections.length-1));let audioMode='tts',voices=[],isRepeating=false;
-const renderContents=()=>{$('contents').innerHTML='';sections.forEach((s,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0')+' · '+s.title;b.className=i===index?'active':'';b.onclick=()=>showPage(i);$('contents').appendChild(b)})};
-function showPage(i,animate=''){index=Math.max(0,Math.min(i,sections.length-1));const p=$('paper');p.classList.remove('turn-next','turn-prev');if(animate)p.classList.add(animate);const s=sections[index];$('pageTitle').textContent=s.title;$('arabicText').textContent=s.text;$('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';$('counter').textContent=`Halaman ${index+1} dari ${sections.length}`;$('prevBtn').disabled=$('prevTop').disabled=index===0;$('nextBtn').disabled=$('nextTop').disabled=index===sections.length-1;$('progressText').textContent=Math.round((index+1)/sections.length*100)+'%';$('progressBar').style.width=((index+1)/sections.length*100)+'%';localStorage.setItem('tahlil-page',index);renderContents();$('audioStatus').textContent='Halaman siap dibaca.';if(audioMode==='qari')setQariTrack();setTimeout(()=>p.classList.remove('turn-next','turn-prev'),360)}
-function next(){if(index<sections.length-1)showPage(index+1,'turn-next')}function prev(){if(index>0)showPage(index-1,'turn-prev')}
+const $=id=>document.getElementById(id);
+let pages=[],index=0,audioMode='tts',voices=[],isRepeating=false,sectionStarts=[];
+const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
+function splitSectionForScreen(section,sectionIndex,availableHeight,width){
+ const words=section.text.split(/\s+/).filter(Boolean),out=[];let chunk='';
+ const probe=$('arabicText').cloneNode(false);probe.removeAttribute('id');probe.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;display:block;flex:none;min-height:0;height:auto;max-height:none;overflow:visible;width:'+width+'px;';
+ document.body.appendChild(probe);
+ for(const word of words){const candidate=chunk?chunk+' '+word:word;probe.textContent=candidate;if(probe.scrollHeight>availableHeight&&chunk){out.push({...section,text:chunk,sectionIndex,continuation:out.length>0});chunk=word;probe.textContent=chunk;}else chunk=candidate;}
+ if(chunk)out.push({...section,text:chunk,sectionIndex,continuation:out.length>0});
+ probe.remove();return out.length?out:[{...section,sectionIndex,continuation:false}];
+}
+function buildPages(){
+ const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
+ if(!mobileReader()){pages=sections.map((s,sectionIndex)=>({...s,sectionIndex,continuation:false}));}
+ else{
+  document.body.classList.remove('toc-open');
+  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
+  requestAnimationFrame(()=>{
+   const available=Math.max(80,text.clientHeight),width=Math.max(100,text.clientWidth);
+   pages=[];sectionStarts=[];
+   sections.forEach((s,si)=>{sectionStarts[si]=pages.length;pages.push(...splitSectionForScreen(s,si,available,width));});
+   index=Math.min(saved,pages.length-1);showPage(index);
+  });return;
+ }
+ sectionStarts=[];sections.forEach((s,si)=>sectionStarts[si]=pages.findIndex(p=>p.sectionIndex===si));
+ index=Math.min(saved,pages.length-1);showPage(index);
+}
+const renderContents=()=>{$('contents').innerHTML='';sections.forEach((s,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0')+' · '+s.title;b.className=pages[index]?.sectionIndex===i?'active':'';b.onclick=()=>{showPage(Math.max(0,sectionStarts[i]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};$('contents').appendChild(b)})};
+function showPage(i,animate=''){if(!pages.length)return;index=Math.max(0,Math.min(i,pages.length-1));const p=$('paper'),s=pages[index];p.classList.remove('turn-next','turn-prev');if(animate)p.classList.add(animate);$('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');$('arabicText').textContent=s.text;$('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';$('counter').textContent=`Halaman ${index+1} dari ${pages.length}`;$('prevBtn').disabled=$('prevTop').disabled=index===0;$('nextBtn').disabled=$('nextTop').disabled=index===pages.length-1;$('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';$('progressBar').style.width=((index+1)/pages.length*100)+'%';localStorage.setItem('tahlil-page',index);renderContents();$('audioStatus').textContent='Halaman siap dibaca.';if(audioMode==='qari')setQariTrack();setTimeout(()=>p.classList.remove('turn-next','turn-prev'),360)}
+function next(){if(index<pages.length-1)showPage(index+1,'turn-next')}function prev(){if(index>0)showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=$('nextTop').onclick=next;$('prevBtn').onclick=$('prevTop').onclick=prev;
 function isArabicVoice(v){return /^ar([-_]|$)/i.test(v.lang)}
 function isLikelyMaleVoice(v){return /male|masculine|maged|hamed|hamdan|tarik|tareq|naayf|naif|mohammed|ahmed|abdul|fahad|mansour|yousef/i.test(v.name)}
 function getArabicVoice(){const selected=$('voiceSelect').value;if(selected){const exact=voices.find(v=>v.name===selected);if(exact)return exact}const arabic=voices.filter(isArabicVoice);if($('voiceGender').value==='male'){return arabic.find(isLikelyMaleVoice)||arabic.find(v=>/ar-SA|ar-AE|ar-EG/i.test(v.lang))||arabic[0]||null}return arabic[0]||null}
-function speak(){if(!('speechSynthesis'in window)){ $('audioStatus').textContent='Browser ini tidak mendukung TTS. Coba Chrome Android.';return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(sections[index].text.replace(/\(٣×\)|\(٣٣×\)|×٢/g,''));u.lang='ar-SA';u.rate=Number($('speedSelect').value||.85);const v=getArabicVoice();if(v)u.voice=v;u.onstart=()=>{$('ttsBtn').textContent='Ⅱ';$('audioStatus').textContent='Sedang melantunkan teks halaman ini.'};u.onend=()=>{if(isRepeating){speak()}else{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Lantunan selesai.'}};u.onerror=()=>{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Suara Arab tidak tersedia atau gagal diputar di perangkat ini.'};speechSynthesis.speak(u)}
+function speak(){if(!('speechSynthesis'in window)){ $('audioStatus').textContent='Browser ini tidak mendukung TTS. Coba Chrome Android.';return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pages[index].text.replace(/\(٣×\)|\(٣٣×\)|×٢/g,''));u.lang='ar-SA';u.rate=Number($('speedSelect').value||.85);const v=getArabicVoice();if(v)u.voice=v;u.onstart=()=>{$('ttsBtn').textContent='Ⅱ';$('audioStatus').textContent='Sedang melantunkan teks halaman ini.'};u.onend=()=>{if(isRepeating){speak()}else{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Lantunan selesai.'}};u.onerror=()=>{$('ttsBtn').textContent='▶';$('audioStatus').textContent='Suara Arab tidak tersedia atau gagal diputar di perangkat ini.'};speechSynthesis.speak(u)}
 function stop(){isRepeating=false;if('speechSynthesis'in window)speechSynthesis.cancel();$('qariAudio').pause();$('ttsBtn').textContent='▶';$('audioStatus').textContent='Pemutaran dihentikan.'}
-$('ttsBtn').onclick=()=>{if(audioMode==='qari'&&sections[index].surah){const a=$('qariAudio');if(a.paused)a.play().catch(()=>{$('audioStatus').textContent='Audio belum bisa diputar. Periksa koneksi internet.'});else a.pause();return}if('speechSynthesis'in window&&speechSynthesis.speaking){speechSynthesis.pause();$('ttsBtn').textContent='▶';$('audioStatus').textContent='Dijeda. Tekan putar untuk melanjutkan.'}else speak()};
+$('ttsBtn').onclick=()=>{if(audioMode==='qari'&&pages[index].surah){const a=$('qariAudio');if(a.paused)a.play().catch(()=>{$('audioStatus').textContent='Audio belum bisa diputar. Periksa koneksi internet.'});else a.pause();return}if('speechSynthesis'in window&&speechSynthesis.speaking){speechSynthesis.pause();$('ttsBtn').textContent='▶';$('audioStatus').textContent='Dijeda. Tekan putar untuk melanjutkan.'}else speak()};
 $('stopBtn').onclick=stop;$('repeatBtn').onclick=()=>{isRepeating=!isRepeating;$('repeatBtn').textContent=isRepeating?'Ulangi: aktif':'Ulangi halaman';if(isRepeating)speak()};
-function setQariTrack(){const s=sections[index],a=$('qariAudio');if(audioMode!=='qari'||!s.surah){a.style.display='none';$('audioModeLabel').textContent=audioMode==='qari'?'Audio qari tidak tersedia untuk bagian doa ini':'TTS bahasa Arab dari perangkat';$('ttsBtn').textContent='▶';return}const q=$('qariSelect').value||'Alafasy_128kbps';a.src=`https://everyayah.com/data/${q}/${s.surah}001.mp3`;a.style.display='block';$('audioModeLabel').textContent='Rekaman qari • Surah '+s.title;$('audioStatus').textContent='Audio qari memerlukan koneksi internet.'}
+function setQariTrack(){const s=pages[index],a=$('qariAudio');if(audioMode!=='qari'||!s.surah){a.style.display='none';$('audioModeLabel').textContent=audioMode==='qari'?'Audio qari tidak tersedia untuk bagian doa ini':'TTS bahasa Arab dari perangkat';$('ttsBtn').textContent='▶';return}const q=$('qariSelect').value||'Alafasy_128kbps';a.src=`https://everyayah.com/data/${q}/${s.surah}001.mp3`;a.style.display='block';$('audioModeLabel').textContent='Rekaman qari • Surah '+s.title;$('audioStatus').textContent='Audio qari memerlukan koneksi internet.'}
 $('modeBtn').onclick=()=>{audioMode=audioMode==='tts'?'qari':'tts';$('modeBtn').textContent=audioMode==='tts'?'Pilih audio':'Gunakan TTS';setQariTrack();$('audioStatus').textContent=audioMode==='qari'?'Mode audio qari aktif. Untuk bagian doa, gunakan TTS.':'Mode TTS Arab aktif.'};
 $('qariSelect').onchange=()=>{if(audioMode==='qari')setQariTrack()};
 $('fontSize').onchange=e=>{$('arabicText').classList.toggle('compact',e.target.value==='small');$('arabicText').style.fontSize=e.target.value==='large'?'clamp(27px,3vw,36px)':''};
 $('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
-$('settingsBtn').onclick=()=>$('settingsModal').classList.add('open');$('closeSettings').onclick=()=>$('settingsModal').classList.remove('open');$('saveSettings').onclick=()=>{$('settingsModal').classList.remove('open');if(audioMode==='qari')setQariTrack()};
+$('contentsBtn').onclick=()=>{const open=!document.body.classList.contains('toc-open');document.body.classList.toggle('toc-open',open);$('contentsBtn').setAttribute('aria-expanded',String(open))};$('settingsBtn').onclick=()=>$('settingsModal').classList.add('open');$('closeSettings').onclick=()=>$('settingsModal').classList.remove('open');$('saveSettings').onclick=()=>{$('settingsModal').classList.remove('open');if(audioMode==='qari')setQariTrack()};
 function loadVoices(){voices=speechSynthesis?.getVoices?.()||[];const sel=$('voiceSelect');const old=sel.value;sel.innerHTML='<option value="">Otomatis sesuai preferensi</option>';voices.filter(isArabicVoice).forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o)});if(old&&voices.some(v=>v.name===old))sel.value=old}
 $('voiceGender').value=localStorage.getItem('tahlil-voice-gender')||'male';
 $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voiceGender').value);$('voiceSelect').value='';$('audioStatus').textContent='Preferensi suara disimpan. Tekan putar untuk mencoba suara yang tersedia.'};
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-showPage(index);
+buildPages();window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
 </script></body></html>
