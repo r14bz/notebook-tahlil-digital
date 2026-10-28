@@ -305,7 +305,13 @@ async function loadAdditionalSurahs(){
     },
     {
       title:source.title,
-      text:ayahs.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾').join('\n'),
+      text:ayahs.map(a=>{
+        let verse=a.text;
+        if(source.number===36 && a.numberInSurah===1){
+          verse=verse.replace(/^\s*بِسْمِ\s*اللّٰهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,'').trim();
+        }
+        return verse+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾';
+      }).join('\n'),
       quranSurah:source.number,
       verseStart:1,
       verseEnd:ayahs.length
