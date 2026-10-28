@@ -243,6 +243,72 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .controls .play-info small{max-width:48px}
  .controls .play-actions button{padding:3px;font-size:8px}
 }
+
+
+/* Premium redesign v1 — restrained editorial palette, stronger hierarchy, consistent controls */
+:root{
+ --green:#103b2d;--green2:#1b5942;--gold:#b99550;--paper:#fffaf0;--ink:#28291f;
+ --muted:#777362;--bg:#efede5;--line:#ded3b9;--radius-card:18px;
+}
+body{background:linear-gradient(145deg,#f2f0e8 0%,#e8e5da 100%);color:var(--ink);letter-spacing:.005em}
+header{min-height:76px;padding-top:13px;padding-bottom:13px;box-shadow:0 8px 24px #102c231a}
+.brand{gap:12px}.seal{width:45px;height:45px;background:#174633}
+.brand h1{font-size:18px;letter-spacing:-.025em}.brand small{font-size:11px;letter-spacing:.01em}
+button{border-radius:11px;transition:background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+button:hover:not(:disabled){filter:brightness(1.025);box-shadow:0 3px 10px #173d2d12}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #c4a35e;outline-offset:3px}
+main{gap:24px;margin-top:25px;margin-bottom:25px}
+.sidebar{background:#fffdf7;border-color:#ded4bd;border-radius:20px;padding:18px;box-shadow:0 8px 26px #4b3b1d0a}
+.sidebar h2{font-size:18px;letter-spacing:-.02em}
+.contents{gap:7px}
+.contents button{padding:11px 12px;border-radius:10px;line-height:1.45}
+.contents button.active{background:#e9eee4;border-left-width:4px}
+.progress{margin-top:19px;padding-top:16px;line-height:1.6}
+.bar{height:5px}
+.toolbar{margin-bottom:14px}
+.soft-btn{background:#fffdf7;border-color:#ded4bd}
+.primary{background:var(--green)}
+.gold-btn{background:#eee0bc}
+.small-select{background:#fffdf7;border-color:#ded4bd;min-height:42px}
+.paper{background:linear-gradient(135deg,#fffdf7 0%,#fff8e8 100%);border-color:#dfcca1;border-radius:8px 20px 20px 8px;box-shadow:0 16px 40px #45371d13,inset 10px 0 20px #d6c59b16;padding-top:40px}
+.paper:before{border-color:#e2d0a7}
+.page-top{font-size:10px;letter-spacing:1.5px}
+.ornament{margin:17px 0 7px;color:#b99550}
+.page-title{letter-spacing:.01em;margin-bottom:16px}
+.title-divider{margin-bottom:18px}
+.arabic{color:#26271f;line-height:2.1;text-align:center;text-align-last:center}
+.page-note{letter-spacing:.025em}
+.page-number{font-variant-numeric:tabular-nums}
+.controls{gap:10px}
+.controls button{min-height:44px}
+.playbar{background:linear-gradient(120deg,#fffdf7,#f8f1e2);border-color:#e0d4ba;border-radius:17px;padding:14px 16px;box-shadow:0 6px 20px #45371d08}
+.play-icon{box-shadow:0 4px 10px #123d2e20}
+.play-info strong{font-size:13px}.play-info small{line-height:1.55}
+.play-actions button{border-radius:10px}
+footer{letter-spacing:.015em}
+.modal{background:#0a2119b8;backdrop-filter:blur(5px)}
+.modal-card{border-radius:20px;box-shadow:0 24px 80px #0003;padding:25px}
+.modal-card h3{letter-spacing:-.025em}
+.modal-card input,.modal-card select{min-height:44px;border-color:#d9ccb0}
+@media(min-width:761px){
+ main{align-items:start}
+ .sidebar{top:20px}
+ .reader{min-width:0}
+ .paper{min-height:610px}
+}
+@media(max-width:760px){
+ body{background:#f0ede4}
+ header{box-shadow:0 3px 14px #102c2317}
+ main{margin-top:8px;margin-bottom:12px;gap:10px}
+ .sidebar{border-radius:15px}
+ .paper{border-radius:8px 15px 15px 8px;padding-top:25px}
+ .playbar{border-radius:15px}
+ .modal-card{border-radius:20px 20px 12px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+ button,.paper,.bar span{transition:none!important}
+}
+
 </style>
 </head>
 <body>
