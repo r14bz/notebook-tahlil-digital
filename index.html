@@ -292,7 +292,7 @@ async function loadAdditionalSurahs(){
     return {source,ayahs:payload.data.ayahs};
   }));
   for(const {source,ayahs} of loaded){
-    const chunkSize=10;
+    const chunkSize=5;
     for(let start=0;start<ayahs.length;start+=chunkSize){
       const group=ayahs.slice(start,start+chunkSize);
       const first=group[0].numberInSurah, last=group[group.length-1].numberInSurah;
