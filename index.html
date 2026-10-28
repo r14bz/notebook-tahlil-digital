@@ -20,9 +20,9 @@ main{max-width:1120px;margin:22px auto;padding:0 16px;display:grid;grid-template
 .reader{min-width:0}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar-group{display:flex;gap:7px;align-items:center}.soft-btn{background:#fffaf0;border:1px solid #ded2b7;color:var(--green)}.primary{background:var(--green);color:#fff7e7}.gold-btn{background:#e9d6a8;color:#4a3b1e}.small-select{border:1px solid #ded2b7;background:#fffaf0;border-radius:10px;padding:9px;color:var(--green);max-width:150px}
 .book{position:relative;perspective:1800px}.paper{min-height:590px;background:var(--paper);border:1px solid #ddc99a;border-radius:5px 18px 18px 5px;box-shadow:0 14px 35px #4a3b1e20, inset 12px 0 20px #d6c59b20;position:relative;padding:36px clamp(22px,5vw,64px) 58px;overflow:hidden;transform-origin:left center;transition:transform .35s,opacity .2s}
 .paper:before{content:"";position:absolute;inset:12px;border:1px solid #d9bd7c;border-radius:3px 12px 12px 3px;pointer-events:none}.paper:after{content:"";position:absolute;left:0;top:0;bottom:0;width:15px;background:linear-gradient(90deg,#d7c49b55,transparent);pointer-events:none}
-.paper.turn-next{animation:pageFlipForward .46s cubic-bezier(.22,.68,.25,1)}.paper.turn-prev{animation:pageFlipBackward .46s cubic-bezier(.22,.68,.25,1)}@keyframes pageFlipForward{0%{transform:rotateY(0);opacity:1;filter:brightness(1)}42%{transform:rotateY(-62deg);opacity:.45;filter:brightness(.82)}100%{transform:rotateY(0);opacity:1;filter:brightness(1)}}@keyframes pageFlipBackward{0%{transform:rotateY(0);opacity:1;filter:brightness(1)}42%{transform:rotateY(62deg);opacity:.45;filter:brightness(.82)}100%{transform:rotateY(0);opacity:1;filter:brightness(1)}}
+.paper.turn-out-next{animation:pageOutNext .18s ease-in forwards;transform-origin:left center}.paper.turn-out-prev{animation:pageOutPrev .18s ease-in forwards;transform-origin:right center}.paper.turn-in-next{animation:pageInNext .34s cubic-bezier(.18,.72,.22,1) both;transform-origin:right center}.paper.turn-in-prev{animation:pageInPrev .34s cubic-bezier(.18,.72,.22,1) both;transform-origin:left center}@keyframes pageOutNext{to{transform:rotateY(-78deg) translateX(-3%);filter:brightness(.78);box-shadow:0 3px 10px #30251a35}}@keyframes pageOutPrev{to{transform:rotateY(78deg) translateX(3%);filter:brightness(.78);box-shadow:0 3px 10px #30251a35}}@keyframes pageInNext{from{transform:rotateY(78deg) translateX(3%);filter:brightness(.76);box-shadow:0 3px 10px #30251a35}to{transform:rotateY(0) translateX(0);filter:brightness(1);box-shadow:0 4px 12px #4a3b1e16,inset 6px 0 12px #d6c59b20}}@keyframes pageInPrev{from{transform:rotateY(-78deg) translateX(-3%);filter:brightness(.76);box-shadow:0 3px 10px #30251a35}to{transform:rotateY(0) translateX(0);filter:brightness(1);box-shadow:0 4px 12px #4a3b1e16,inset 6px 0 12px #d6c59b20}}
 .page-top{display:flex;justify-content:space-between;align-items:center;color:#9d824b;font-size:10px;letter-spacing:1.3px;text-transform:uppercase;position:relative;z-index:1}.ornament{color:var(--gold);font-size:22px;text-align:center;margin:14px 0 4px}
-.page-title{text-align:center;font-family:'Amiri',serif;font-size:clamp(25px,3vw,34px);color:var(--green);margin:3px 0 24px;font-weight:700}
+.page-title{text-align:center;font-family:'Amiri',serif;font-size:clamp(25px,3vw,34px);color:var(--green);margin:10px 0 12px;font-weight:700}.title-divider{height:1px;flex:0 0 1px;width:min(82%,420px);margin:0 auto 12px;background:linear-gradient(90deg,transparent,#bd9854 16%,#d8c18a 50%,#bd9854 84%,transparent);position:relative}.title-divider:after{content:'◆';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:0 7px;background:var(--paper);color:#bd9854;font-size:8px}
 .arabic{font-family:'Amiri',serif;font-size:clamp(23px,2.5vw,30px);line-height:2.05;text-align:justify;text-align-last:center;direction:rtl;color:#27261e;white-space:pre-line;position:relative;z-index:1}
 .arabic.compact{font-size:clamp(20px,2.1vw,26px);line-height:1.95}.page-note{text-align:center;color:#9a8c70;font-size:11px;margin-top:25px;position:relative;z-index:1}.page-number{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#a18b5e;font-size:12px}
 .controls{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}.counter{font-size:12px;color:#827762}.playbar{margin-top:16px;background:#f8f2e4;border:1px solid #dfd2b6;border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.play-icon{width:40px;height:40px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:17px;flex-shrink:0}.play-info{flex:1;min-width:130px}.play-info strong{font-size:12px;color:var(--green);display:block}.play-info small{font-size:10px;color:var(--muted)}.play-actions{display:flex;gap:6px;flex-wrap:wrap}.play-actions button{padding:9px 11px;font-size:11px}.audio-status{font-size:11px;color:#8c7c5e;width:100%}
@@ -162,13 +162,11 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .toolbar-group button{min-width:0;flex:1 1 0;padding:7px 5px;font-size:10px;min-height:34px}
  .toolbar-group select,.small-select{min-width:0;max-width:100%;flex:1 1 0;padding:6px 4px;font-size:10px;min-height:34px}
  .book{flex:1 1 auto;min-height:0;width:100%;overflow:hidden;perspective:1300px}
- .paper{height:100%;min-height:0;width:100%;padding:13px 12px 29px;display:flex;flex-direction:column;overflow:hidden;border-radius:6px 11px 11px 6px;box-shadow:0 4px 12px #4a3b1e16,inset 6px 0 12px #d6c59b20;transform-origin:left center;transform-style:preserve-3d;will-change:transform}
+ .paper{height:100%;min-height:0;width:100%;padding:17px 12px 29px;display:flex;flex-direction:column;overflow:hidden;border-radius:6px 11px 11px 6px;box-shadow:0 4px 12px #4a3b1e16,inset 6px 0 12px #d6c59b20;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform}
  .paper:before{inset:5px}.paper:after{width:6px}
- .page-top{flex:0 0 auto;font-size:8px;letter-spacing:.3px;gap:5px}
- .ornament{flex:0 0 auto;font-size:15px;line-height:1;margin:4px 0 1px}
- .page-title{flex:0 0 auto;font-size:clamp(19px,5.2vw,24px);line-height:1.2;margin:3px 0 15px}
- .arabic{flex:1 1 auto;min-height:0;width:100%;overflow:hidden;font-size:clamp(21px,5.4vw,26px);line-height:1.85;text-align:center;text-align-last:center;white-space:pre-line;overflow-wrap:anywhere}
- .arabic.compact{font-size:clamp(19px,4.8vw,23px);line-height:1.75}.arabic.short-text{display:flex;flex-direction:column;justify-content:center;}
+ .page-title{flex:0 0 auto;font-size:clamp(19px,5.2vw,24px);line-height:1.2;margin:4px 0 9px}.title-divider{margin-bottom:9px;width:78%}
+ .arabic{flex:1 1 auto;min-height:0;width:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden;font-size:clamp(21px,5.4vw,26px);line-height:1.85;text-align:center;text-align-last:center;white-space:pre-line;overflow-wrap:anywhere}
+ .arabic.compact{font-size:clamp(19px,4.8vw,23px);line-height:1.75}
  .page-note{display:none}
  .page-number{bottom:9px;font-size:10px}
  .controls{flex:0 0 auto;position:static;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:6px;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;background:transparent;align-items:stretch}
@@ -249,7 +247,7 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
 <aside class="sidebar"><div class="eyebrow">Daftar isi</div><h2>Rangkaian Tahlil</h2><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
 <section class="reader">
 
-<div class="book"><article class="paper" id="paper"><div class="page-top"><span>Majelis Tahlil</span><span>بِسْمِ اللّٰهِ</span></div><div class="ornament">۞ ❧ ۞</div><h2 class="page-title" id="pageTitle"></h2><div class="arabic" id="arabicText" lang="ar" dir="rtl"></div><div class="page-note" id="pageNote">اقْرَؤُوا بِتَأَنٍّ وَحُضُورِ الْقَلْبِ</div><div class="page-number" id="pageNumber"></div></article></div>
+<div class="book"><article class="paper" id="paper"><h2 class="page-title" id="pageTitle"></h2><div class="title-divider" aria-hidden="true"></div><div class="arabic" id="arabicText" lang="ar" dir="rtl"></div><div class="page-note" id="pageNote">اقْرَؤُوا بِتَأَنٍّ وَحُضُورِ الْقَلْبِ</div><div class="page-number" id="pageNumber"></div></article></div>
 <div class="controls"><button class="soft-btn nav-page" id="prevBtn" aria-label="Halaman sebelumnya">‹ Sebelumnya</button><div class="playbar"><button class="play-icon" id="ttsBtn" aria-label="Putar TTS">▶</button><div class="play-info"><strong>Lantunan</strong><small id="audioModeLabel">TTS bahasa Arab dari perangkat</small></div><div class="play-actions"><button class="soft-btn" id="modeBtn">Audio</button><button class="gold-btn" id="stopBtn" aria-label="Berhenti">■</button></div><div class="audio-status" id="audioStatus">Tekan putar untuk mendengarkan bacaan halaman ini.</div><audio id="qariAudio" controls style="display:none;width:100%"></audio></div><button class="primary nav-page" id="nextBtn" aria-label="Halaman berikutnya">Berikutnya ›</button></div>
 </section></main>
 <footer>Notebook Tahlil Digital • Bacaan mengikuti teks yang dimasukkan pengguna. Periksa kembali teks dan tajwid bersama guru/ustaz setempat.</footer>
@@ -307,8 +305,39 @@ function buildPages(){
  index=Math.min(saved,pages.length-1);showPage(index);
 }
 const renderContents=()=>{$('contents').innerHTML='';sections.forEach((s,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0')+' · '+s.title;b.className=pages[index]?.sectionIndex===i?'active':'';b.onclick=()=>{showPage(Math.max(0,sectionStarts[i]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};$('contents').appendChild(b)})};
-function showPage(i,animate=''){if(!pages.length)return;index=Math.max(0,Math.min(i,pages.length-1));const p=$('paper'),s=pages[index],arabic=$('arabicText');p.classList.remove('turn-next','turn-prev');if(animate){void p.offsetWidth;p.classList.add(animate)}$('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');arabic.textContent=s.text;arabic.classList.toggle('short-text',s.text.replace(/\s/g,'').length<=180||s.text.trim().split(/\s+/).length<=22);$('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';$('prevBtn').disabled=index===0;$('nextBtn').disabled=index===pages.length-1;$('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';$('progressBar').style.width=((index+1)/pages.length*100)+'%';localStorage.setItem('tahlil-page',index);renderContents();$('audioStatus').textContent='Halaman siap dibaca.';if(audioMode==='qari')setQariTrack();setTimeout(()=>p.classList.remove('turn-next','turn-prev'),360)}
-function next(){if(index<pages.length-1)showPage(index+1,'turn-next')}function prev(){if(index>0)showPage(index-1,'turn-prev')}
+let pageTurning=false;
+function paintPage(s){
+ $('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');
+ $('arabicText').textContent=s.text;
+ $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
+ $('audioStatus').textContent='Halaman siap dibaca.';
+ if(audioMode==='qari')setQariTrack();
+ renderContents();
+}
+function showPage(i,animate=''){
+ if(!pages.length)return;
+ if(pageTurning&&animate)return;
+ const target=Math.max(0,Math.min(i,pages.length-1));
+ if(target===index&&!animate)return;
+ index=target;
+ const p=$('paper'),s=pages[index];
+ p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
+ $('prevBtn').disabled=index===0;$('nextBtn').disabled=index===pages.length-1;
+ $('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';
+ $('progressBar').style.width=((index+1)/pages.length*100)+'%';
+ localStorage.setItem('tahlil-page',index);
+ if(animate){
+  pageTurning=true;p.style.transformOrigin=animate==='turn-next'?'left center':'right center';
+  p.classList.add(animate==='turn-next'?'turn-out-next':'turn-out-prev');
+  window.setTimeout(()=>{
+   paintPage(s);p.classList.remove('turn-out-next','turn-out-prev');
+   p.style.transformOrigin=animate==='turn-next'?'right center':'left center';
+   p.classList.add(animate==='turn-next'?'turn-in-next':'turn-in-prev');
+   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false},350);
+  },175);
+ }else paintPage(s);
+}
+function next(){if(!pageTurning&&index<pages.length-1)showPage(index+1,'turn-next')}function prev(){if(!pageTurning&&index>0)showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
@@ -318,7 +347,7 @@ $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
   startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTime=Date.now();
  },{passive:true});
  paper.addEventListener('touchend',e=>{
-  if(!startTime||!e.changedTouches.length)return;
+  if(!startTime||!e.changedTouches.length||pageTurning)return;
   const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY,duration=Date.now()-startTime;
   startTime=0;
   if(Math.abs(dx)<48||Math.abs(dx)<Math.abs(dy)*1.25||duration>900)return;
