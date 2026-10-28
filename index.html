@@ -277,13 +277,13 @@ const sections = [
 {title:"Doa untuk ahli kubur",text:`ثُمَّ إِلَى أَرْوَاحِ جَمِيعِ أَهْلِ الْقُبُورِ مِنَ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ، وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ مِنْ مَشَارِقِ الْأَرْضِ إِلَى مَغَارِبِهَا بَرِّهَا وَبَحْرِهَا، خُصُوصًا آبَاءَنَا وَأُمَّهَاتِنَا وَأَجْدَادَنَا وَجَدَّاتِنَا، وَنَخُصُّ خُصُوصًا إِلَى رُوحِ ... وَإِلَى رُوحِ ...\nاَللّٰهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ، اَللّٰهُمَّ أَنْزِلِ الرَّحْمَةَ وَالْمَغْفِرَةَ عَلَى أَهْلِ الْقُبُورِ مِنْ أَهْلِ لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُوْلُ اللهِ`},
 {title:"Doa penutup",text:`رَبَّنَا أَرِنَا الْحَقَّ حَقًّا وَّارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا الْبَاطِلَ بَاطِلًا وَّارْزُقْنَا اجْتِنَابَهُ، رَبَّنَا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَّفِي الْآخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَلَمِيْنَ، اَلْفَاتِحَة`}
 ];
-// Simpan materi tahlil asli, lalu susun bacaan utama sesuai urutan daftar isi.
+// Simpan materi tahlil asli. Setiap surah menjadi satu bagian utuh;
+// pemenggalan halaman dilakukan berdasarkan tinggi layar, bukan jumlah ayat.
 const tahlilSections = sections.slice();
-// Teks Al-Qur'an dibagi untuk tata letak halaman; daftar isi tetap hanya menampilkan satu entri per surah.
 async function loadAdditionalSurahs(){
   const sources = [
-    {number:36,title:'Surah Yasin'},
-    {number:55,title:'Surah Ar-Rahman'}
+    {number:36,title:'Yasin'},
+    {number:55,title:'Ar-Rahman'}
   ];
   const loaded = await Promise.all(sources.map(async source=>{
     const response = await fetch('https://api.alquran.cloud/v1/surah/'+source.number+'/quran-uthmani');
@@ -292,23 +292,13 @@ async function loadAdditionalSurahs(){
     if(payload.code!==200 || !payload.data || !Array.isArray(payload.data.ayahs)) throw new Error('Format teks surah tidak valid');
     return {source,ayahs:payload.data.ayahs};
   }));
-  const additionalSections=[];
-  for(const {source,ayahs} of loaded){
-    const chunkSize=5;
-    for(let start=0;start<ayahs.length;start+=chunkSize){
-      const group=ayahs.slice(start,start+chunkSize);
-      const first=group[0].numberInSurah, last=group[group.length-1].numberInSurah;
-      const title=source.title+' · Ayat '+first+(last!==first?'–'+last:'');
-      const lines=group.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾');
-      additionalSections.push({
-        title,
-        text:(first===1?'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ\\n':'')+lines.join('\\n'),
-        quranSurah:source.number,
-        verseStart:first,
-        verseEnd:last
-      });
-    }
-  }
+  const additionalSections=loaded.map(({source,ayahs})=>({
+    title:source.title,
+    text:(source.number===36?'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ\\n':'')+ayahs.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾').join('\\n'),
+    quranSurah:source.number,
+    verseStart:1,
+    verseEnd:ayahs.length
+  }));
   sections.splice(0,sections.length,...additionalSections,...tahlilSections);
 }
 const $=id=>document.getElementById(id);
@@ -324,18 +314,14 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
 }
 function buildPages(){
  const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
- if(!mobileReader()){pages=sections.map((s,sectionIndex)=>({...s,sectionIndex,continuation:false}));}
- else{
-  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
-  requestAnimationFrame(()=>{
-   const available=Math.max(80,text.clientHeight),width=Math.max(100,text.clientWidth);
-   pages=[];sectionStarts=[];
-   sections.forEach((s,si)=>{sectionStarts[si]=pages.length;pages.push(...splitSectionForScreen(s,si,available,width));});
-   index=Math.min(saved,pages.length-1);showPage(index);
-  });return;
- }
- sectionStarts=[];sections.forEach((s,si)=>sectionStarts[si]=pages.findIndex(p=>p.sectionIndex===si));
- index=Math.min(saved,pages.length-1);showPage(index);
+ $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
+ requestAnimationFrame(()=>{
+  const available=mobileReader()?Math.max(80,text.clientHeight):Math.max(180,paper.clientHeight-205);
+  const width=Math.max(100,text.clientWidth);
+  pages=[];sectionStarts=[];
+  sections.forEach((s,si)=>{sectionStarts[si]=pages.length;pages.push(...splitSectionForScreen(s,si,available,width));});
+  index=Math.min(saved,pages.length-1);showPage(index);
+ });
 }
 const tocGroups=[
  {title:'Yasin (ayat 1 sampai selesai)',matches:s=>s.quranSurah===36},
