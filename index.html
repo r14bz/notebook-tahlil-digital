@@ -151,10 +151,14 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .brand small{font-size:9px;margin-top:1px}
  #contentsBtn,#settingsBtn{min-height:36px;padding:7px 9px;font-size:11px;white-space:nowrap}
  main{position:relative;flex:1 1 auto;min-height:0;height:auto;width:100%;max-width:none;margin:0;padding:7px;display:flex;overflow:hidden;gap:0}
- .sidebar{display:none;position:absolute;z-index:9;left:7px;right:7px;top:7px;width:auto;max-width:none;max-height:52%;overflow:auto;box-shadow:0 12px 30px #1a2c2240;border-radius:13px;padding:12px}
- body.toc-open .sidebar{display:block}
- .sidebar h2{margin:3px 0 7px;font-size:14px}
- .contents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;max-height:32vh;overflow:auto}
+ .sidebar{display:none;position:fixed;z-index:20;inset:0;width:100%;height:100dvh;max-width:none;max-height:none;overflow:auto;box-shadow:none;border:0;border-radius:0;padding:calc(18px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));background:#fffaf0;flex-direction:column;gap:18px}
+ body.toc-open .sidebar{display:flex}
+ .toc-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e1d7c1;padding-bottom:16px}
+ .toc-heading h2{margin:4px 0 0;font-size:22px}
+ #closeContents{min-height:42px;flex:0 0 auto}
+ .contents{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:10px;max-height:none;overflow:auto;flex:1}
+ .contents button{font-size:16px;padding:16px;border:1px solid #e0d4ba;border-radius:12px;background:#fffdf7}
+ .contents button.active{border-left:4px solid var(--gold);background:#e8eddf}
  .contents button{min-width:0;white-space:normal;text-align:left;padding:7px 8px;font-size:11px;line-height:1.25}
  .reader{width:100%;height:100%;min-height:0;display:flex;flex-direction:column;gap:5px;overflow:hidden}
  .toolbar{flex:0 0 auto;display:flex;flex-direction:row;gap:5px;margin:0}
@@ -244,7 +248,7 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
 <body>
 <header><div class="brand"><div class="seal">۞</div><div><h1>Notebook Tahlil Digital</h1><small>Kitab doa & zikir • edisi digital</small></div></div><button class="header-btn icon-btn" id="contentsBtn" aria-label="Daftar isi" title="Daftar isi" aria-expanded="false">☰</button><select id="fontSize" class="header-select" aria-label="Ukuran tulisan" title="Ukuran tulisan"><option value="small">A−</option><option value="normal" selected>A</option><option value="large">A+</option></select><button class="header-btn icon-btn" id="fullBtn" aria-label="Layar penuh" title="Layar penuh">⛶</button><button class="header-btn icon-btn" id="settingsBtn" aria-label="Pengaturan bacaan" title="Pengaturan bacaan">⚙</button></header>
 <main>
-<aside class="sidebar"><div class="eyebrow">Daftar isi</div><h2>Rangkaian Tahlil</h2><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
+<aside class="sidebar"><div class="toc-heading"><div><div class="eyebrow">Daftar isi</div><h2>Rangkaian Bacaan</h2></div><button class="soft-btn" id="closeContents" type="button">Tutup ✕</button></div><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
 <section class="reader">
 
 <div class="book"><article class="paper" id="paper"><h2 class="page-title" id="pageTitle"></h2><div class="title-divider" aria-hidden="true"></div><div class="arabic" id="arabicText" lang="ar" dir="rtl"></div><div class="page-note" id="pageNote">اقْرَؤُوا بِتَأَنٍّ وَحُضُورِ الْقَلْبِ</div><div class="page-number" id="pageNumber"></div></article></div>
@@ -292,13 +296,21 @@ async function loadAdditionalSurahs(){
     if(payload.code!==200 || !payload.data || !Array.isArray(payload.data.ayahs)) throw new Error('Format teks surah tidak valid');
     return {source,ayahs:payload.data.ayahs};
   }));
-  const additionalSections=loaded.map(({source,ayahs})=>({
-    title:source.title,
-    text:(source.number===36?'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ\\n':'')+ayahs.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾').join('\\n'),
-    quranSurah:source.number,
-    verseStart:1,
-    verseEnd:ayahs.length
-  }));
+  const additionalSections=loaded.flatMap(({source,ayahs})=>[
+    {
+      title:source.title+' — Bismillah',
+      text:'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ',
+      quranSurah:source.number,
+      isBismillah:true
+    },
+    {
+      title:source.title,
+      text:ayahs.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾').join('\n'),
+      quranSurah:source.number,
+      verseStart:1,
+      verseEnd:ayahs.length
+    }
+  ]);
   sections.splice(0,sections.length,...additionalSections,...tahlilSections);
 }
 const $=id=>document.getElementById(id);
@@ -403,7 +415,7 @@ $('modeBtn').onclick=()=>{audioMode=audioMode==='tts'?'qari':'tts';$('modeBtn').
 $('qariSelect').onchange=()=>{if(audioMode==='qari')setQariTrack()};
 $('fontSize').onchange=e=>{$('arabicText').classList.toggle('compact',e.target.value==='small');$('arabicText').style.fontSize=e.target.value==='large'?'clamp(27px,3vw,36px)':''};
 $('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
-$('contentsBtn').onclick=()=>{const open=!document.body.classList.contains('toc-open');document.body.classList.toggle('toc-open',open);$('contentsBtn').setAttribute('aria-expanded',String(open))};$('settingsBtn').onclick=()=>$('settingsModal').classList.add('open');$('closeSettings').onclick=()=>$('settingsModal').classList.remove('open');$('saveSettings').onclick=()=>{$('settingsModal').classList.remove('open');if(audioMode==='qari')setQariTrack()};
+$('contentsBtn').onclick=()=>{const open=!document.body.classList.contains('toc-open');document.body.classList.toggle('toc-open',open);$('contentsBtn').setAttribute('aria-expanded',String(open))};$('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};$('settingsBtn').onclick=()=>$('settingsModal').classList.add('open');$('closeSettings').onclick=()=>$('settingsModal').classList.remove('open');$('saveSettings').onclick=()=>{$('settingsModal').classList.remove('open');if(audioMode==='qari')setQariTrack()};
 function loadVoices(){voices=speechSynthesis?.getVoices?.()||[];const sel=$('voiceSelect');const old=sel.value;sel.innerHTML='<option value="">Otomatis sesuai preferensi</option>';voices.filter(isArabicVoice).forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o)});if(old&&voices.some(v=>v.name===old))sel.value=old}
 $('voiceGender').value=localStorage.getItem('tahlil-voice-gender')||'male';
 $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voiceGender').value);$('voiceSelect').value='';$('audioStatus').textContent='Preferensi suara disimpan. Tekan putar untuk mencoba suara yang tersedia.'};
