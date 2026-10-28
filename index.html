@@ -277,8 +277,9 @@ const sections = [
 {title:"Doa untuk ahli kubur",text:`ثُمَّ إِلَى أَرْوَاحِ جَمِيعِ أَهْلِ الْقُبُورِ مِنَ الْمُسْلِمِينَ وَالْمُسْلِمَاتِ، وَالْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ مِنْ مَشَارِقِ الْأَرْضِ إِلَى مَغَارِبِهَا بَرِّهَا وَبَحْرِهَا، خُصُوصًا آبَاءَنَا وَأُمَّهَاتِنَا وَأَجْدَادَنَا وَجَدَّاتِنَا، وَنَخُصُّ خُصُوصًا إِلَى رُوحِ ... وَإِلَى رُوحِ ...\nاَللّٰهُمَّ اغْفِرْ لَهُمْ وَارْحَمْهُمْ وَعَافِهِمْ وَاعْفُ عَنْهُمْ، اَللّٰهُمَّ أَنْزِلِ الرَّحْمَةَ وَالْمَغْفِرَةَ عَلَى أَهْلِ الْقُبُورِ مِنْ أَهْلِ لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَّسُوْلُ اللهِ`},
 {title:"Doa penutup",text:`رَبَّنَا أَرِنَا الْحَقَّ حَقًّا وَّارْزُقْنَا اتِّبَاعَهُ، وَأَرِنَا الْبَاطِلَ بَاطِلًا وَّارْزُقْنَا اجْتِنَابَهُ، رَبَّنَا اٰتِنَا فِي الدُّنْيَا حَسَنَةً وَّفِي الْآخِرَةِ حَسَنَةً وَّقِنَا عَذَابَ النَّارِ، سُبْحَانَ رَبِّكَ رَبِّ الْعِزَّةِ عَمَّا يَصِفُوْنَ وَسَلَامٌ عَلَى الْمُرْسَلِيْنَ وَالْحَمْدُ لِلّٰهِ رَبِّ الْعَلَمِيْنَ، اَلْفَاتِحَة`}
 ];
-// Memuat teks Al-Qur'an berharakat dari endpoint Quran API, lalu membaginya
-// menjadi kelompok 10 ayat agar nyaman dibaca pada halaman desktop maupun HP.
+// Simpan materi tahlil asli, lalu susun bacaan utama sesuai urutan daftar isi.
+const tahlilSections = sections.slice();
+// Teks Al-Qur'an dibagi untuk tata letak halaman; daftar isi tetap hanya menampilkan satu entri per surah.
 async function loadAdditionalSurahs(){
   const sources = [
     {number:36,title:'Surah Yasin'},
@@ -291,6 +292,7 @@ async function loadAdditionalSurahs(){
     if(payload.code!==200 || !payload.data || !Array.isArray(payload.data.ayahs)) throw new Error('Format teks surah tidak valid');
     return {source,ayahs:payload.data.ayahs};
   }));
+  const additionalSections=[];
   for(const {source,ayahs} of loaded){
     const chunkSize=5;
     for(let start=0;start<ayahs.length;start+=chunkSize){
@@ -298,7 +300,7 @@ async function loadAdditionalSurahs(){
       const first=group[0].numberInSurah, last=group[group.length-1].numberInSurah;
       const title=source.title+' · Ayat '+first+(last!==first?'–'+last:'');
       const lines=group.map(a=>a.text+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾');
-      sections.push({
+      additionalSections.push({
         title,
         text:(first===1?'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ\\n':'')+lines.join('\\n'),
         quranSurah:source.number,
@@ -307,6 +309,7 @@ async function loadAdditionalSurahs(){
       });
     }
   }
+  sections.splice(0,sections.length,...additionalSections,...tahlilSections);
 }
 const $=id=>document.getElementById(id);
 let pages=[],index=0,audioMode='tts',voices=[],isRepeating=false,sectionStarts=[];
@@ -323,7 +326,6 @@ function buildPages(){
  const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
  if(!mobileReader()){pages=sections.map((s,sectionIndex)=>({...s,sectionIndex,continuation:false}));}
  else{
-  document.body.classList.remove('toc-open');
   $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
   requestAnimationFrame(()=>{
    const available=Math.max(80,text.clientHeight),width=Math.max(100,text.clientWidth);
@@ -335,7 +337,23 @@ function buildPages(){
  sectionStarts=[];sections.forEach((s,si)=>sectionStarts[si]=pages.findIndex(p=>p.sectionIndex===si));
  index=Math.min(saved,pages.length-1);showPage(index);
 }
-const renderContents=()=>{$('contents').innerHTML='';sections.forEach((s,i)=>{const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0')+' · '+s.title;b.className=pages[index]?.sectionIndex===i?'active':'';b.onclick=()=>{showPage(Math.max(0,sectionStarts[i]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};$('contents').appendChild(b)})};
+const tocGroups=[
+ {title:'Yasin (ayat 1 sampai selesai)',matches:s=>s.quranSurah===36},
+ {title:'Ar-Rahman (ayat 1 sampai selesai)',matches:s=>s.quranSurah===55},
+ {title:'Tahlil (dari awal sampai selesai)',matches:s=>!s.quranSurah}
+];
+const renderContents=()=>{
+ $('contents').innerHTML='';
+ tocGroups.forEach((group,i)=>{
+  const firstSection=sections.findIndex(group.matches);
+  if(firstSection<0)return;
+  const b=document.createElement('button');
+  b.textContent=(i+1)+'. '+group.title;
+  b.className=group.matches(pages[index]||{})?'active':'';
+  b.onclick=()=>{showPage(Math.max(0,sectionStarts[firstSection]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
+  $('contents').appendChild(b);
+ });
+};
 let pageTurning=false;
 function paintPage(s){
  $('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');
@@ -404,5 +422,5 @@ function loadVoices(){voices=speechSynthesis?.getVoices?.()||[];const sel=$('voi
 $('voiceGender').value=localStorage.getItem('tahlil-voice-gender')||'male';
 $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voiceGender').value);$('voiceSelect').value='';$('audioStatus').textContent='Preferensi suara disimpan. Tekan putar untuk mencoba suara yang tersedia.'};
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-loadAdditionalSurahs().then(()=>{buildPages();$('audioStatus').textContent='Surah Yasin dan Ar-Rahman siap dibaca.'}).catch(()=>{buildPages();$('audioStatus').textContent='Surah tambahan belum termuat. Periksa koneksi internet lalu muat ulang halaman.'});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
+document.body.classList.add('toc-open');$('contentsBtn').setAttribute('aria-expanded','true');loadAdditionalSurahs().then(()=>{buildPages();$('audioStatus').textContent='Surah Yasin, Ar-Rahman, dan Tahlil siap dibaca.'}).catch(()=>{sections.splice(0,sections.length,...tahlilSections);buildPages();$('audioStatus').textContent='Surah tambahan belum termuat. Periksa koneksi internet lalu muat ulang halaman.'});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
 </script></body></html>
