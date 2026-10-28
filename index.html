@@ -318,7 +318,7 @@ function showPage(i,animate=''){
  if(!pages.length)return;
  if(pageTurning&&animate)return;
  const target=Math.max(0,Math.min(i,pages.length-1));
- if(target===index&&!animate)return;
+ if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title+(pages[target].continuation?' (lanjutan)':'')&&$('arabicText').textContent===pages[target].text)return;
  index=target;
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
