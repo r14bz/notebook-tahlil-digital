@@ -54,18 +54,9 @@ function buildPages(){
   const available=mobileReader()?Math.max(80,text.clientHeight):Math.max(180,paper.clientHeight-205);
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
-  // Gabungkan bacaan tahlil yang pendek agar tidak perlu terlalu sering berpindah halaman.
+  // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
   const readingSections=[];
-  const tahlilLimit=mobileReader()?1200:1800;
-  sections.forEach((s,si)=>{
-   if(s.quranSurah){readingSections.push({...s,originalIndex:si});return;}
-   const previous=readingSections[readingSections.length-1];
-   if(previous&&!previous.quranSurah&&previous.text.length+s.text.length+2<=tahlilLimit){
-    previous.text+='\n'+s.text;
-    previous.groupedCount=(previous.groupedCount||1)+1;
-    previous.title='Rangkaian Tahlil';
-   }else readingSections.push({...s,originalIndex:si,groupedCount:1});
-  });
+  sections.forEach((s,si)=>readingSections.push({...s,originalIndex:si}));
   readingSections.forEach((s,ri)=>{
    const originalIndex=s.originalIndex??ri;
    sectionStarts[originalIndex]=pages.length;
