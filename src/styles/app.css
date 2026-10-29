@@ -434,3 +434,19 @@ body:not(.reader-active) #readerFooter{display:none!important}
     filter: brightness(.97);
   }
 }
+
+
+/* Denser reading layout: preserve complete text while fitting more lines per page. */
+@media (max-width: 760px) {
+  body.reader-active .paper { padding-top: 12px; padding-bottom: 25px; }
+  body.reader-active .page-title { margin: 2px 0 5px; line-height: 1.15; }
+  body.reader-active .title-divider { margin-bottom: 5px; }
+  body.reader-active .arabic { font-size: clamp(19px, 4.9vw, 23px); line-height: 1.55; }
+  body.reader-active .arabic.compact { font-size: clamp(18px, 4.5vw, 21px); line-height: 1.45; }
+}
+@media (min-width: 761px) {
+  body.reader-active .paper { padding-top: 24px; padding-bottom: 42px; }
+  body.reader-active .page-title { margin: 6px 0 8px; }
+  body.reader-active .arabic { font-size: clamp(22px, 2.2vw, 27px); line-height: 1.7; }
+  body.reader-active .arabic.compact { font-size: clamp(20px, 2vw, 24px); line-height: 1.55; }
+}
