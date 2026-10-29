@@ -52,7 +52,7 @@ export async function loadAdditionalSurahs(){
   }));
   const additionalSections=loaded.map(({source,ayahs})=>({
     title:source.title,
-    text:ayahs.map(a=>a.text).join('\\n'),
+    text:ayahs.map(a=>a.text).join('\n'),
     quranSurah:source.number,
     surah:String(source.number).padStart(3,'0'),
     verseStart:1,
