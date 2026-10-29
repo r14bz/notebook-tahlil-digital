@@ -228,7 +228,12 @@ function next(){if(pageTurning||index>=pages.length-1||navGroup(pages[index+1])!
 function prev(){if(pageTurning||index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 $('homeBtn').onclick=()=>{document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
-$('contentsBtn').onclick=()=>{const open=!document.body.classList.contains('toc-open');document.body.classList.toggle('toc-open',open);$('contentsBtn').setAttribute('aria-expanded',String(open));};
+$('contentsBtn').onclick=()=>{
+ const open=!document.body.classList.contains('toc-open');
+ if(open){document.body.classList.add('reader-active');renderContents();}
+ document.body.classList.toggle('toc-open',open);
+ $('contentsBtn').setAttribute('aria-expanded',String(open));
+};
 $('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
 const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';localStorage.setItem('etahlil-theme',theme)};
 $('themeBtn').onclick=()=>applyTheme(document.body.classList.contains('theme-dark')?'light':'dark');
@@ -255,7 +260,7 @@ applyTheme(localStorage.getItem('etahlil-theme')==='dark'?'dark':'light');
 })();
 
 $('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
-$('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+// Fullscreen control has been replaced by the theme toggle; do not bind the removed button.
 document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
