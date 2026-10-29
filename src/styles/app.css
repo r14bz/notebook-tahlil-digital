@@ -384,3 +384,53 @@ body:not(.reader-active) #readerFooter{display:none!important}
   .arabic { line-height: 2.2; }
   .arabic.compact { line-height: 2.1; }
 }
+
+
+/* Homepage must use document scrolling on mobile; the fixed-height lock is for the reader only. */
+@media (max-width: 768px) {
+  html {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-x: clip !important;
+    overflow-y: auto !important;
+    scroll-padding-top: 76px;
+  }
+  body:not(.reader-active) {
+    display: block !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    max-height: none !important;
+    overflow-x: clip !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body:not(.reader-active) header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  body:not(.reader-active) #homePage {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+    animation: none;
+    transform: none;
+  }
+  body:not(.reader-active) .collection-card,
+  body:not(.reader-active) .continue-reading,
+  body:not(.reader-active) .index-entry {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body:not(.reader-active) .collection-card:active,
+  body:not(.reader-active) .continue-reading:active,
+  body:not(.reader-active) .index-entry:active {
+    transform: scale(.99);
+    filter: brightness(.97);
+  }
+}
