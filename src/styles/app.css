@@ -366,6 +366,7 @@ body:not(.reader-active) #readerFooter{display:none!important}
 /* Quranic Arabic typography: load a Quran-specific font and broad Arabic fallback. */
 .arabic,
 .arabic.compact {
+  white-space: pre-wrap !important;
   font-family: 'Amiri Quran', 'Amiri', 'Noto Naskh Arabic', serif !important;
   direction: rtl;
   unicode-bidi: plaintext;
