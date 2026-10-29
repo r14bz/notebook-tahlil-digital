@@ -825,3 +825,68 @@ body.theme-dark #readerFooter{color:#b9b09e}
  .controls #homeBtn:before{font-size:29px}
  body.reader-active #readerMain .controls{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)}
 }
+
+
+/* Final polish: concise four-item collection menu, accessible dark menu, and aligned controls. */
+body.theme-dark.toc-open .sidebar {
+  background:#18231d!important;
+  color:#f1eadb!important;
+  border-color:#64745b!important;
+}
+body.theme-dark .toc-heading h2,
+body.theme-dark .toc-heading .eyebrow,
+body.theme-dark .contents button,
+body.theme-dark .progress,
+body.theme-dark #savedText { color:#f1eadb!important; }
+body.theme-dark .contents button { background:#202e25; border-color:#465a49; }
+body.theme-dark .contents button:hover,
+body.theme-dark .contents button.active { background:#385542; color:#fff4d5!important; }
+body.toc-open:after { z-index:29; }
+body.toc-open .sidebar { z-index:30!important; }
+@media(max-width:768px) {
+  .header-actions .header-btn,
+  .header-actions .header-font-control,
+  #themeBtn {
+    box-sizing:border-box!important;
+    width:38px!important; min-width:38px!important; max-width:38px!important;
+    height:38px!important; min-height:38px!important; max-height:38px!important;
+    padding:0!important; border-radius:9px!important;
+    display:inline-flex!important; align-items:center!important; justify-content:center!important;
+  }
+  .header-actions .header-font-control {
+    background:transparent!important; border:0!important; box-shadow:none!important;
+  }
+  .header-actions .header-font-control .header-select {
+    box-sizing:border-box; width:38px!important; min-width:38px!important;
+    height:38px!important; min-height:38px!important;
+    border:1px solid #ffffff35!important; border-radius:9px!important;
+    background:#ffffff16!important; color:#fff7e7!important;
+    font-size:11px!important; text-align:center; padding:0 2px!important;
+  }
+  body.theme-dark .header-actions .header-font-control .header-select { background:#ffffff16!important; color:#fff7e7!important; }
+}
+.collection-card .round-arrow {
+  position:relative; display:grid!important; place-items:center!important;
+  box-sizing:border-box; padding:0!important; line-height:1!important;
+  text-align:center; overflow:hidden;
+}
+.collection-card .round-arrow:before {
+  position:absolute; inset:0; display:grid!important; place-items:center!important;
+  width:100%; height:100%; line-height:1!important; margin:0!important;
+  transform:translate(0,-1px);
+}
+.collection-card.is-activating .round-arrow:before { animation:collectionArrowTap .32s ease both; }
+@keyframes collectionArrowTap {
+  0% { transform:translate(0,-1px); }
+  45% { transform:translate(4px,-1px); }
+  100% { transform:translate(0,-1px); }
+}
+.collection-card .surah-number {
+  width:auto!important; height:auto!important; min-width:0!important;
+  border:0!important; border-radius:0!important; background:transparent!important;
+  box-shadow:none!important; justify-content:start;
+}
+.swipe-hint { transition:opacity .16s ease,background-color .16s ease; }
+.swipe-hint.hint-fading { opacity:0!important; }
+.swipe-hint:active { opacity:0!important; }
+.controls #homeBtn:before { content:'⌂'; }
