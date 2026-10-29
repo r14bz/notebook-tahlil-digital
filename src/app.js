@@ -86,7 +86,15 @@ function buildPages(){
   const readingSections=[];
   let pageLayout={};
   try{pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}')||{}}catch{}
+  // A complete exported Dzikir Ba'da Shalat layout already contains the whole collection.
+  // Render it once at its anchor section and skip the original dzikir entries that it replaces.
+  const manualDzikirLayoutIndex=Object.keys(pageLayout).map(Number).find(si=>
+   sections[si]?.collection==='dzikir' &&
+   typeof pageLayout[si]==='string' &&
+   pageLayout[si].includes('[[HALAMAN BARU]]')
+  );
   sections.forEach((s,si)=>{
+   if(manualDzikirLayoutIndex!==undefined&&s.collection==='dzikir'&&si!==manualDzikirLayoutIndex)return;
    const item={...s,originalIndex:si};
    if(Object.prototype.hasOwnProperty.call(pageLayout,si)&&typeof pageLayout[si]==='string')item.pageLayoutText=pageLayout[si];
    readingSections.push(item);
