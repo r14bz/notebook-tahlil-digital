@@ -167,7 +167,7 @@ $('continueReadingBtn').addEventListener('click',()=>{
  const saved=Number(localStorage.getItem('tahlil-page')||0);
  document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
-document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>openCollection(b.dataset.homeTarget)));
+document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{b.classList.remove('is-activating');void b.offsetWidth;b.classList.add('is-activating');openCollection(b.dataset.homeTarget);setTimeout(()=>b.classList.remove('is-activating'),320)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>{
  $('contents').innerHTML='';
