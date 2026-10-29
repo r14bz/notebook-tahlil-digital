@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123d2e">
+<title>Atur Pemisah Lafadz — E-Tahlil Digital</title>
+<link rel="stylesheet" href="./src/styles/app.css">
+<style>
+.editor-wrap{max-width:900px;margin:24px auto;padding:0 16px 32px}
+.editor-card{background:#fffaf0;border:1px solid #d7c9a7;border-radius:18px;padding:clamp(16px,4vw,28px);box-shadow:0 12px 30px #4a3b1e12}
+.editor-card h2{color:var(--green);margin:0 0 8px;font-size:25px}
+.editor-help{color:#766b58;font-size:14px;line-height:1.7}
+.editor-label{display:block;font-size:13px;font-weight:700;color:var(--green);margin:20px 0 8px}
+#sectionSelect,#lafadzEditor{width:100%;border:1px solid #d8c9a8;border-radius:12px;background:#fffdf7;padding:12px;color:#2f2a21}
+#lafadzEditor{min-height:48vh;resize:vertical;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:23px;line-height:2;text-align:right;direction:rtl;white-space:pre-wrap}
+.editor-preview{margin-top:16px;border:1px solid #e1d2ad;border-radius:12px;background:#fff8e8;padding:16px;min-height:100px;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:23px;line-height:2;text-align:center;white-space:pre-wrap;direction:rtl}
+.editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.editor-status{min-height:24px;color:var(--green);font-size:13px;margin-top:10px}
+.editor-back{display:inline-flex;margin-bottom:14px;color:var(--green);font-weight:700;text-decoration:none}
+@media(max-width:600px){.editor-wrap{margin:14px auto;padding:0 10px 24px}.editor-card{border-radius:14px}.editor-card h2{font-size:22px}#lafadzEditor{min-height:52vh;font-size:22px}.editor-preview{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="seal">۞</div><div><h1>Atur Pemisah Lafadz</h1><small>Editor Dzikir Ba'da Shalat</small></div></div>
+</header>
+<main class="editor-wrap" style="display:block">
+  <a class="editor-back" href="./">← Kembali ke E-Tahlil</a>
+  <section class="editor-card">
+    <h2>Atur sendiri pemisah setiap lafadz</h2>
+    <p class="editor-help">Pilih bagian dzikir, lalu sisipkan <b>satu baris kosong</b> di antara lafadz yang ingin dipisahkan. Teks Arab tidak akan dikoreksi atau diubah otomatis. Tekan Simpan agar pemisah diterapkan saat membaca di perangkat ini.</p>
+    <label class="editor-label" for="sectionSelect">Bagian dzikir</label>
+    <select id="sectionSelect"></select>
+    <label class="editor-label" for="lafadzEditor">Teks dzikir (baris kosong = pemisah)</label>
+    <textarea id="lafadzEditor" spellcheck="false" dir="rtl"></textarea>
+    <label class="editor-label">Pratinjau pemisah</label>
+    <div id="preview" class="editor-preview" lang="ar" dir="rtl"></div>
+    <div class="editor-actions">
+      <button id="saveBtn" class="primary" type="button">Simpan pemisah</button>
+      <button id="resetBtn" class="soft-btn" type="button">Kembalikan bagian ini</button>
+      <button id="resetAllBtn" class="soft-btn" type="button">Reset semua pemisah</button>
+    </div>
+    <div id="status" class="editor-status" role="status" aria-live="polite"></div>
+  </section>
+</main>
+<script type="module">
+import { dzikirSections } from './src/data/dzikir.js';
+const KEY='etahlil-dzikir-separators-v1';
+const $=id=>document.getElementById(id);
+let saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
+const select=$('sectionSelect'),editor=$('lafadzEditor'),preview=$('preview'),status=$('status');
+dzikirSections.forEach((section,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=(i+1)+'. '+(section.title||"Dzikir Ba'da Shalat")+' — '+section.text.replace(/\s+/g,' ').slice(0,38)+'…';select.appendChild(option)});
+function currentIndex(){return Number(select.value||0)}
+function loadCurrent(){const i=currentIndex();editor.value=Object.prototype.hasOwnProperty.call(saved,i)?saved[i]:dzikirSections[i].text;renderPreview();status.textContent=''}
+function renderPreview(){preview.textContent=editor.value.replace(/\n{3,}/g,'\n\n');}
+select.addEventListener('change',loadCurrent);editor.addEventListener('input',renderPreview);
+$('saveBtn').addEventListener('click',()=>{saved[currentIndex()]=editor.value;localStorage.setItem(KEY,JSON.stringify(saved));status.textContent='Pemisah bagian ini tersimpan di perangkat. Muat ulang halaman bacaan jika sedang terbuka.'});
+$('resetBtn').addEventListener('click',()=>{delete saved[currentIndex()];localStorage.setItem(KEY,JSON.stringify(saved));loadCurrent();status.textContent='Pemisah bagian ini dikembalikan ke teks awal.'});
+$('resetAllBtn').addEventListener('click',()=>{if(!confirm('Reset semua pemisah Dzikir Ba\'da Shalat ke teks awal?'))return;saved={};localStorage.removeItem(KEY);loadCurrent();status.textContent='Semua pemisah dikembalikan ke teks awal.'});
+loadCurrent();
+</script>
+</body>
+</html>
