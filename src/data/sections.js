@@ -41,7 +41,7 @@ export async function loadAdditionalSurahs(){
     // Cari elemen terkecil yang memuat satu penanda nomor ayat dan teks Arabnya.
     documentSource.querySelectorAll('body *').forEach(node=>{
       const raw = (node.innerText || node.textContent || '').replace(/\s+/g,' ').trim();
-      if(!raw || !/[\u0600-\u06FF]/.test(raw)) return;
+      if(!raw || !/[ء-ي]/.test(raw)) return;
       const markers = [...raw.matchAll(/۝\s*([٠-٩]{1,3}|[0-9]{1,3})/g)];
       if(markers.length!==1) return;
       const number = toNumber(markers[0][1]);
