@@ -80,7 +80,8 @@ function buildPages(){
 const tocGroups=[
  {title:'Surah Yasin (ayat 1–83)',matches:s=>s.quranSurah===36},
  {title:'Surah Ar-Rahman (ayat 1–78)',matches:s=>s.quranSurah===55},
- ...tahlilSections.map(s=>({title:s.title,matches:page=>!page.quranSurah&&page.title===s.title}))
+ ...tahlilSections.map(s=>({title:s.title,matches:page=>!page.quranSurah&&!page.collection&&page.title===s.title})),
+ {title:"Dzikir Ba'da Shalat",matches:s=>s.collection==='dzikir'}
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
@@ -97,7 +98,8 @@ function renderHome(){
  $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah).length+' bagian bacaan';
  const list=$('homeIndexList');list.innerHTML='';
  const groups=[
-  {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah,icon:'۞'},
+  {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah&&!s.collection,icon:'۞'},
+  {key:'dzikir',title:"Dzikir Ba'da Shalat",sub:'Istighfar, dzikir, ayat pilihan, dan doa',filter:s=>s.collection==='dzikir',icon:'۞'},
   {key:'yasin',title:'Surah Yasin',sub:'Surah ke-36 · Al-Qur’an',filter:s=>s.quranSurah===36,icon:'٣٦'},
   {key:'rahman',title:'Surah Ar-Rahman',sub:'Surah ke-55 · Al-Qur’an',filter:s=>s.quranSurah===55,icon:'٥٥'}
  ];
@@ -120,7 +122,7 @@ function renderHome(){
  $('homeSearchEmpty').hidden=shown!==0;
 }
 function openCollection(kind){
- const first=sections.findIndex(s=>kind==='tahlil'?!s.quranSurah:kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
+ const first=sections.findIndex(s=>kind==='tahlil'?(!s.quranSurah&&!s.collection):kind==='dzikir'?s.collection==='dzikir':kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
  if(first>=0)activateReader(first);
 }
 $('continueReadingBtn').addEventListener('click',()=>{
