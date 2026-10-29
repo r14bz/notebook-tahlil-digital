@@ -13,6 +13,15 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  probe.classList.toggle('quran-text',Boolean(section.quranSurah));
  document.body.appendChild(probe);
  const measure=value=>{probe.textContent=value;return probe.scrollHeight;};
+ const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
+ const addWords=value=>{
+  const words=value.split(/\s+/u).filter(Boolean);let part='';
+  for(const word of words){
+   const candidate=part?part+' '+word:word;
+   if(measure(candidate)>availableHeight&&part){push(part);part=word;}else part=candidate;
+  }
+  if(part)push(part);
+ };
  // Explicit page groups saved by the page-layout editor take priority over automatic packing.
  if(typeof section.pageLayoutText==='string'&&section.pageLayoutText.includes('[[HALAMAN BARU]]')){
   const groups=section.pageLayoutText.split(/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/u).map(x=>x.trim()).filter(Boolean);
@@ -23,15 +32,6 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
   probe.remove();
   return out.length?out:[{...section,sectionIndex,continuation:false}];
  }
- const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
- const addWords=value=>{
-  const words=value.split(/\s+/u).filter(Boolean);let part='';
-  for(const word of words){
-   const candidate=part?part+' '+word:word;
-   if(measure(candidate)>availableHeight&&part){push(part);part=word;}else part=candidate;
-  }
-  if(part)push(part);
- };
  // Match each complete ayah through its verse marker. Never split an ayah across pages.
  const units=section.quranSurah
   ? (section.text.match(/[\s\S]*?۝[٠-٩۰-۹0-9]{1,3}|[\s\S]+$/gu)||[section.text]).map(x=>x.trim()).filter(Boolean)
