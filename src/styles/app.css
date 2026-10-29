@@ -585,3 +585,153 @@ header { justify-content: space-between; gap: 24px; }
   .header-font-control .header-icon { font-size:15px; font-weight:700; letter-spacing:-1px; }
   .header-select { min-height:28px; height:28px; padding:2px 5px; line-height:1; }
 }
+
+
+/* UI consistency: collection cards share one calm paper palette and icon treatment. */
+.collection-card,
+.collection-card.collection-tahlil,
+.collection-card.collection-yasin,
+.collection-card.collection-rahman,
+.collection-card.collection-dzikir {
+  background: linear-gradient(145deg, #fffaf0, #f7f0df);
+  border-color: #ded3ba;
+  color: #203d2d;
+}
+.collection-card .collection-symbol,
+.collection-card .surah-number {
+  color: #bd9854;
+}
+.collection-card .surah-number {
+  background: #f5edda;
+  border-color: #d5c18b;
+}
+.collection-card .round-arrow,
+.collection-yasin .round-arrow,
+.collection-rahman .round-arrow {
+  background: #e8eddf;
+  color: #244e3a;
+}
+
+/* Header controls use isolated flex items so backgrounds never overlap labels/icons. */
+header {
+  min-width: 0;
+}
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.brand > div:last-child {
+  min-width: 0;
+}
+.header-actions {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.header-actions .header-btn,
+.header-actions .header-font-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0 12px;
+  gap: 8px;
+  border-radius: 11px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.header-actions .header-btn {
+  background: #ffffff16;
+  border: 1px solid #ffffff35;
+  color: #fff7e7;
+}
+.header-actions .header-icon {
+  position: static;
+  display: inline-flex;
+  flex: 0 0 20px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-size: 18px;
+}
+.header-actions .header-label {
+  position: static;
+  display: inline-block;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.header-actions .header-font-control {
+  color: #fff7e7;
+  background: #ffffff12;
+  border: 1px solid #ffffff35;
+}
+.header-actions .header-select {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  margin: 0;
+  padding: 2px 5px;
+  line-height: 1;
+}
+@media (min-width: 769px) {
+  header { gap: 18px; }
+  .header-actions { gap: 8px; }
+}
+@media (max-width: 768px) {
+  header { gap: 7px; }
+  .header-actions { gap: 4px; flex: 0 0 auto; }
+  .header-actions .header-btn,
+  .header-actions .header-font-control {
+    min-height: 38px;
+    height: 38px;
+    padding: 0 8px;
+    gap: 0;
+    border-radius: 9px;
+  }
+  .header-actions .header-label,
+  .header-actions .header-font-control .header-label {
+    display: none;
+  }
+  .header-actions .header-icon {
+    flex-basis: 18px;
+    width: 18px;
+    min-width: 18px;
+    font-size: 16px;
+  }
+  .header-actions .header-select {
+    height: 28px;
+    min-height: 28px;
+    padding: 2px 3px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 420px) {
+  header { padding-left: 8px; padding-right: 8px; }
+  .brand { gap: 6px; }
+  .seal { width: 32px; height: 32px; flex-basis: 32px; font-size: 17px; }
+  .brand h1 { font-size: 12px; }
+  .brand small { font-size: 9px; }
+  .header-actions { gap: 3px; }
+  .header-actions .header-btn,
+  .header-actions .header-font-control { padding: 0 6px; }
+}
