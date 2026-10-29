@@ -23,10 +23,10 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  };
  // Match each complete ayah through its verse marker. Never split an ayah across pages.
  const units=section.quranSurah
-  ? (section.text.match(/[\\s\\S]*?۝[٠-٩۰-۹0-9]{1,3}|[\\s\\S]+$/gu)||[section.text]).map(x=>x.trim()).filter(Boolean)
+  ? (section.text.match(/[\s\S]*?۝[٠-٩۰-۹0-9]{1,3}|[\s\S]+$/gu)||[section.text]).map(x=>x.trim()).filter(Boolean)
   : section.preserveAyat
    ? section.text.split(/(?<=۝)/u).map(x=>x.trim()).filter(Boolean)
-   : section.text.split(/\\n+/u).map(x=>x.trim()).filter(Boolean);
+   : section.text.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
  for(const unit of units){
   const candidate=chunk?chunk+'\n'+unit:unit;
   if(measure(candidate)>availableHeight&&chunk){push(chunk);chunk='';}
