@@ -38,6 +38,7 @@
     <div id="preview" class="editor-preview" lang="ar" dir="rtl"></div>
     <div class="editor-actions">
       <button id="saveBtn" class="primary" type="button">Simpan pemisah</button>
+      <button id="exportBtn" class="primary" type="button">Ekspor hasil pemisahan</button>
       <button id="resetBtn" class="soft-btn" type="button">Kembalikan bagian ini</button>
       <button id="resetAllBtn" class="soft-btn" type="button">Reset semua pemisah</button>
     </div>
@@ -57,6 +58,24 @@ function loadCurrent(){const i=currentIndex();editor.value=Object.prototype.hasO
 function renderPreview(){preview.textContent=editor.value.replace(/\n{3,}/g,'\n\n');}
 select.addEventListener('change',loadCurrent);editor.addEventListener('input',renderPreview);
 $('saveBtn').addEventListener('click',()=>{saved[currentIndex()]=editor.value;localStorage.setItem(KEY,JSON.stringify(saved));status.textContent='Pemisah bagian ini tersimpan di perangkat. Muat ulang halaman bacaan jika sedang terbuka.'});
+$('exportBtn').addEventListener('click',()=>{
+ saved[currentIndex()]=editor.value;
+ localStorage.setItem(KEY,JSON.stringify(saved));
+ const exportData={
+  format:'etahlil-dzikir-separators',
+  version:1,
+  exportedAt:new Date().toISOString(),
+  sections:dzikirSections.map((section,i)=>({
+   index:i,
+   title:section.title||"Dzikir Ba'da Shalat",
+   text:Object.prototype.hasOwnProperty.call(saved,i)?saved[i]:section.text
+  }))
+ };
+ const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');a.href=url;a.download='hasil-pemisahan-dzikir.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ status.textContent='File hasil-pemisahan-dzikir.json berhasil dibuat. Kirim file ini ke ChatGPT agar hasilnya bisa dimasukkan ke proyek.';
+});
 $('resetBtn').addEventListener('click',()=>{delete saved[currentIndex()];localStorage.setItem(KEY,JSON.stringify(saved));loadCurrent();status.textContent='Pemisah bagian ini dikembalikan ke teks awal.'});
 $('resetAllBtn').addEventListener('click',()=>{if(!confirm('Reset semua pemisah Dzikir Ba\'da Shalat ke teks awal?'))return;saved={};localStorage.removeItem(KEY);loadCurrent();status.textContent='Semua pemisah dikembalikan ke teks awal.'});
 loadCurrent();
