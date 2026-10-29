@@ -203,6 +203,13 @@ $('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElemen
 $('contentsBtn').onclick=()=>{document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false')};$('closeContents').onclick=()=>{document.body.classList.remove('reader-active');window.scrollTo({top:0,behavior:'smooth'});$('contentsBtn').setAttribute('aria-expanded','false')};document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
-loadAdditionalSurahs().then(()=>{buildPages();renderHome();}).catch(()=>{});
+function applyDzikirSeparatorOverrides(){
+ try{
+  const overrides=JSON.parse(localStorage.getItem('etahlil-dzikir-separators-v1')||'{}');
+  const dzikir=sections.filter(s=>s.collection==='dzikir');
+  dzikir.forEach((section,i)=>{if(Object.prototype.hasOwnProperty.call(overrides,i))section.text=overrides[i];});
+ }catch{}
+}
+loadAdditionalSurahs().then(()=>{applyDzikirSeparatorOverrides();buildPages();renderHome();}).catch(()=>{});
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
