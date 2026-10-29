@@ -146,6 +146,7 @@ const renderContents=()=>{
 let pageTurning=false;
 function paintPage(s){
  $('pageTitle').textContent=s.title;
+ $('arabicText').style.whiteSpace='pre-wrap';
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
  $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
