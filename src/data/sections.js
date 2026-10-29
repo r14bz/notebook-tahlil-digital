@@ -27,7 +27,7 @@ export let sections = [
 const rawTahlilSections = sections.slice();
 const combineTahlil = (title, indexes) => ({
   title,
-  text: indexes.map(i => rawTahlilSections[i].text).join('\\n'),
+  text: indexes.map(i => rawTahlilSections[i].text).join('\n'),
   tahlilGroup: true
 });
 // Group bacaan secara eksplisit agar satu halaman mengikuti urutan majelis,
