@@ -227,6 +227,13 @@ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection===
 function next(){if(pageTurning||index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
 function prev(){if(pageTurning||index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
+$('homeBtn').onclick=()=>{document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
+$('contentsBtn').onclick=()=>{const open=!document.body.classList.contains('toc-open');document.body.classList.toggle('toc-open',open);$('contentsBtn').setAttribute('aria-expanded',String(open));};
+$('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
+const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';localStorage.setItem('etahlil-theme',theme)};
+$('themeBtn').onclick=()=>applyTheme(document.body.classList.contains('theme-dark')?'light':'dark');
+applyTheme(localStorage.getItem('etahlil-theme')==='dark'?'dark':'light');
+
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
  const paper=$('paper');let startX=0,startY=0,startTime=0;
@@ -242,11 +249,14 @@ $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
   if(dx<0)next();else prev();
  },{passive:true});
  paper.setAttribute('aria-label','Halaman bacaan. Geser ke kiri untuk halaman berikutnya, geser ke kanan untuk halaman sebelumnya.');
+ const left=document.createElement('button');left.type='button';left.className='swipe-hint swipe-hint-left';left.setAttribute('aria-label','Halaman sebelumnya');left.title='Halaman sebelumnya';left.textContent='‹';left.onclick=e=>{e.stopPropagation();prev()};
+ const right=document.createElement('button');right.type='button';right.className='swipe-hint swipe-hint-right';right.setAttribute('aria-label','Halaman berikutnya');right.title='Halaman berikutnya';right.textContent='›';right.onclick=e=>{e.stopPropagation();next()};
+ paper.append(left,right);
 })();
 
 $('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
 $('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
-$('contentsBtn').onclick=()=>{document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false')};$('closeContents').onclick=()=>{document.body.classList.remove('reader-active');window.scrollTo({top:0,behavior:'smooth'});$('contentsBtn').setAttribute('aria-expanded','false')};document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
+document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
 loadAdditionalSurahs().then(async()=>{
