@@ -13,6 +13,16 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  probe.classList.toggle('quran-text',Boolean(section.quranSurah));
  document.body.appendChild(probe);
  const measure=value=>{probe.textContent=value;return probe.scrollHeight;};
+ // Explicit page groups saved by the page-layout editor take priority over automatic packing.
+ if(typeof section.pageLayoutText==='string'&&section.pageLayoutText.includes('[[HALAMAN BARU]]')){
+  const groups=section.pageLayoutText.split(/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/u).map(x=>x.trim()).filter(Boolean);
+  for(const group of groups){
+   if(measure(group)<=availableHeight)push(group);
+   else addWords(group);
+  }
+  probe.remove();
+  return out.length?out:[{...section,sectionIndex,continuation:false}];
+ }
  const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
  const addWords=value=>{
   const words=value.split(/\s+/u).filter(Boolean);let part='';
@@ -60,7 +70,13 @@ function buildPages(){
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
   const readingSections=[];
-  sections.forEach((s,si)=>readingSections.push({...s,originalIndex:si}));
+  let pageLayout={};
+  try{pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}')||{}}catch{}
+  sections.forEach((s,si)=>{
+   const item={...s,originalIndex:si};
+   if(Object.prototype.hasOwnProperty.call(pageLayout,si)&&typeof pageLayout[si]==='string')item.pageLayoutText=pageLayout[si];
+   readingSections.push(item);
+  });
   readingSections.forEach((s,ri)=>{
    const originalIndex=s.originalIndex??ri;
    sectionStarts[originalIndex]=pages.length;
