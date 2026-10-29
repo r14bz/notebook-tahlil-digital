@@ -24,7 +24,7 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  };
  // Explicit page groups saved by the page-layout editor take priority over automatic packing.
  if(typeof section.pageLayoutText==='string'&&section.pageLayoutText.includes('[[HALAMAN BARU]]')){
-  const groups=section.pageLayoutText.split(/\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\n/u).map(x=>x.trim()).filter(Boolean);
+  const groups=section.pageLayoutText.split(/\n\s*\[\[HALAMAN BARU\]\]\s*\n/u).map(x=>x.trim()).filter(Boolean);
   for(const group of groups){
    if(measure(group)<=availableHeight)push(group);
    else addWords(group);
