@@ -79,7 +79,7 @@ function buildPages(){
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
   if(pass!==layoutPass)return;
-  const available=Math.max(90,paper.clientHeight-$('pageTitle').offsetHeight-$('pageTitle').offsetTop-145);
+  const available=Math.max(90,paper.clientHeight-$('pageTitle').offsetHeight-$('pageTitle').offsetTop-85);
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
