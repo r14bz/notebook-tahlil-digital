@@ -27,36 +27,37 @@ export let sections = [
 export const tahlilSections = sections.slice();
 export async function loadAdditionalSurahs(){
   const sources = [
-    {number:36,title:'Yasin'},
-    {number:55,title:'Ar-Rahman'}
+    {number:36,title:'Yasin',slug:'yasin',expectedAyahs:83},
+    {number:55,title:'Ar-Rahman',slug:'ar-rahman',expectedAyahs:78}
   ];
   const loaded = await Promise.all(sources.map(async source=>{
-    const response = await fetch('https://api.alquran.cloud/v1/surah/'+source.number+'/quran-uthmani');
-    if(!response.ok) throw new Error('Gagal memuat '+source.title);
-    const payload = await response.json();
-    if(payload.code!==200 || !payload.data || !Array.isArray(payload.data.ayahs)) throw new Error('Format teks surah tidak valid');
-    return {source,ayahs:payload.data.ayahs};
+    const response = await fetch('/api/quran-nu?surah='+encodeURIComponent(source.slug));
+    if(!response.ok) throw new Error('Gagal memuat '+source.title+' dari Quran NU Online');
+    const html = await response.text();
+    const documentSource = new DOMParser().parseFromString(html,'text/html');
+    const found = new Map();
+    documentSource.querySelectorAll('div[id]').forEach(node=>{
+      const id = Number(node.id);
+      if(!Number.isInteger(id)||id<1||id>source.expectedAyahs||found.has(id)) return;
+      const arabicNode = node.querySelector('[dir="rtl"]');
+      const arabicText = arabicNode?.textContent?.trim();
+      if(arabicText) found.set(id,arabicText);
+    });
+    const ayahs = Array.from({length:source.expectedAyahs},(_,i)=>({
+      numberInSurah:i+1,
+      text:found.get(i+1)
+    }));
+    if(ayahs.some(ayah=>!ayah.text)) throw new Error('Teks '+source.title+' dari Quran NU Online belum lengkap');
+    return {source,ayahs};
   }));
-  const additionalSections=loaded.flatMap(({source,ayahs})=>[
-    {
-      title:source.title+' — Bismillah',
-      text:'بِسْمِ اللّٰهِ الرَّحْمَٰنِ الرَّحِيمِ',
-      quranSurah:source.number,
-      isBismillah:true
-    },
-    {
-      title:source.title,
-      text:ayahs.map(a=>{
-        let verse=a.text;
-        if(source.number===36 && a.numberInSurah===1){
-          verse=verse.replace(/^\s*بِسْمِ\s*اللّٰهِ\s*الرَّحْمَٰنِ\s*الرَّحِيمِ\s*/,'').trim();
-        }
-        return verse+' ﴿'+a.numberInSurah.toLocaleString('ar-EG')+'﴾';
-      }).join('\n'),
-      quranSurah:source.number,
-      verseStart:1,
-      verseEnd:ayahs.length
-    }
-  ]);
+  const additionalSections=loaded.map(({source,ayahs})=>({
+    title:source.title,
+    text:ayahs.map(a=>a.text).join('\\n'),
+    quranSurah:source.number,
+    surah:String(source.number).padStart(3,'0'),
+    verseStart:1,
+    verseEnd:ayahs.length,
+    sourceUrl:'https://quran.nu.or.id/'+source.slug
+  }));
   sections.splice(0,sections.length,...additionalSections,...tahlilSections);
 }
