@@ -94,7 +94,7 @@ function activateReader(sectionIndex){
 function renderHome(){
  const saved=Number(localStorage.getItem('tahlil-page')||0);
  const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
- $('continueReadingLabel').textContent=savedPage ? (savedPage.title+(savedPage.continuation?' · lanjutan':'')) : 'Mulai dari halaman pertama';
+ $('continueReadingLabel').textContent=savedPage ? (savedPage.title) : 'Mulai dari halaman pertama';
  $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah&&!s.collection).length+' bagian bacaan';
  const list=$('homeIndexList');list.innerHTML='';
  const groups=[
@@ -145,7 +145,7 @@ const renderContents=()=>{
 };
 let pageTurning=false;
 function paintPage(s){
- $('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');
+ $('pageTitle').textContent=s.title;
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
  $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
@@ -155,7 +155,7 @@ function showPage(i,animate=''){
  if(!pages.length)return;
  if(pageTurning&&animate)return;
  const target=Math.max(0,Math.min(i,pages.length-1));
- if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title+(pages[target].continuation?' (lanjutan)':'')&&$('arabicText').textContent===pages[target].text)return;
+ if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title&&$('arabicText').textContent===pages[target].text)return;
  index=target;
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
