@@ -75,7 +75,7 @@ function buildPages(){
 const tocGroups=[
  {title:'Surah Yasin (ayat 1–83)',matches:s=>s.quranSurah===36},
  {title:'Surah Ar-Rahman (ayat 1–78)',matches:s=>s.quranSurah===55},
- ...tahlilSections.map((s,i)=>({title:s.title,matches:page=>!page.quranSurah&&page.sectionIndex===sections.findIndex(x=>x.title===s.title)}))
+ ...tahlilSections.map(s=>({title:s.title,matches:page=>!page.quranSurah&&page.title===s.title}))
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
