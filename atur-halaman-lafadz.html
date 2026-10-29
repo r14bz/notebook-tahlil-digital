@@ -24,15 +24,15 @@
 <script type="module">
 import { tahlilSections } from './src/data/sections.js';
 import { dzikirSections } from './src/data/dzikir.js';
-const KEY='etahlil-page-layout-v1', IDX=2+tahlilSections.length, MARK='\\n\\n[[HALAMAN BARU]]\\n\\n';
+const KEY='etahlil-page-layout-v1', IDX=2+tahlilSections.length, MARK='\n\n[[HALAMAN BARU]]\n\n';
 let base=dzikirSections[0]?.text||'', saved={};
 try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
 try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(typeof d.sections?.[0]?.text==='string')base=d.sections[0].text}}catch{}
 const el=document.getElementById('layoutEditor'),status=document.getElementById('status'),count=document.getElementById('pageCount');
-function refresh(){count.textContent=el.value.split(/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/u).length+' kelompok halaman bertanda · '+el.value.length.toLocaleString('id-ID')+' karakter'}
+function refresh(){count.textContent=el.value.split(/\n\s*\[\[HALAMAN BARU\]\]\s*\n/u).length+' kelompok halaman bertanda · '+el.value.length.toLocaleString('id-ID')+' karakter'}
 function say(s){status.textContent=s}
-document.getElementById('breakBtn').onclick=()=>{const a=el.selectionStart,b=el.selectionEnd,before=el.value.slice(0,a).replace(/\\n+$/u,''),after=el.value.slice(b).replace(/^\\n+/u,'');el.value=before+MARK+after;const p=(before+MARK).length;el.focus();el.setSelectionRange(p,p);refresh();say('Pemisah ditambahkan. Simpan pengaturan untuk menerapkannya.')};
-document.getElementById('removeBtn').onclick=()=>{const p=el.selectionStart,rx=/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/gu;let m,hit=null;while((m=rx.exec(el.value)))if(p>=m.index-40&&p<=m.index+m[0].length+40){hit=m;break}if(!hit){say('Tidak ada pemisah dekat kursor.');return}el.setRangeText('\\n\\n',hit.index,hit.index+hit[0].length,'end');refresh();say('Pemisah dihapus.')};
+document.getElementById('breakBtn').onclick=()=>{const a=el.selectionStart,b=el.selectionEnd,before=el.value.slice(0,a).replace(/\n+$/u,''),after=el.value.slice(b).replace(/^\n+/u,'');el.value=before+MARK+after;const p=(before+MARK).length;el.focus();el.setSelectionRange(p,p);refresh();say('Pemisah ditambahkan. Simpan pengaturan untuk menerapkannya.')};
+document.getElementById('removeBtn').onclick=()=>{const p=el.selectionStart,rx=/\n\s*\[\[HALAMAN BARU\]\]\s*\n/gu;let m,hit=null;while((m=rx.exec(el.value)))if(p>=m.index-40&&p<=m.index+m[0].length+40){hit=m;break}if(!hit){say('Tidak ada pemisah dekat kursor.');return}el.setRangeText('\n\n',hit.index,hit.index+hit[0].length,'end');refresh();say('Pemisah dihapus.')};
 document.getElementById('saveBtn').onclick=()=>{saved[IDX]=el.value;localStorage.setItem(KEY,JSON.stringify(saved));say('Tersimpan di browser ini. Muat ulang halaman bacaan untuk melihat hasilnya.')};
 document.getElementById('resetBtn').onclick=()=>{delete saved[IDX];localStorage.setItem(KEY,JSON.stringify(saved));el.value=base;refresh();say('Pengaturan dikembalikan ke teks awal.')};
 document.getElementById('exportBtn').onclick=()=>{const d={format:'etahlil-dzikir-page-layout',version:1,exportedAt:new Date().toISOString(),scope:'dzikir-ba-da-shalat',sectionIndex:IDX,text:el.value};const url=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='etahlil-pembagian-halaman-dzikir.json';a.click();URL.revokeObjectURL(url);say('File JSON berhasil diekspor.')};
