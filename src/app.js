@@ -227,6 +227,17 @@ loadAdditionalSurahs().then(async()=>{
    const dzikir=sections.filter(s=>s.collection==='dzikir');
    data.sections?.forEach((item,i)=>{if(dzikir[i]&&typeof item.text==='string')dzikir[i].text=item.text;});
   }
+  // Apply the latest manually exported page breaks from the feature branch.
+  // The Arabic text is used verbatim; only [[HALAMAN BARU]] markers control layout.
+  const layoutResponse=await fetch('./etahlil-pembagian-halaman-dzikir.json',{cache:'no-store'});
+  if(layoutResponse.ok){
+   const layout=await layoutResponse.json();
+   if(layout.format==='etahlil-dzikir-page-layout'&&layout.scope==='dzikir-ba-da-shalat'&&typeof layout.text==='string'&&layout.text.includes('[[HALAMAN BARU]]')){
+    const pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}');
+    pageLayout[Number(layout.sectionIndex)]=layout.text;
+    localStorage.setItem('etahlil-page-layout-v1',JSON.stringify(pageLayout));
+   }
+  }
  }catch{}
  // The reviewed, exported file committed with the app is authoritative.
  // Do not overwrite it with stale device-local editor data.
