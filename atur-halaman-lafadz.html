@@ -3,53 +3,40 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#123d2e">
-<title>Atur Halaman Lafadz — E-Tahlil Digital</title>
+<title>Editor Halaman Dzikir Ba'da Shalat — E-Tahlil Digital</title>
 <link rel="stylesheet" href="./src/styles/app.css">
 <style>
-.layout-wrap{max-width:960px;margin:22px auto;padding:0 14px 30px}.layout-card{background:#fffaf0;border:1px solid #d7c9a7;border-radius:18px;padding:clamp(15px,3vw,26px);box-shadow:0 12px 30px #4a3b1e12}.layout-help{color:#766b58;line-height:1.65;font-size:14px}.layout-label{display:block;margin:18px 0 7px;color:var(--green);font-size:13px;font-weight:700}#sectionSelect,#layoutEditor{width:100%;border:1px solid #d8c9a8;border-radius:12px;background:#fffdf7;padding:12px;color:#2f2a21}#layoutEditor{min-height:45vh;resize:vertical;font:22px/2 'Amiri','Noto Naskh Arabic',serif;text-align:right;direction:rtl;white-space:pre-wrap}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.secondary{background:#e9e2d0;color:#38513f}.status{margin-top:12px;color:var(--green);font-size:13px;min-height:22px}.marker-note{background:#f3ead5;border-radius:10px;padding:12px;font-size:13px;line-height:1.6}.preview{margin-top:14px;padding:14px;border:1px solid #e1d2ad;border-radius:12px;background:#fff8e8;direction:rtl;text-align:center;font:22px/2 'Amiri','Noto Naskh Arabic',serif;white-space:pre-wrap}.page-chip{display:inline-block;background:#e4eadc;color:#123d2e;padding:4px 9px;border-radius:99px;font-size:12px;margin:3px}
+.layout-wrap{max-width:1050px;margin:22px auto;padding:0 14px 32px}.layout-card{background:#fffaf0;border:1px solid #d7c9a7;border-radius:18px;padding:clamp(14px,3vw,26px)}.layout-help{color:#766b58;line-height:1.7;font-size:14px}.marker-note{background:#f3ead5;border-radius:10px;padding:12px;font-size:13px;line-height:1.65}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.actions button,.file-label{font:600 13px 'DM Sans',sans-serif;border:0;border-radius:10px;padding:11px 13px;cursor:pointer;background:#123d2e;color:#fff8e8}.file-label{display:inline-flex;align-items:center}.file-label input{display:none}#layoutEditor{width:100%;min-height:58vh;resize:vertical;border:1px solid #d8c9a8;border-radius:12px;background:#fffdf7;padding:16px;color:#2f2a21;font:22px/2 'Amiri','Noto Naskh Arabic',serif;text-align:right;direction:rtl;white-space:pre-wrap}.status{min-height:22px;margin-top:10px;color:#123d2e;font-size:13px}.stats{font-size:12px;color:#766b58;margin-top:8px}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="seal">۞</div><div><h1>Atur Halaman Lafadz</h1><small>Editor pembagian lafadz per halaman</small></div></div></header>
+<header><div class="brand"><div class="seal">۞</div><div><h1>Editor Halaman Dzikir Ba'da Shalat</h1><small>Pengaturan khusus bagian dzikir</small></div></div></header>
 <main class="layout-wrap" style="display:block">
 <a href="./" style="display:inline-flex;margin-bottom:14px;color:var(--green);font-weight:700;text-decoration:none">← Kembali ke E-Tahlil</a>
 <section class="layout-card">
-<h2 style="color:var(--green);margin-top:0">Atur lafadz agar halaman lebih padat</h2>
-<p class="layout-help">Pilih bagian bacaan, lalu letakkan kursor di antara lafadz dan tekan <b>“Pisahkan ke halaman berikutnya”</b>. Pemisah ini memaksa lafadz setelahnya mulai di halaman baru. Teks Arab tidak dikoreksi atau diubah otomatis. Pengaturan tersimpan di perangkat/browser ini.</p>
-<div class="marker-note">Gunakan pemisah halaman hanya pada batas lafadz yang sesuai. Jika satu kelompok terlalu panjang untuk satu halaman, aplikasi akan membaginya agar tetap terbaca.</div>
-<label class="layout-label" for="sectionSelect">Bagian bacaan</label><select id="sectionSelect"></select>
-<label class="layout-label" for="layoutEditor">Teks bacaan</label><textarea id="layoutEditor" dir="rtl" spellcheck="false"></textarea>
-<div class="actions">
-<button id="breakBtn" type="button">Pisahkan ke halaman berikutnya</button>
-<button id="removeBtn" class="secondary" type="button">Hapus pemisah dekat kursor</button>
-<button id="saveBtn" type="button">Simpan pembagian</button>
-<button id="resetBtn" class="secondary" type="button">Kembalikan bagian ini</button>
-</div>
-<div id="status" class="status" role="status" aria-live="polite"></div>
-<label class="layout-label">Perkiraan jumlah halaman</label><div id="pageCount"></div>
-<div class="preview" id="preview" lang="ar" dir="rtl"></div>
+<h2 style="color:var(--green);margin-top:0">Semua lafadz dzikir dalam satu editor</h2>
+<p class="layout-help">Seluruh bacaan Dzikir Ba'da Shalat ditampilkan sekaligus. Letakkan kursor di antara lafadz, lalu sisipkan pemisah halaman. Teks lafadz tidak dikoreksi otomatis.</p>
+<div class="marker-note"><b>Hanya bagian Dzikir Ba'da Shalat yang diatur.</b> Tahlil, Surah Yasin, dan Surah Ar-Rahman tidak diubah. Jika kelompok lafadz tidak muat setelah font diperbesar ke A+, aplikasi akan membaginya secara dinamis agar tidak terpotong.</div>
+<div class="actions"><button id="breakBtn" type="button">Sisipkan pemisah halaman</button><button id="removeBtn" type="button">Hapus pemisah dekat kursor</button><button id="saveBtn" type="button">Simpan pengaturan</button><button id="resetBtn" type="button">Reset ke teks awal</button><button id="exportBtn" type="button">Export JSON</button><label class="file-label">Import JSON<input id="importFile" type="file" accept="application/json,.json"></label></div>
+<textarea id="layoutEditor" dir="rtl" lang="ar" spellcheck="false" aria-label="Seluruh lafadz dzikir"></textarea><div id="pageCount" class="stats"></div><div id="status" class="status" role="status" aria-live="polite"></div>
 </section>
 </main>
 <script type="module">
 import { tahlilSections } from './src/data/sections.js';
-import yasinArabicText from './src/data/yasin.js';
-import rahmanArabicText from './src/data/rahman.js';
 import { dzikirSections } from './src/data/dzikir.js';
-const KEY='etahlil-page-layout-v1', MARK='\n\n[[HALAMAN BARU]]\n\n';
-const sections=[{title:'Yasin',text:yasinArabicText,quranSurah:36},{title:'Ar-Rahman',text:rahmanArabicText,quranSurah:55},...tahlilSections,...dzikirSections].map(s=>({...s}));
-try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();const dz=sections.filter(s=>s.collection==='dzikir');d.sections?.forEach((x,i)=>{if(dz[i]&&typeof x.text==='string')dz[i].text=x.text})}}catch{}
-const $=id=>document.getElementById(id);let saved={};
+const KEY='etahlil-page-layout-v1', IDX=2+tahlilSections.length, MARK='\\n\\n[[HALAMAN BARU]]\\n\\n';
+let base=dzikirSections[0]?.text||'', saved={};
 try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
-sections.forEach((s,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=(i+1)+'. '+(s.title||'Bagian bacaan')+(s.collection==='dzikir'?' · Dzikir':'');$('sectionSelect').appendChild(o)});
-const idx=()=>Number($('sectionSelect').value||0);
-function sourceText(i){return Object.prototype.hasOwnProperty.call(saved,i)?saved[i]:sections[i].text}
-function render(){const value=$('layoutEditor').value,parts=value.split(/\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\n/);$('pageCount').innerHTML='';parts.forEach((p,i)=>{const chip=document.createElement('span');chip.className='page-chip';chip.textContent='Halaman '+(i+1)+' · '+p.trim().length+' karakter';$('pageCount').appendChild(chip)});$('preview').textContent=parts.map((p,i)=>(i?'— HALAMAN '+(i+1)+' —\n':'')+p.trim()).join('\n\n');}
-function load(){ $('layoutEditor').value=sourceText(idx());render();$('status').textContent='';}
-$('sectionSelect').addEventListener('change',load);$('layoutEditor').addEventListener('input',render);
-$('breakBtn').onclick=()=>{const el=$('layoutEditor'),start=el.selectionStart,end=el.selectionEnd;const before=el.value.slice(0,start).replace(/\n+$/,''),after=el.value.slice(end).replace(/^\n+/, '');el.value=before+MARK+after;const pos=(before+MARK).length;el.focus();el.setSelectionRange(pos,pos);render();$('status').textContent='Pemisah halaman ditambahkan. Tekan Simpan pembagian untuk menerapkan.'};
-$('removeBtn').onclick=()=>{const el=$('layoutEditor'),pos=el.selectionStart,pattern=/\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\n/g;let match,best=null;while((match=pattern.exec(el.value))){if(pos>=match.index-20&&pos<=match.index+match[0].length+20){best=match;break}}if(!best){$('status').textContent='Tidak ada pemisah halaman di dekat kursor.';return}el.setRangeText('\n\n',best.index,best.index+best[0].length,'end');render();$('status').textContent='Pemisah halaman dihapus.'};
-$('saveBtn').onclick=()=>{saved[idx()]=$('layoutEditor').value;localStorage.setItem(KEY,JSON.stringify(saved));$('status').textContent='Pembagian halaman tersimpan. Kembali ke bacaan dan muat ulang halaman untuk melihat hasilnya.'};
-$('resetBtn').onclick=()=>{delete saved[idx()];localStorage.setItem(KEY,JSON.stringify(saved));load();$('status').textContent='Bagian ini dikembalikan ke pembagian otomatis.'};
-load();
+try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(typeof d.sections?.[0]?.text==='string')base=d.sections[0].text}}catch{}
+const el=document.getElementById('layoutEditor'),status=document.getElementById('status'),count=document.getElementById('pageCount');
+function refresh(){count.textContent=el.value.split(/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/u).length+' kelompok halaman bertanda · '+el.value.length.toLocaleString('id-ID')+' karakter'}
+function say(s){status.textContent=s}
+document.getElementById('breakBtn').onclick=()=>{const a=el.selectionStart,b=el.selectionEnd,before=el.value.slice(0,a).replace(/\\n+$/u,''),after=el.value.slice(b).replace(/^\\n+/u,'');el.value=before+MARK+after;const p=(before+MARK).length;el.focus();el.setSelectionRange(p,p);refresh();say('Pemisah ditambahkan. Simpan pengaturan untuk menerapkannya.')};
+document.getElementById('removeBtn').onclick=()=>{const p=el.selectionStart,rx=/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/gu;let m,hit=null;while((m=rx.exec(el.value)))if(p>=m.index-40&&p<=m.index+m[0].length+40){hit=m;break}if(!hit){say('Tidak ada pemisah dekat kursor.');return}el.setRangeText('\\n\\n',hit.index,hit.index+hit[0].length,'end');refresh();say('Pemisah dihapus.')};
+document.getElementById('saveBtn').onclick=()=>{saved[IDX]=el.value;localStorage.setItem(KEY,JSON.stringify(saved));say('Tersimpan di browser ini. Muat ulang halaman bacaan untuk melihat hasilnya.')};
+document.getElementById('resetBtn').onclick=()=>{delete saved[IDX];localStorage.setItem(KEY,JSON.stringify(saved));el.value=base;refresh();say('Pengaturan dikembalikan ke teks awal.')};
+document.getElementById('exportBtn').onclick=()=>{const d={format:'etahlil-dzikir-page-layout',version:1,exportedAt:new Date().toISOString(),scope:'dzikir-ba-da-shalat',sectionIndex:IDX,text:el.value};const url=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='etahlil-pembagian-halaman-dzikir.json';a.click();URL.revokeObjectURL(url);say('File JSON berhasil diekspor.')};
+document.getElementById('importFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=='etahlil-dzikir-page-layout'||typeof d.text!=='string')throw Error('Format JSON tidak sesuai');el.value=d.text;refresh();say('JSON dimuat. Tekan Simpan pengaturan untuk menerapkannya.')}catch(err){say('Gagal import: '+err.message)}e.target.value=''};
+el.value=Object.prototype.hasOwnProperty.call(saved,IDX)?saved[IDX]:base;el.addEventListener('input',refresh);refresh();
 </script>
 </body></html>
