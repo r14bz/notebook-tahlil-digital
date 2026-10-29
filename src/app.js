@@ -1,4 +1,7 @@
 import { sections, tahlilSections, loadAdditionalSurahs } from './data/sections.js';
+import { mountAppShell } from './components/app-shell.js';
+
+mountAppShell();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,audioMode='tts',voices=[],isRepeating=false,sectionStarts=[];
