@@ -210,6 +210,16 @@ function applyDzikirSeparatorOverrides(){
   dzikir.forEach((section,i)=>{if(Object.prototype.hasOwnProperty.call(overrides,i))section.text=overrides[i];});
  }catch{}
 }
-loadAdditionalSurahs().then(()=>{applyDzikirSeparatorOverrides();buildPages();renderHome();}).catch(()=>{});
+loadAdditionalSurahs().then(async()=>{
+ try{
+  const response=await fetch('./src/data/dzikir-overrides.json');
+  if(response.ok){
+   const data=await response.json();
+   const dzikir=sections.filter(s=>s.collection==='dzikir');
+   data.sections?.forEach((item,i)=>{if(dzikir[i]&&typeof item.text==='string')dzikir[i].text=item.text;});
+  }
+ }catch{}
+ applyDzikirSeparatorOverrides();buildPages();renderHome();
+}).catch(()=>{});
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
