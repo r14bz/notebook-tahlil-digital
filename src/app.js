@@ -29,7 +29,8 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
    ? section.text.split(/(?<=۝)/u).map(x=>x.trim()).filter(Boolean)
    : (section.tahlilGroup || section.preserveSeparators) ? section.text.split(/\n{2,}/u).map(x=>x.trim()).filter(Boolean) : section.text.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
  for(const unit of units){
-  const separator=(section.tahlilGroup || section.preserveSeparators)?'\n\n\n':'\n';
+  // Ayat Yasin dan Ar-Rahman mengalir dalam paragraf yang sama; pergantian halaman tetap hanya di batas ayat.
+  const separator=section.quranSurah?' ':((section.tahlilGroup || section.preserveSeparators)?'\n\n\n':'\n');
   const candidate=chunk?chunk+separator+unit:unit;
   if(measure(candidate)>availableHeight&&chunk){push(chunk);chunk='';}
   if(measure(unit)>availableHeight){
@@ -156,7 +157,10 @@ function showPage(i,animate=''){
  index=target;
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
- $('prevBtn').disabled=index===0;$('nextBtn').disabled=index===pages.length-1;
+ const current=pages[index],previous=pages[index-1],following=pages[index+1];
+ const quranBoundary=(a,b)=>Boolean(a?.quranSurah)&&Boolean(b)&&a.quranSurah!==b.quranSurah;
+ $('prevBtn').disabled=index===0||quranBoundary(current,previous);
+ $('nextBtn').disabled=index===pages.length-1||quranBoundary(current,following);
  $('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';
  $('progressBar').style.width=((index+1)/pages.length*100)+'%';
  localStorage.setItem('tahlil-page',index);
@@ -171,7 +175,8 @@ function showPage(i,animate=''){
   },175);
  }else paintPage(s);
 }
-function next(){if(!pageTurning&&index<pages.length-1)showPage(index+1,'turn-next')}function prev(){if(!pageTurning&&index>0)showPage(index-1,'turn-prev')}
+function next(){if(pageTurning||index>=pages.length-1)return; if(pages[index]?.quranSurah&&pages[index+1]?.quranSurah!==pages[index].quranSurah)return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning||index<=0)return; if(pages[index]?.quranSurah&&pages[index-1]?.quranSurah!==pages[index].quranSurah)return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
