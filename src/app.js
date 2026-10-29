@@ -46,6 +46,8 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  return out.length?out:[{...section,sectionIndex,continuation:false}];
 }
 function buildPages(){
+ const wasReaderActive=document.body.classList.contains('reader-active');
+ document.body.classList.add('reader-active');
  const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
@@ -76,12 +78,13 @@ function buildPages(){
    pageCursor=sectionStarts[si];
   });
   index=Math.min(saved,pages.length-1);showPage(index);renderHome();
+  if(!wasReaderActive)document.body.classList.remove('reader-active');
  });
 }
 const tocGroups=[
- {title:'Yasin (ayat 1 sampai selesai)',matches:s=>s.quranSurah===36},
- {title:'Ar-Rahman (ayat 1 sampai selesai)',matches:s=>s.quranSurah===55},
- {title:'Tahlil (dari awal sampai selesai)',matches:s=>!s.quranSurah}
+ {title:'Surah Yasin (ayat 1–83)',matches:s=>s.quranSurah===36},
+ {title:'Surah Ar-Rahman (ayat 1–78)',matches:s=>s.quranSurah===55},
+ ...tahlilSections.map((s,i)=>({title:s.title,matches:page=>!page.quranSurah&&page.sectionIndex===sections.findIndex(x=>x.title===s.title)}))
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
