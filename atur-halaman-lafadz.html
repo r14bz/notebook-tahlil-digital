@@ -25,9 +25,9 @@
 import { tahlilSections } from './src/data/sections.js';
 import { dzikirSections } from './src/data/dzikir.js';
 const KEY='etahlil-page-layout-v1', IDX=2+tahlilSections.length, MARK='\n\n[[HALAMAN BARU]]\n\n';
-let base=dzikirSections[0]?.text||'', saved={};
+let base=dzikirSections.map(s=>s.text||'').filter(Boolean).join('\n\n'), saved={};
 try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
-try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(typeof d.sections?.[0]?.text==='string')base=d.sections[0].text}}catch{}
+try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(Array.isArray(d.sections)&&d.sections.length){const all=d.sections.map(s=>typeof s.text==='string'?s.text:'').filter(Boolean).join('\n\n');if(all)base=all}}}catch{}
 const el=document.getElementById('layoutEditor'),status=document.getElementById('status'),count=document.getElementById('pageCount');
 function refresh(){count.textContent=el.value.split(/\n\s*\[\[HALAMAN BARU\]\]\s*\n/u).length+' kelompok halaman bertanda · '+el.value.length.toLocaleString('id-ID')+' karakter'}
 function say(s){status.textContent=s}
