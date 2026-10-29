@@ -95,7 +95,7 @@ function renderHome(){
  const saved=Number(localStorage.getItem('tahlil-page')||0);
  const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
  $('continueReadingLabel').textContent=savedPage ? (savedPage.title+(savedPage.continuation?' · lanjutan':'')) : 'Mulai dari halaman pertama';
- $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah).length+' bagian bacaan';
+ $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah&&!s.collection).length+' bagian bacaan';
  const list=$('homeIndexList');list.innerHTML='';
  const groups=[
   {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah&&!s.collection,icon:'۞'},
