@@ -10,6 +10,7 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  const out=[];let chunk='';
  const probe=$('arabicText').cloneNode(false);probe.removeAttribute('id');
  probe.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;display:block;flex:none;min-height:0;height:auto;max-height:none;overflow:visible;width:'+width+'px;';
+ probe.classList.toggle('quran-text',Boolean(section.quranSurah));
  document.body.appendChild(probe);
  const measure=value=>{probe.textContent=value;return probe.scrollHeight;};
  const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
@@ -58,7 +59,7 @@ function buildPages(){
    if(s.quranSurah){readingSections.push({...s,originalIndex:si});return;}
    const previous=readingSections[readingSections.length-1];
    if(previous&&!previous.quranSurah&&previous.text.length+s.text.length+2<=tahlilLimit){
-    previous.text+='\\n'+s.text;
+    previous.text+='\n'+s.text;
     previous.groupedCount=(previous.groupedCount||1)+1;
     previous.title='Rangkaian Tahlil';
    }else readingSections.push({...s,originalIndex:si,groupedCount:1});
@@ -145,6 +146,7 @@ let pageTurning=false;
 function paintPage(s){
  $('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');
  $('arabicText').textContent=s.text;
+ $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
  $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
  $('audioStatus').textContent='Halaman siap dibaca.';
  if(audioMode==='qari')setQariTrack();
