@@ -53,7 +53,7 @@ function buildPages(){
   pages=[];sectionStarts=[];
   // Gabungkan bacaan tahlil yang pendek agar tidak perlu terlalu sering berpindah halaman.
   const readingSections=[];
-  const tahlilLimit=mobileReader()?360:560;
+  const tahlilLimit=mobileReader()?1200:1800;
   sections.forEach((s,si)=>{
    if(s.quranSurah){readingSections.push({...s,originalIndex:si});return;}
    const previous=readingSections[readingSections.length-1];
