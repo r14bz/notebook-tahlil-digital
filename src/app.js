@@ -29,7 +29,8 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
    ? section.text.split(/(?<=۝)/u).map(x=>x.trim()).filter(Boolean)
    : section.tahlilGroup ? section.text.split(/\n{2,}/u).map(x=>x.trim()).filter(Boolean) : section.text.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
  for(const unit of units){
-  const candidate=chunk?chunk+'\n'+unit:unit;
+  const separator=section.tahlilGroup?'\n\n\n':'\n';
+  const candidate=chunk?chunk+separator+unit:unit;
   if(measure(candidate)>availableHeight&&chunk){push(chunk);chunk='';}
   if(measure(unit)>availableHeight){
    if(chunk){push(chunk);chunk='';}
@@ -38,7 +39,7 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
     push(unit);
    }else addWords(unit);
   }else{
-   chunk=chunk?chunk+'\n'+unit:unit;
+   chunk=chunk?chunk+separator+unit:unit;
   }
  }
  if(chunk)push(chunk);
