@@ -14,20 +14,29 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  const measure=value=>{probe.textContent=value;return probe.scrollHeight;};
  const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
  const addWords=value=>{
-  const words=value.split(/\\s+/).filter(Boolean);let part='';
-  for(const word of words){const candidate=part?part+' '+word:word;if(measure(candidate)>availableHeight&&part){push(part);part=word;}else part=candidate;}
-  if(part)chunk=chunk?chunk+'\\n'+part:part;
+  const words=value.split(/\s+/u).filter(Boolean);let part='';
+  for(const word of words){
+   const candidate=part?part+' '+word:word;
+   if(measure(candidate)>availableHeight&&part){push(part);part=word;}else part=candidate;
+  }
+  if(part)push(part);
  };
- // Preserve complete Quran ayat: only move to the next page between verse markers.
+ // Match each complete ayah through its verse marker. Never split an ayah across pages.
  const units=section.quranSurah
-  ? section.text.split(/(?<=۝[٠-٩۰-۹0-9]{1,3})\\s*/u).map(x=>x.trim()).filter(Boolean)
-  : section.text.split(/\\n+/).map(x=>x.trim()).filter(Boolean);
+  ? (section.text.match(/[\s\S]*?۝[٠-٩۰-۹0-9]{1,3}|[\s\S]+$/gu)||[section.text]).map(x=>x.trim()).filter(Boolean)
+  : section.text.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
  for(const unit of units){
-  const candidate=chunk?chunk+'\\n'+unit:unit;
-  if(measure(candidate)>availableHeight&&chunk){
-   push(chunk);chunk='';
-   if(measure(unit)>availableHeight){addWords(unit);}else chunk=unit;
-  }else chunk=candidate;
+  const candidate=chunk?chunk+'\n'+unit:unit;
+  if(measure(candidate)>availableHeight&&chunk){push(chunk);chunk='';}
+  if(measure(unit)>availableHeight){
+   if(chunk){push(chunk);chunk='';}
+   if(section.quranSurah){
+    // An unusually tall single ayah remains intact on its own page; do not word-split Quran.
+    push(unit);
+   }else addWords(unit);
+  }else{
+   chunk=chunk?chunk+'\n'+unit:unit;
+  }
  }
  if(chunk)push(chunk);
  probe.remove();
