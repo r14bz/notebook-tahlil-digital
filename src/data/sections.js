@@ -26,6 +26,7 @@ export let sections = [
 // pemenggalan halaman dilakukan berdasarkan tinggi layar, bukan jumlah ayat.
 export const tahlilSections = sections.slice();
 import yasinArabicText from './yasin.js';
+import rahmanArabicText from './rahman.js';
 
 export async function loadAdditionalSurahs(){
   const additionalSections = [{
@@ -37,44 +38,14 @@ export async function loadAdditionalSurahs(){
     verseEnd:83,
     sourceUrl:'https://quran.nu.or.id/yasin'
   }];
-  const source = {number:55,title:'Ar-Rahman',slug:'ar-rahman',expectedAyahs:78};
-  try {
-    const response = await fetch('/api/quran-nu?surah='+encodeURIComponent(source.slug));
-    if(!response.ok) throw new Error('Gagal memuat '+source.title+' dari Quran NU Online');
-    const html = await response.text();
-    const documentSource = new DOMParser().parseFromString(html,'text/html');
-    const found = new Map();
-    const toNumber = digits => Number(String(digits).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
-    documentSource.querySelectorAll('body *').forEach(node=>{
-      const raw = (node.innerText || node.textContent || '').replace(/\\s+/g,' ').trim();
-      if(!raw || !/[ء-ي]/.test(raw)) return;
-      const markers = [...raw.matchAll(/۝\\s*([٠-٩]{1,3}|[0-9]{1,3})/g)];
-      if(markers.length!==1) return;
-      const number = toNumber(markers[0][1]);
-      if(!Number.isInteger(number)||number<1||number>source.expectedAyahs) return;
-      const current = found.get(number);
-      if(!current || raw.length<current.length) found.set(number,raw);
-    });
-    const ayahs = Array.from({length:source.expectedAyahs},(_,i)=>({numberInSurah:i+1,text:found.get(i+1)}));
-    if(ayahs.some(ayah=>!ayah.text)) throw new Error('Teks '+source.title+' dari Quran NU Online belum lengkap');
-    additionalSections.push({
-      title:source.title,
-      text:ayahs.map(a=>a.text).join('\\n'),
-      quranSurah:source.number,
-      surah:String(source.number).padStart(3,'0'),
-      verseStart:1,
-      verseEnd:ayahs.length,
-      sourceUrl:'https://quran.nu.or.id/'+source.slug
-    });
-  } catch(error) {
-    // Surah Yasin tersimpan lokal dan tetap bisa dibaca meskipun sumber Ar-Rahman gagal diakses.
-    additionalSections.push({
-      title:source.title,
-      text:'Teks Surah Ar-Rahman belum berhasil dimuat dari Quran NU Online. Periksa koneksi lalu muat ulang halaman.',
-      quranSurah:source.number,
-      surah:String(source.number).padStart(3,'0'),
-      sourceUrl:'https://quran.nu.or.id/'+source.slug
-    });
-  }
+  additionalSections.push({
+    title:'Ar-Rahman',
+    text:rahmanArabicText,
+    quranSurah:55,
+    surah:'055',
+    verseStart:1,
+    verseEnd:78,
+    sourceUrl:'https://quran.nu.or.id/ar-rahman'
+  });
   sections.splice(0,sections.length,...additionalSections,...tahlilSections);
 }
