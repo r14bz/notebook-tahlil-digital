@@ -36,12 +36,18 @@ export async function loadAdditionalSurahs(){
     const html = await response.text();
     const documentSource = new DOMParser().parseFromString(html,'text/html');
     const found = new Map();
-    documentSource.querySelectorAll('div[id]').forEach(node=>{
-      const id = Number(node.id);
-      if(!Number.isInteger(id)||id<1||id>source.expectedAyahs||found.has(id)) return;
-      const arabicNode = node.querySelector('[dir="rtl"]');
-      const arabicText = arabicNode?.textContent?.trim();
-      if(arabicText) found.set(id,arabicText);
+    const toNumber = digits => Number(String(digits).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+    // Quran NU Online dapat merender teks ayat tanpa ID elemen numerik.
+    // Cari elemen terkecil yang memuat satu penanda nomor ayat dan teks Arabnya.
+    documentSource.querySelectorAll('body *').forEach(node=>{
+      const raw = (node.innerText || node.textContent || '').replace(/\\s+/g,' ').trim();
+      if(!raw || !/[\\u0600-\\u06FF]/.test(raw)) return;
+      const markers = [...raw.matchAll(/۝\\s*([٠-٩]{1,3}|[0-9]{1,3})/g)];
+      if(markers.length!==1) return;
+      const number = toNumber(markers[0][1]);
+      if(!Number.isInteger(number)||number<1||number>source.expectedAyahs) return;
+      const current = found.get(number);
+      if(!current || raw.length<current.length) found.set(number,raw);
     });
     const ayahs = Array.from({length:source.expectedAyahs},(_,i)=>({
       numberInSurah:i+1,
