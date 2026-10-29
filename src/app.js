@@ -24,10 +24,24 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  };
  // Explicit page groups saved by the page-layout editor take priority over automatic packing.
  if(typeof section.pageLayoutText==='string'&&section.pageLayoutText.includes('[[HALAMAN BARU]]')){
-  const groups=section.pageLayoutText.split(/\n\s*\[\[HALAMAN BARU\]\]\s*\n/u).map(x=>x.trim()).filter(Boolean);
+  // Manual layout is authoritative: split only on the explicit marker, not arbitrary whitespace.
+  // If a marked group is too tall, move complete source lines to the next page while preserving
+  // every newline within the source. Never run the group's text through addWords(), which flattens it.
+  const groups=section.pageLayoutText.split(/\n[ \t]*\[\[HALAMAN BARU\]\][ \t]*\n/u).map(x=>x.trim()).filter(Boolean);
   for(const group of groups){
-   if(measure(group)<=availableHeight)push(group);
-   else addWords(group);
+   if(measure(group)<=availableHeight){push(group);continue;}
+   const lines=group.split(/(?<=\n)/u);
+   let lineChunk='';
+   for(const line of lines){
+    const candidate=lineChunk+line;
+    if(lineChunk&&measure(candidate.trim())>availableHeight){
+     push(lineChunk);
+     lineChunk=line;
+    }else{
+     lineChunk=candidate;
+    }
+   }
+   if(lineChunk.trim())push(lineChunk);
   }
   probe.remove();
   return out.length?out:[{...section,sectionIndex,continuation:false}];
