@@ -31,10 +31,12 @@
 </section>
 </main>
 <script type="module">
-import { sections as tahlilSections } from './src/data/sections.js';
+import { tahlilSections } from './src/data/sections.js';
+import yasinArabicText from './src/data/yasin.js';
+import rahmanArabicText from './src/data/rahman.js';
 import { dzikirSections } from './src/data/dzikir.js';
 const KEY='etahlil-page-layout-v1', MARK='\n\n[[HALAMAN BARU]]\n\n';
-const sections=[...tahlilSections,...dzikirSections].map(s=>({...s}));
+const sections=[{title:'Yasin',text:yasinArabicText,quranSurah:36},{title:'Ar-Rahman',text:rahmanArabicText,quranSurah:55},...tahlilSections,...dzikirSections].map(s=>({...s}));
 try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();const dz=sections.filter(s=>s.collection==='dzikir');d.sections?.forEach((x,i)=>{if(dz[i]&&typeof x.text==='string')dz[i].text=x.text})}}catch{}
 const $=id=>document.getElementById(id);let saved={};
 try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
