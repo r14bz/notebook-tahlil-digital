@@ -30,6 +30,52 @@ const tocGroups=[
  {title:'Ar-Rahman (ayat 1 sampai selesai)',matches:s=>s.quranSurah===55},
  {title:'Tahlil (dari awal sampai selesai)',matches:s=>!s.quranSurah}
 ];
+const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
+function activateReader(sectionIndex){
+ const start=Math.max(0,sectionStarts[sectionIndex]??0);
+ document.body.classList.add('reader-active');
+ showPage(start);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderHome(){
+ const saved=Number(localStorage.getItem('tahlil-page')||0);
+ const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
+ $('continueReadingLabel').textContent=savedPage ? (savedPage.title+(savedPage.continuation?' · lanjutan':'')) : 'Mulai dari halaman pertama';
+ $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah).length+' bagian bacaan';
+ const list=$('homeIndexList');list.innerHTML='';
+ const groups=[
+  {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah,icon:'۞'},
+  {key:'yasin',title:'Surah Yasin',sub:'Surah ke-36 · Al-Qur’an',filter:s=>s.quranSurah===36,icon:'٣٦'},
+  {key:'rahman',title:'Surah Ar-Rahman',sub:'Surah ke-55 · Al-Qur’an',filter:s=>s.quranSurah===55,icon:'٥٥'}
+ ];
+ const query=($('homeSearch').value||'').trim().toLocaleLowerCase('id');
+ let shown=0;
+ groups.forEach((group,gi)=>{
+  const entries=sections.map((s,i)=>({s,i})).filter(x=>group.filter(x.s)&&(!query||(x.s.title||'').toLocaleLowerCase('id').includes(query)));
+  if(!entries.length)return;
+  const heading=document.createElement('div');heading.className='index-group-title';heading.innerHTML='<span class="index-group-icon">'+group.icon+'</span><span><strong>'+group.title+'</strong><small>'+group.sub+'</small></span><span class="index-group-count">'+String(entries.length).padStart(2,'0')+'</span>';
+  list.appendChild(heading);
+  entries.forEach(({s,i},j)=>{
+   const b=document.createElement('button');b.className='index-entry';b.type='button';
+   const safeTitle=document.createElement('span');safeTitle.className='entry-title';safeTitle.textContent=s.title||'Bagian bacaan';
+   const number=document.createElement('span');number.className='entry-number';number.textContent=String(j+1).padStart(2,'0');
+   const desc=document.createElement('span');desc.className='entry-subtitle';desc.textContent=s.quranSurah ? (s.isBismillah?'Pembuka surah':'Ayat Al-Qur’an') : 'Doa dan zikir';
+   const arrow=document.createElement('span');arrow.className='entry-arrow';arrow.textContent='↗';
+   b.append(number,safeTitle,desc,arrow);b.addEventListener('click',()=>activateReader(i));list.appendChild(b);shown++;
+  });
+ });
+ $('homeSearchEmpty').hidden=shown!==0;
+}
+function openCollection(kind){
+ const first=sections.findIndex(s=>kind==='tahlil'?!s.quranSurah:kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
+ if(first>=0)activateReader(first);
+}
+$('continueReadingBtn').addEventListener('click',()=>{
+ const saved=Number(localStorage.getItem('tahlil-page')||0);
+ document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
+});
+document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>openCollection(b.dataset.homeTarget)));
+$('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>{
  $('contents').innerHTML='';
  tocGroups.forEach((group,i)=>{
@@ -110,4 +156,4 @@ function loadVoices(){voices=speechSynthesis?.getVoices?.()||[];const sel=$('voi
 $('voiceGender').value=localStorage.getItem('tahlil-voice-gender')||'male';
 $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voiceGender').value);$('voiceSelect').value='';$('audioStatus').textContent='Preferensi suara disimpan. Tekan putar untuk mencoba suara yang tersedia.'};
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-document.body.classList.add('toc-open');$('contentsBtn').setAttribute('aria-expanded','true');loadAdditionalSurahs().then(()=>{buildPages();$('audioStatus').textContent='Surah Yasin, Ar-Rahman, dan Tahlil siap dibaca.'}).catch(()=>{sections.splice(0,sections.length,...tahlilSections);buildPages();$('audioStatus').textContent='Surah tambahan belum termuat. Periksa koneksi internet lalu muat ulang halaman.'});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
+document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');loadAdditionalSurahs().then(()=>{buildPages();renderHome();$('audioStatus').textContent='Surah Yasin, Ar-Rahman, dan Tahlil siap dibaca.'}).catch(()=>{sections.splice(0,sections.length,...tahlilSections);buildPages();renderHome();$('audioStatus').textContent='Surah tambahan belum termuat. Periksa koneksi internet lalu muat ulang halaman.'});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
