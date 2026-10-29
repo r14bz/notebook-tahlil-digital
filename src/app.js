@@ -49,7 +49,7 @@ function buildPages(){
  const pass=++layoutPass;
  const wasReaderActive=document.body.classList.contains('reader-active');
  document.body.classList.add('reader-active');
- const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
+ const saved=Number(localStorage.getItem('tahlil-page')||0),currentSection=pages[index]?.sectionIndex,paper=$('paper'),text=$('arabicText');
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
   if(pass!==layoutPass)return;
@@ -70,7 +70,8 @@ function buildPages(){
    if(sectionStarts[si]===undefined)sectionStarts[si]=Math.max(0,pageCursor);
    pageCursor=sectionStarts[si];
   });
-  index=Math.min(saved,pages.length-1);showPage(index);
+  const sectionPage=currentSection===undefined?-1:pages.findIndex(p=>p.sectionIndex===currentSection&&!p.continuation);
+  index=sectionPage>=0?sectionPage:Math.min(saved,pages.length-1);showPage(index);
   if(!wasReaderActive)document.body.classList.remove('reader-active');
  });
 }
