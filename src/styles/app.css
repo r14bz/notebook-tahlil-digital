@@ -450,3 +450,16 @@ body:not(.reader-active) #readerFooter{display:none!important}
   body.reader-active .arabic { font-size: clamp(22px, 2.2vw, 27px); line-height: 1.7; }
   body.reader-active .arabic.compact { font-size: clamp(20px, 2vw, 24px); line-height: 1.55; }
 }
+
+
+/* Keep Quran diacritics clear; compact spacing is reserved for short Tahlil passages. */
+@media (max-width: 768px) {
+  body.reader-active .arabic.quran-text { font-size: clamp(21px, 5.3vw, 25px); line-height: 2.15; }
+  body.reader-active .arabic.quran-text.compact { font-size: clamp(19px, 4.8vw, 22px); line-height: 2.05; }
+  body.reader-active .arabic:not(.quran-text) { font-size: clamp(18px, 4.6vw, 21px); line-height: 1.55; }
+}
+@media (min-width: 769px) {
+  body.reader-active .arabic.quran-text { line-height: 2.0; }
+  body.reader-active .arabic.quran-text.compact { line-height: 1.9; }
+  body.reader-active .arabic:not(.quran-text) { line-height: 1.55; }
+}
