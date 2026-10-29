@@ -187,7 +187,8 @@ function paintPage(s){
  $('arabicText').style.whiteSpace='pre-wrap';
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
- $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
+ const sectionFirst=pages.findIndex(page=>page.sectionIndex===s.sectionIndex);
+ $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
  renderContents();
 }
 function showPage(i,animate=''){
@@ -198,12 +199,15 @@ function showPage(i,animate=''){
  index=target;
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
- const current=pages[index],previous=pages[index-1],following=pages[index+1];
- const quranBoundary=(a,b)=>Boolean(a?.quranSurah)&&Boolean(b)&&a.quranSurah!==b.quranSurah;
- $('prevBtn').disabled=index===0||quranBoundary(current,previous);
- $('nextBtn').disabled=index===pages.length-1||quranBoundary(current,following);
- $('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';
- $('progressBar').style.width=((index+1)/pages.length*100)+'%';
+ const current=pages[index];
+ const sectionFirst=pages.findIndex(page=>page.sectionIndex===current.sectionIndex);
+ let sectionLast=index;
+ while(sectionLast+1<pages.length&&pages[sectionLast+1].sectionIndex===current.sectionIndex)sectionLast++;
+ const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
+ $('prevBtn').disabled=index<=sectionFirst;
+ $('nextBtn').disabled=index>=sectionLast;
+ $('progressText').textContent=Math.round(sectionPageIndex/sectionPageCount*100)+'%';
+ $('progressBar').style.width=(sectionPageIndex/sectionPageCount*100)+'%';
  localStorage.setItem('tahlil-page',index);
  if(animate){
   pageTurning=true;p.style.transformOrigin=animate==='turn-next'?'left center':'right center';
@@ -216,8 +220,8 @@ function showPage(i,animate=''){
   },175);
  }else paintPage(s);
 }
-function next(){if(pageTurning||index>=pages.length-1)return; if(pages[index]?.quranSurah&&pages[index+1]?.quranSurah!==pages[index].quranSurah)return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning||index<=0)return; if(pages[index]?.quranSurah&&pages[index-1]?.quranSurah!==pages[index].quranSurah)return;showPage(index-1,'turn-prev')}
+function next(){if(pageTurning||index>=pages.length-1||pages[index+1]?.sectionIndex!==pages[index]?.sectionIndex)return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning||index<=0||pages[index-1]?.sectionIndex!==pages[index]?.sectionIndex)return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
