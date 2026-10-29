@@ -469,3 +469,17 @@ body:not(.reader-active) #readerFooter{display:none!important}
 body.reader-active .arabic.quran-text { text-align: justify; text-align-last: center; }
 body.reader-active .arabic.quran-text { line-height: 2.15; }
 @media (max-width: 768px) { body.reader-active .arabic.quran-text { line-height: 2.25; } }
+
+/* Reader font controls scale text and pagination together. */
+body.font-small .arabic { font-size: clamp(17px, 4.2vw, 20px) !important; }
+body.font-normal .arabic { font-size: clamp(21px, 5.1vw, 25px) !important; }
+body.font-large .arabic { font-size: clamp(25px, 6.1vw, 30px) !important; }
+@media (min-width: 769px) {
+ body.font-small .arabic { font-size: clamp(19px, 1.9vw, 23px) !important; }
+ body.font-normal .arabic { font-size: clamp(22px, 2.2vw, 27px) !important; }
+ body.font-large .arabic { font-size: clamp(27px, 2.8vw, 34px) !important; }
+}
+body.reader-active .controls { display:flex; justify-content:space-between; }
+body.reader-active .controls .nav-page { flex:1; }
+body.reader-active .paper { overflow: visible; }
+body.reader-active .arabic { overflow: visible; }
