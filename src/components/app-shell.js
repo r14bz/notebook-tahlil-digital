@@ -23,7 +23,7 @@ export function mountAppShell() {
     <div id="homeIndexList" class="home-index-list"></div>
     <p id="homeSearchEmpty" class="home-search-empty" hidden>Bacaan tidak ditemukan. Coba kata kunci lain.</p>
   </section>
-  <div class="home-footnote"><span>۞</span><span>Ruang kecil untuk zikir dan ketenangan hati.</span></div>
+  <div class="home-footnote"><span>۞</span><span>Ruang kecil untuk zikir dan ketenangan hati.</span></div><div style="text-align:center;margin:0 auto 28px"><a href="./pemisah-dzikir.html" style="display:inline-block;padding:12px 18px;border:1px solid #bd9854;border-radius:12px;color:#123d2e;background:#fffaf0;text-decoration:none;font-weight:700">Atur Pemisah Lafadz Dzikir</a></div>
 </section>
 <main id="readerMain">
 <aside class="sidebar"><div class="toc-heading"><div><div class="eyebrow">Daftar isi</div><h2>Rangkaian Bacaan</h2></div><button class="soft-btn" id="closeContents" type="button">Tutup ✕</button></div><nav class="contents" id="contents"></nav><div class="progress"><div style="display:flex;justify-content:space-between"><span>Progres bacaan</span><b id="progressText">0%</b></div><div class="bar"><span id="progressBar"></span></div><p id="savedText">Posisi bacaan tersimpan di perangkat ini.</p></div></aside>
