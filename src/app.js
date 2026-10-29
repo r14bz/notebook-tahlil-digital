@@ -188,6 +188,7 @@ $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
  paper.setAttribute('aria-label','Halaman bacaan. Geser ke kiri untuk halaman berikutnya, geser ke kanan untuk halaman sebelumnya.');
 })();
 
+$('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
 $('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
 $('contentsBtn').onclick=()=>{document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false')};$('closeContents').onclick=()=>{document.body.classList.remove('reader-active');window.scrollTo({top:0,behavior:'smooth'});$('contentsBtn').setAttribute('aria-expanded','false')};document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
 // Render local content immediately so taps work even while optional surah data is loading.
