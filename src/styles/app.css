@@ -890,3 +890,7 @@ body.toc-open .sidebar { z-index:30!important; }
 .swipe-hint.hint-fading { opacity:0!important; }
 .swipe-hint:active { opacity:0!important; }
 .controls #homeBtn:before { content:'⌂'; }
+
+/* Use a familiar house symbol for the reader's return-to-home action. */
+.controls #homeBtn:before { content:'⌂'; font-family:Arial,sans-serif; font-size:34px; }
+@media(max-width:768px){.controls #homeBtn:before{font-size:29px}}
