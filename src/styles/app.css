@@ -463,3 +463,9 @@ body:not(.reader-active) #readerFooter{display:none!important}
   body.reader-active .arabic.quran-text.compact { line-height: 1.9; }
   body.reader-active .arabic:not(.quran-text) { line-height: 1.55; }
 }
+
+
+/* Quran verses use justified alignment while retaining generous diacritic spacing. */
+body.reader-active .arabic.quran-text { text-align: justify; text-align-last: center; }
+body.reader-active .arabic.quran-text { line-height: 2.15; }
+@media (max-width: 768px) { body.reader-active .arabic.quran-text { line-height: 2.25; } }
