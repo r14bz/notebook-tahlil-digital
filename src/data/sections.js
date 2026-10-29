@@ -24,7 +24,30 @@ export let sections = [
 ];
 // Simpan materi tahlil asli. Setiap surah menjadi satu bagian utuh;
 // pemenggalan halaman dilakukan berdasarkan tinggi layar, bukan jumlah ayat.
-export const tahlilSections = sections.slice();
+const rawTahlilSections = sections.slice();
+const combineTahlil = (title, indexes) => ({
+  title,
+  text: indexes.map(i => rawTahlilSections[i].text).join('\\n'),
+  tahlilGroup: true
+});
+// Group bacaan secara eksplisit agar satu halaman mengikuti urutan majelis,
+// bukan digabung sembarang berdasarkan panjang teks.
+export const tahlilSections = [
+  combineTahlil('Tawasul kepada Nabi Muhammad dan para nabi serta orang saleh', [0,1]),
+  combineTahlil('Tawasul kepada ahli kubur dan doa nama almarhum', [2,3]),
+  rawTahlilSections[4],
+  rawTahlilSections[5],
+  rawTahlilSections[6],
+  rawTahlilSections[7],
+  combineTahlil('Awal Surah Al-Baqarah dan ayat tentang keesaan Allah', [8,9]),
+  rawTahlilSections[10],
+  rawTahlilSections[11],
+  combineTahlil('Istighfar, Afdhaludz dzikr, dan Tahlil', [12,13,14,15]),
+  combineTahlil('Tasbih, tasbih penutup, dan selawat', [16,17,18]),
+  rawTahlilSections[19],
+  rawTahlilSections[20],
+  rawTahlilSections[21]
+];
 import yasinArabicText from './yasin.js';
 import rahmanArabicText from './rahman.js';
 
