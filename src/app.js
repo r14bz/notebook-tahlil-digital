@@ -187,7 +187,8 @@ function paintPage(s){
  $('arabicText').style.whiteSpace='pre-wrap';
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
- const sectionFirst=pages.findIndex(page=>page.sectionIndex===s.sectionIndex);
+ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+ const sectionFirst=pages.findIndex(page=>navGroup(page)===navGroup(s));
  $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
  renderContents();
 }
@@ -200,9 +201,11 @@ function showPage(i,animate=''){
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
  const current=pages[index];
- const sectionFirst=pages.findIndex(page=>page.sectionIndex===current.sectionIndex);
+ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+ const currentGroup=navGroup(current);
+ const sectionFirst=pages.findIndex(page=>navGroup(page)===currentGroup);
  let sectionLast=index;
- while(sectionLast+1<pages.length&&pages[sectionLast+1].sectionIndex===current.sectionIndex)sectionLast++;
+ while(sectionLast+1<pages.length&&navGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
  const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
  $('prevBtn').disabled=index<=sectionFirst;
  $('nextBtn').disabled=index>=sectionLast;
@@ -220,8 +223,9 @@ function showPage(i,animate=''){
   },175);
  }else paintPage(s);
 }
-function next(){if(pageTurning||index>=pages.length-1||pages[index+1]?.sectionIndex!==pages[index]?.sectionIndex)return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning||index<=0||pages[index-1]?.sectionIndex!==pages[index]?.sectionIndex)return;showPage(index-1,'turn-prev')}
+const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+function next(){if(pageTurning||index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning||index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
