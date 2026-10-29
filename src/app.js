@@ -7,12 +7,31 @@ const $=id=>document.getElementById(id);
 let pages=[],index=0,audioMode='tts',voices=[],isRepeating=false,sectionStarts=[];
 const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
 function splitSectionForScreen(section,sectionIndex,availableHeight,width){
- const words=section.text.split(/\s+/).filter(Boolean),out=[];let chunk='';
- const probe=$('arabicText').cloneNode(false);probe.removeAttribute('id');probe.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;display:block;flex:none;min-height:0;height:auto;max-height:none;overflow:visible;width:'+width+'px;';
+ const out=[];let chunk='';
+ const probe=$('arabicText').cloneNode(false);probe.removeAttribute('id');
+ probe.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;display:block;flex:none;min-height:0;height:auto;max-height:none;overflow:visible;width:'+width+'px;';
  document.body.appendChild(probe);
- for(const word of words){const candidate=chunk?chunk+' '+word:word;probe.textContent=candidate;if(probe.scrollHeight>availableHeight&&chunk){out.push({...section,text:chunk,sectionIndex,continuation:out.length>0});chunk=word;probe.textContent=chunk;}else chunk=candidate;}
- if(chunk)out.push({...section,text:chunk,sectionIndex,continuation:out.length>0});
- probe.remove();return out.length?out:[{...section,sectionIndex,continuation:false}];
+ const measure=value=>{probe.textContent=value;return probe.scrollHeight;};
+ const push=value=>{if(value.trim())out.push({...section,text:value.trim(),sectionIndex,continuation:out.length>0});};
+ const addWords=value=>{
+  const words=value.split(/\\s+/).filter(Boolean);let part='';
+  for(const word of words){const candidate=part?part+' '+word:word;if(measure(candidate)>availableHeight&&part){push(part);part=word;}else part=candidate;}
+  if(part)chunk=chunk?chunk+'\\n'+part:part;
+ };
+ // Preserve complete Quran ayat: only move to the next page between verse markers.
+ const units=section.quranSurah
+  ? section.text.split(/(?<=۝[٠-٩۰-۹0-9]{1,3})\\s*/u).map(x=>x.trim()).filter(Boolean)
+  : section.text.split(/\\n+/).map(x=>x.trim()).filter(Boolean);
+ for(const unit of units){
+  const candidate=chunk?chunk+'\\n'+unit:unit;
+  if(measure(candidate)>availableHeight&&chunk){
+   push(chunk);chunk='';
+   if(measure(unit)>availableHeight){addWords(unit);}else chunk=unit;
+  }else chunk=candidate;
+ }
+ if(chunk)push(chunk);
+ probe.remove();
+ return out.length?out:[{...section,sectionIndex,continuation:false}];
 }
 function buildPages(){
  const saved=Number(localStorage.getItem('tahlil-page')||0),paper=$('paper'),text=$('arabicText');
@@ -21,7 +40,29 @@ function buildPages(){
   const available=mobileReader()?Math.max(80,text.clientHeight):Math.max(180,paper.clientHeight-205);
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
-  sections.forEach((s,si)=>{sectionStarts[si]=pages.length;pages.push(...splitSectionForScreen(s,si,available,width));});
+  // Gabungkan bacaan tahlil yang pendek agar tidak perlu terlalu sering berpindah halaman.
+  const readingSections=[];
+  const tahlilLimit=mobileReader()?360:560;
+  sections.forEach((s,si)=>{
+   if(s.quranSurah){readingSections.push({...s,originalIndex:si});return;}
+   const previous=readingSections[readingSections.length-1];
+   if(previous&&!previous.quranSurah&&previous.text.length+s.text.length+2<=tahlilLimit){
+    previous.text+='\\n'+s.text;
+    previous.groupedCount=(previous.groupedCount||1)+1;
+    previous.title='Rangkaian Tahlil';
+   }else readingSections.push({...s,originalIndex:si,groupedCount:1});
+  });
+  readingSections.forEach((s,ri)=>{
+   const originalIndex=s.originalIndex??ri;
+   sectionStarts[originalIndex]=pages.length;
+   pages.push(...splitSectionForScreen(s,originalIndex,available,width));
+  });
+  // Point all grouped Tahlil entries to the page that contains their combined text.
+  let pageCursor=0;
+  sections.forEach((s,si)=>{
+   if(sectionStarts[si]===undefined)sectionStarts[si]=Math.max(0,pageCursor);
+   pageCursor=sectionStarts[si];
+  });
   index=Math.min(saved,pages.length-1);showPage(index);renderHome();
  });
 }
