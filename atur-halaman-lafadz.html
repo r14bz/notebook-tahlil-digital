@@ -33,7 +33,7 @@
 <script type="module">
 import { sections as tahlilSections } from './src/data/sections.js';
 import { dzikirSections } from './src/data/dzikir.js';
-const KEY='etahlil-page-layout-v1', MARK='\\n\\n[[HALAMAN BARU]]\\n\\n';
+const KEY='etahlil-page-layout-v1', MARK='\n\n[[HALAMAN BARU]]\n\n';
 const sections=[...tahlilSections,...dzikirSections].map(s=>({...s}));
 try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();const dz=sections.filter(s=>s.collection==='dzikir');d.sections?.forEach((x,i)=>{if(dz[i]&&typeof x.text==='string')dz[i].text=x.text})}}catch{}
 const $=id=>document.getElementById(id);let saved={};
@@ -41,11 +41,11 @@ try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
 sections.forEach((s,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=(i+1)+'. '+(s.title||'Bagian bacaan')+(s.collection==='dzikir'?' · Dzikir':'');$('sectionSelect').appendChild(o)});
 const idx=()=>Number($('sectionSelect').value||0);
 function sourceText(i){return Object.prototype.hasOwnProperty.call(saved,i)?saved[i]:sections[i].text}
-function render(){const value=$('layoutEditor').value,parts=value.split(/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/);$('pageCount').innerHTML='';parts.forEach((p,i)=>{const chip=document.createElement('span');chip.className='page-chip';chip.textContent='Halaman '+(i+1)+' · '+p.trim().length+' karakter';$('pageCount').appendChild(chip)});$('preview').textContent=parts.map((p,i)=>(i?'— HALAMAN '+(i+1)+' —\\n':'')+p.trim()).join('\\n\\n');}
+function render(){const value=$('layoutEditor').value,parts=value.split(/\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\n/);$('pageCount').innerHTML='';parts.forEach((p,i)=>{const chip=document.createElement('span');chip.className='page-chip';chip.textContent='Halaman '+(i+1)+' · '+p.trim().length+' karakter';$('pageCount').appendChild(chip)});$('preview').textContent=parts.map((p,i)=>(i?'— HALAMAN '+(i+1)+' —\n':'')+p.trim()).join('\n\n');}
 function load(){ $('layoutEditor').value=sourceText(idx());render();$('status').textContent='';}
 $('sectionSelect').addEventListener('change',load);$('layoutEditor').addEventListener('input',render);
-$('breakBtn').onclick=()=>{const el=$('layoutEditor'),start=el.selectionStart,end=el.selectionEnd;const before=el.value.slice(0,start).replace(/\\n+$/,''),after=el.value.slice(end).replace(/^\\n+/, '');el.value=before+MARK+after;const pos=(before+MARK).length;el.focus();el.setSelectionRange(pos,pos);render();$('status').textContent='Pemisah halaman ditambahkan. Tekan Simpan pembagian untuk menerapkan.'};
-$('removeBtn').onclick=()=>{const el=$('layoutEditor'),pos=el.selectionStart,pattern=/\\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\\n/g;let match,best=null;while((match=pattern.exec(el.value))){if(pos>=match.index-20&&pos<=match.index+match[0].length+20){best=match;break}}if(!best){$('status').textContent='Tidak ada pemisah halaman di dekat kursor.';return}el.setRangeText('\\n\\n',best.index,best.index+best[0].length,'end');render();$('status').textContent='Pemisah halaman dihapus.'};
+$('breakBtn').onclick=()=>{const el=$('layoutEditor'),start=el.selectionStart,end=el.selectionEnd;const before=el.value.slice(0,start).replace(/\n+$/,''),after=el.value.slice(end).replace(/^\n+/, '');el.value=before+MARK+after;const pos=(before+MARK).length;el.focus();el.setSelectionRange(pos,pos);render();$('status').textContent='Pemisah halaman ditambahkan. Tekan Simpan pembagian untuk menerapkan.'};
+$('removeBtn').onclick=()=>{const el=$('layoutEditor'),pos=el.selectionStart,pattern=/\n\\s*\\[\\[HALAMAN BARU\\]\\]\\s*\n/g;let match,best=null;while((match=pattern.exec(el.value))){if(pos>=match.index-20&&pos<=match.index+match[0].length+20){best=match;break}}if(!best){$('status').textContent='Tidak ada pemisah halaman di dekat kursor.';return}el.setRangeText('\n\n',best.index,best.index+best[0].length,'end');render();$('status').textContent='Pemisah halaman dihapus.'};
 $('saveBtn').onclick=()=>{saved[idx()]=$('layoutEditor').value;localStorage.setItem(KEY,JSON.stringify(saved));$('status').textContent='Pembagian halaman tersimpan. Kembali ke bacaan dan muat ulang halaman untuk melihat hasilnya.'};
 $('resetBtn').onclick=()=>{delete saved[idx()];localStorage.setItem(KEY,JSON.stringify(saved));load();$('status').textContent='Bagian ini dikembalikan ke pembagian otomatis.'};
 load();
