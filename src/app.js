@@ -32,6 +32,7 @@ const tocGroups=[
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
+ if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
  const start=Math.max(0,sectionStarts[sectionIndex]??0);
  document.body.classList.add('reader-active');
  showPage(start);
@@ -156,4 +157,7 @@ function loadVoices(){voices=speechSynthesis?.getVoices?.()||[];const sel=$('voi
 $('voiceGender').value=localStorage.getItem('tahlil-voice-gender')||'male';
 $('voiceGender').onchange=()=>{localStorage.setItem('tahlil-voice-gender',$('voiceGender').value);$('voiceSelect').value='';$('audioStatus').textContent='Preferensi suara disimpan. Tekan putar untuk mencoba suara yang tersedia.'};
 if('speechSynthesis'in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');loadAdditionalSurahs().then(()=>{buildPages();renderHome();$('audioStatus').textContent='Surah Yasin, Ar-Rahman, dan Tahlil siap dibaca.'}).catch(error=>{sections.splice(0,sections.length,{title:'Surah Yasin',text:'Teks Surah Yasin dari Quran NU Online belum berhasil dimuat. Periksa koneksi internet lalu muat ulang halaman.',quranSurah:36},{title:'Surah Ar-Rahman',text:'Teks Surah Ar-Rahman dari Quran NU Online belum berhasil dimuat. Periksa koneksi internet lalu muat ulang halaman.',quranSurah:55},...tahlilSections);buildPages();renderHome();$('audioStatus').textContent='Surah belum berhasil dimuat dari Quran NU Online: '+(error?.message||'kesalahan sumber');});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
+document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');
+// Render local content immediately so taps work even while optional surah data is loading.
+buildPages();renderHome();
+loadAdditionalSurahs().then(()=>{buildPages();renderHome();$('audioStatus').textContent='Surah Yasin, Ar-Rahman, dan Tahlil siap dibaca.'}).catch(error=>{$('audioStatus').textContent='Sebagian bacaan belum berhasil dimuat: '+(error?.message||'kesalahan sumber');});window.addEventListener('resize',()=>{clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,180)});if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(buildPages,50));
