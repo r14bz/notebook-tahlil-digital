@@ -116,10 +116,10 @@ function buildPages(){
  });
 }
 const tocGroups=[
- {title:'Surah Yasin (ayat 1–83)',matches:s=>s.quranSurah===36},
- {title:'Surah Ar-Rahman (ayat 1–78)',matches:s=>s.quranSurah===55},
- ...tahlilSections.map(s=>({title:s.title,matches:page=>!page.quranSurah&&!page.collection&&page.title===s.title})),
- {title:"Dzikir Ba'da Shalat",matches:s=>s.collection==='dzikir'}
+ {title:'Tahlil',matches:s=>!s.quranSurah&&!s.collection},
+ {title:'Surah Yasin',matches:s=>s.quranSurah===36},
+ {title:'Surah Ar-Rahman',matches:s=>s.quranSurah===55},
+ {title:"Dzikir",matches:s=>s.collection==='dzikir'}
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
@@ -254,9 +254,10 @@ applyTheme(localStorage.getItem('etahlil-theme')==='dark'?'dark':'light');
   if(dx<0)next();else prev();
  },{passive:true});
  paper.setAttribute('aria-label','Halaman bacaan. Geser ke kiri untuk halaman berikutnya, geser ke kanan untuk halaman sebelumnya.');
- const left=document.createElement('button');left.type='button';left.className='swipe-hint swipe-hint-left';left.setAttribute('aria-label','Halaman sebelumnya');left.title='Halaman sebelumnya';left.textContent='‹';left.onclick=e=>{e.stopPropagation();prev()};
- const right=document.createElement('button');right.type='button';right.className='swipe-hint swipe-hint-right';right.setAttribute('aria-label','Halaman berikutnya');right.title='Halaman berikutnya';right.textContent='›';right.onclick=e=>{e.stopPropagation();next()};
+ const left=document.createElement('button');left.type='button';left.className='swipe-hint swipe-hint-left';left.setAttribute('aria-label','Halaman sebelumnya');left.title='Halaman sebelumnya';left.textContent='‹';left.onclick=e=>{e.stopPropagation();left.classList.add('hint-tapped');prev();window.setTimeout(()=>left.classList.remove('hint-tapped'),80)};
+ const right=document.createElement('button');right.type='button';right.className='swipe-hint swipe-hint-right';right.setAttribute('aria-label','Halaman berikutnya');right.title='Halaman berikutnya';right.textContent='›';right.onclick=e=>{e.stopPropagation();right.classList.add('hint-tapped');next();window.setTimeout(()=>right.classList.remove('hint-tapped'),80)};
  paper.append(left,right);
+ [left,right].forEach(hint=>hint.addEventListener('click',()=>{hint.classList.add('hint-fading');window.setTimeout(()=>hint.classList.remove('hint-fading'),80)}));
 })();
 
 $('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
