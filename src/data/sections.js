@@ -48,6 +48,7 @@ export const tahlilSections = [
   rawTahlilSections[20],
   rawTahlilSections[21]
 ];
+import { dzikirSections } from './dzikir.js';
 import yasinArabicText from './yasin.js';
 import rahmanArabicText from './rahman.js';
 
@@ -70,5 +71,5 @@ export async function loadAdditionalSurahs(){
     verseEnd:78,
     sourceUrl:'https://quran.nu.or.id/ar-rahman'
   });
-  sections.splice(0,sections.length,...additionalSections,...tahlilSections);
+  sections.splice(0,sections.length,...additionalSections,...tahlilSections,...dzikirSections);
 }
