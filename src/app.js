@@ -22,7 +22,7 @@ function buildPages(){
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
   sections.forEach((s,si)=>{sectionStarts[si]=pages.length;pages.push(...splitSectionForScreen(s,si,available,width));});
-  index=Math.min(saved,pages.length-1);showPage(index);
+  index=Math.min(saved,pages.length-1);showPage(index);renderHome();
  });
 }
 const tocGroups=[
