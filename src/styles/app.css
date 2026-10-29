@@ -361,3 +361,27 @@ body:not(.reader-active) #readerFooter{display:none!important}
   }
   body:not(.reader-active) header { position: sticky; top: 0; }
 }
+
+
+/* Quranic Arabic typography: load a Quran-specific font and broad Arabic fallback. */
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+.arabic,
+.arabic.compact {
+  font-family: 'Amiri Quran', 'Amiri', 'Noto Naskh Arabic', serif !important;
+  direction: rtl;
+  unicode-bidi: plaintext;
+  font-synthesis: none;
+  line-break: auto;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-align: center;
+  text-align-last: center;
+}
+.page-title,
+.index-group-icon {
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+}
+@media (max-width: 768px) {
+  .arabic { line-height: 2.2; }
+  .arabic.compact { line-height: 2.1; }
+}
