@@ -534,3 +534,31 @@ body.reader-active .arabic { overflow: visible; }
   .collection-symbol,.surah-number { width:35px; height:35px; font-size:21px; }
   .collection-title { font-size:18px; }
 }
+
+
+/* Desktop header: group actions neatly and pair icons with clear labels. */
+header { justify-content: space-between; gap: 24px; }
+.header-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex:0 0 auto; }
+.header-actions .header-btn,
+.header-font-control { min-height:42px; display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:9px 13px; border-radius:12px; white-space:nowrap; }
+.header-actions .header-btn { border:1px solid #ffffff2b; }
+.header-icon { display:inline-grid; place-items:center; min-width:20px; font-size:18px; line-height:1; }
+.header-label { font-size:12px; font-weight:600; }
+.header-font-control { color:#fff7e7; background:#ffffff12; border:1px solid #ffffff2b; cursor:default; }
+.header-select { color:#fff7e7; background:#ffffff12; border:1px solid #ffffff30; border-radius:8px; padding:5px 7px; min-height:30px; font:inherit; font-size:12px; }
+.header-select option { color:#203d2d; background:#fffaf0; }
+.report-link { color:var(--green2); font-weight:700; text-decoration:underline; text-decoration-color:#bd9854; text-underline-offset:3px; }
+.report-link:hover { color:#8b6425; }
+@media (min-width:769px) {
+  header { justify-content:space-between; }
+  .header-actions { margin-left:auto; gap:12px; }
+}
+@media (max-width:768px) {
+  .header-actions { gap:5px; }
+  .header-actions .header-btn { gap:0; padding:8px 10px; }
+  .header-label { display:none; }
+  .header-font-control { gap:5px; padding:5px 6px; }
+  .header-font-control .header-label { display:none; }
+  .header-icon { min-width:18px; font-size:16px; }
+  .header-select { padding:4px; }
+}
