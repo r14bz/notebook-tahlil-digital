@@ -341,3 +341,23 @@ body.reader-active #readerFooter { display:block; }
 body:not(.reader-active) #readerMain{display:grid!important;visibility:hidden;position:absolute;left:-200vw;top:0;width:min(1120px,calc(100vw - 32px));margin:22px 0;pointer-events:none}
 body:not(.reader-active) #readerFooter{display:none!important}
 @media(max-width:760px){body:not(.reader-active) #readerMain{width:100vw;max-width:100%;margin:10px 0;padding:0 10px}}
+
+
+/* Fix homepage scrolling on mobile; the full-screen lock is reader-only. */
+@media (max-width: 768px) {
+  body:not(.reader-active) {
+    display: block !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+  body:not(.reader-active) #homePage {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+  body:not(.reader-active) header { position: sticky; top: 0; }
+}
