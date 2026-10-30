@@ -1,6 +1,7 @@
 import { sections, tahlilSections, loadAdditionalSurahs } from './data/sections.js';
 import { mountAppShell } from './components/app-shell.js';
 import { registerOfflineSupport } from './services/offline/register-service-worker.js';
+import { readPreference, writePreference, readJsonPreference, writeJsonPreference } from './services/storage/preferences.js';
 
 mountAppShell();
 registerOfflineSupport();
@@ -77,7 +78,7 @@ function buildPages(){
  const pass=++layoutPass;
  const wasReaderActive=document.body.classList.contains('reader-active');
  document.body.classList.add('reader-active');
- const saved=Number(localStorage.getItem('tahlil-page')||0),currentSection=pages[index]?.sectionIndex,paper=$('paper'),text=$('arabicText');
+ const saved=Number(readPreference('page', '0')),currentSection=pages[index]?.sectionIndex,paper=$('paper'),text=$('arabicText');
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
   if(pass!==layoutPass)return;
@@ -86,8 +87,7 @@ function buildPages(){
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
   const readingSections=[];
-  let pageLayout={};
-  try{pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}')||{}}catch{}
+  const pageLayout=readJsonPreference('pageLayout', {});
   // A complete exported Dzikir Ba'da Shalat layout already contains the whole collection.
   // Render it once at its anchor section and skip the original dzikir entries that it replaces.
   const manualDzikirLayoutIndex=Object.keys(pageLayout).map(Number).find(si=>
@@ -213,7 +213,7 @@ function showPage(i,animate=''){
  $('nextBtn').disabled=index>=sectionLast;document.querySelectorAll('.swipe-hint-left').forEach(b=>{b.disabled=$('prevBtn').disabled});document.querySelectorAll('.swipe-hint-right').forEach(b=>{b.disabled=$('nextBtn').disabled});
  $('progressText').textContent=Math.round(sectionPageIndex/sectionPageCount*100)+'%';
  $('progressBar').style.width=(sectionPageIndex/sectionPageCount*100)+'%';
- localStorage.setItem('tahlil-page',index);
+ writePreference('page', index);
  if(animate){
   pageTurning=true;p.style.transformOrigin=animate==='turn-next'?'left center':'right center';
   p.classList.add(animate==='turn-next'?'turn-out-next':'turn-out-prev');
@@ -237,9 +237,9 @@ $('contentsBtn').onclick=()=>{
  $('contentsBtn').setAttribute('aria-expanded',String(open));
 };
 $('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
-const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';localStorage.setItem('etahlil-theme',theme)};
+const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';writePreference('theme', theme)};
 $('themeBtn').onclick=()=>applyTheme(document.body.classList.contains('theme-dark')?'light':'dark');
-applyTheme(localStorage.getItem('etahlil-theme')==='dark'?'dark':'light');
+applyTheme(readPreference('theme')==='dark'?'dark':'light');
 
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
@@ -281,9 +281,9 @@ loadAdditionalSurahs().then(async()=>{
   if(layoutResponse.ok){
    const layout=await layoutResponse.json();
    if(layout.format==='etahlil-dzikir-page-layout'&&layout.scope==='dzikir-ba-da-shalat'&&typeof layout.text==='string'&&layout.text.includes('[[HALAMAN BARU]]')){
-    const pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}');
+    const pageLayout=readJsonPreference('pageLayout', {});
     pageLayout[Number(layout.sectionIndex)]=layout.text;
-    localStorage.setItem('etahlil-page-layout-v1',JSON.stringify(pageLayout));
+    writeJsonPreference('pageLayout', pageLayout);
    }
   }
  }catch{}
