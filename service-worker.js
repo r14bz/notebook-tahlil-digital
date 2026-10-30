@@ -8,6 +8,7 @@ const CORE_ASSETS = [
   '/src/components/shell/reader-page.js',
   '/src/components/shell/footer.js',
   '/src/services/offline/register-service-worker.js',
+  '/src/services/storage/preferences.js',
   '/src/data/sections.js',
   '/src/data/dzikir-overrides.json',
   '/etahlil-pembagian-halaman-dzikir.json'
