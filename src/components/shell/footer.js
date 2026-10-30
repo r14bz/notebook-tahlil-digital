@@ -1,0 +1,1 @@
+export const footerMarkup = "<footer id=\"readerFooter\">Menemukan kesalahan pada lafadz atau ayat? <a class=\"report-link\" href=\"https://wa.me/6289676707976?text=Assalamu%27alaikum%2C%20saya%20ingin%20melaporkan%20kesalahan%20lafadz%20atau%20ayat%20pada%20e-Moeslife.\" target=\"_blank\" rel=\"noopener noreferrer\">Hubungi Kami!</a></footer>";
