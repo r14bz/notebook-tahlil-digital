@@ -29,6 +29,14 @@ Untuk Vercel:
 - Output Directory: `.` (folder root)
 - Root Directory: `.`
 
+## Arsitektur aplikasi
+
+- UI shell dipecah menjadi komponen header, beranda, reader, dan footer pada `src/components/shell/`.
+- Logika aplikasi tetap berada di modul terpisah dan akan dipecah bertahap per domain; jangan menambahkan seluruh halaman atau fitur ke satu file.
+- Arah arsitektur: tanpa akun, local-first, dan fitur inti dapat digunakan offline.
+- Service worker PWA menggunakan cache-first untuk aset same-origin dan fallback dokumen saat offline.
+- Preferensi serta progres bacaan tetap menggunakan penyimpanan lokal; key lama dipertahankan untuk kompatibilitas.
+
 ## Persiapan Android dengan Capacitor
 
 Proyek ini sedang disiapkan agar website dapat dibungkus menjadi aplikasi Android menggunakan Capacitor. Folder Android native dibuat setelah dependensi dipasang.
@@ -36,7 +44,7 @@ Proyek ini sedang disiapkan agar website dapat dibungkus menjadi aplikasi Androi
 Persyaratan:
 - Node.js LTS
 - npm
-- Android Studio dan Android SDK untuk build APK
+- Build Android dilakukan melalui GitHub Actions/cloud CI agar workflow tetap nyaman dari Termux. Android Studio bersifat opsional.
 
 Langkah awal:
 
@@ -54,14 +62,14 @@ Setelah mengubah file web:
 npm run cap:sync
 ```
 
-Kemudian build APK dari Android Studio melalui **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+Build APK akan disiapkan melalui workflow GitHub Actions setelah folder platform Android dan konfigurasi CI selesai diverifikasi.
 
 Catatan:
 - Folder `www/` adalah hasil persiapan web untuk Capacitor dan tidak perlu di-commit.
 - Folder `android/` berisi proyek native Android dan akan di-commit setelah platform Android dibuat.
 - Jangan memasukkan signing key, password keystore, token, atau kredensial ke Git.
 - Izin native seperti notifikasi, audio, penyimpanan, dan status bar perlu ditambahkan hanya jika fitur tersebut benar-benar digunakan dan sudah diuji.
-- TTS Arab bergantung pada engine dan voice yang tersedia di perangkat. Audio qari membutuhkan koneksi internet.
+- TTS Arab bergantung pada engine dan voice yang tersedia di perangkat. Audio qari perlu disiapkan sebagai aset unduhan agar dapat diputar offline.
 - Periksa teks Al-Qur'an dan bacaan bersama sumber tepercaya/guru setempat.
 
 ## Kompatibilitas data
