@@ -918,3 +918,8 @@ header { background:#123d2e!important; }
  .brand-logo { width:clamp(112px,35vw,170px); max-height:48px; }
  .collection-card .collection-symbol,.collection-card .surah-number { width:39px!important; height:39px!important; }
 }
+
+/* Header: hanya logo (tanpa teks), ukuran lebih besar. */
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.brand-logo{height:88px;width:auto;max-width:min(100%,360px);max-height:none;object-fit:contain}
+@media(max-width:768px){.brand-logo{height:60px;max-width:52vw}}
