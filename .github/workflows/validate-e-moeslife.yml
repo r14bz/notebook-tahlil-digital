@@ -1,0 +1,44 @@
+name: Validate e-Moeslife
+
+on:
+  push:
+    branches:
+      - feature/e-moeslife-rebrand-capacitor
+  pull_request:
+    branches:
+      - feature/e-moeslife-rebrand-capacitor
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Check JavaScript syntax
+        run: |
+          find src scripts -type f -name '*.js' -o -name '*.mjs' | while read file; do
+            node --check "$file"
+          done
+          node --check service-worker.js
+      - name: Prepare offline and Android web assets
+        run: npm run prepare:mobile
+      - name: Verify required offline assets
+        run: |
+          test -f www/index.html
+          test -f www/service-worker.js
+          test -f www/src/app.js
+          test -f www/src/services/offline/register-service-worker.js
+          test -f www/src/data/sections.js
+          test -f www/src/data/dzikir-overrides.json
+          test -f www/etahlil-pembagian-halaman-dzikir.json
+          test -f www/assets/collection-icon.webp
