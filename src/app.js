@@ -7,7 +7,7 @@ mountAppShell();
 registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
-let pages=[],index=0,sectionStarts=[],layoutPass=0;
+let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
 const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
 function splitSectionForScreen(section,sectionIndex,availableHeight,width){
  const out=[];let chunk='';
@@ -76,7 +76,7 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
 }
 function buildPages(){
  const pass=++layoutPass;
- const wasReaderActive=document.body.classList.contains('reader-active');
+ const wasReaderActive=readerViewRequested;
  document.body.classList.add('reader-active');
  const saved=Number(readPreference('page', '0')),currentSection=pages[index]?.sectionIndex,paper=$('paper'),text=$('arabicText');
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
@@ -125,6 +125,7 @@ const tocGroups=[
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
+ readerViewRequested=true;
  if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
  const start=Math.max(0,sectionStarts[sectionIndex]??0);
  document.body.classList.add('reader-active');
@@ -167,7 +168,7 @@ function openCollection(kind){
 }
 $('continueReadingBtn').addEventListener('click',()=>{
  const saved=Number(localStorage.getItem('tahlil-page')||0);
- document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
+ readerViewRequested=true;document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
@@ -229,10 +230,10 @@ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection===
 function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
 function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
-$('homeBtn').onclick=()=>{document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
+$('homeBtn').onclick=()=>{readerViewRequested=false;readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
  const open=!document.body.classList.contains('toc-open');
- if(open){document.body.classList.add('reader-active');renderContents();}
+ if(open){readerViewRequested=true;document.body.classList.add('reader-active');renderContents();}
  document.body.classList.toggle('toc-open',open);
  $('contentsBtn').setAttribute('aria-expanded',String(open));
 };
