@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123d2e">
+<title>Editor Halaman Dzikir Ba'da Shalat — E-Tahlil Digital</title>
+<link rel="stylesheet" href="./src/styles/app.css">
+<style>
+.layout-wrap{max-width:1050px;margin:22px auto;padding:0 14px 32px}.layout-card{background:#fffaf0;border:1px solid #d7c9a7;border-radius:18px;padding:clamp(14px,3vw,26px)}.layout-help{color:#766b58;line-height:1.7;font-size:14px}.marker-note{background:#f3ead5;border-radius:10px;padding:12px;font-size:13px;line-height:1.65}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.actions button,.file-label{font:600 13px 'DM Sans',sans-serif;border:0;border-radius:10px;padding:11px 13px;cursor:pointer;background:#123d2e;color:#fff8e8}.file-label{display:inline-flex;align-items:center}.file-label input{display:none}#layoutEditor{width:100%;min-height:58vh;resize:vertical;border:1px solid #d8c9a8;border-radius:12px;background:#fffdf7;padding:16px;color:#2f2a21;font:22px/2 'Amiri','Noto Naskh Arabic',serif;text-align:right;direction:rtl;white-space:pre-wrap}.status{min-height:22px;margin-top:10px;color:#123d2e;font-size:13px}.stats{font-size:12px;color:#766b58;margin-top:8px}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="seal">۞</div><div><h1>Editor Halaman Dzikir Ba'da Shalat</h1><small>Pengaturan khusus bagian dzikir</small></div></div></header>
+<main class="layout-wrap" style="display:block">
+<a href="./" style="display:inline-flex;margin-bottom:14px;color:var(--green);font-weight:700;text-decoration:none">← Kembali ke E-Tahlil</a>
+<section class="layout-card">
+<h2 style="color:var(--green);margin-top:0">Semua lafadz dzikir dalam satu editor</h2>
+<p class="layout-help">Seluruh bacaan Dzikir Ba'da Shalat ditampilkan sekaligus. Letakkan kursor di antara lafadz, lalu sisipkan pemisah halaman. Teks lafadz tidak dikoreksi otomatis.</p>
+<div class="marker-note"><b>Hanya bagian Dzikir Ba'da Shalat yang diatur.</b> Tahlil, Surah Yasin, dan Surah Ar-Rahman tidak diubah. Jika kelompok lafadz tidak muat setelah font diperbesar ke A+, aplikasi akan membaginya secara dinamis agar tidak terpotong.</div>
+<div class="actions"><button id="breakBtn" type="button">Sisipkan pemisah halaman</button><button id="removeBtn" type="button">Hapus pemisah dekat kursor</button><button id="saveBtn" type="button">Simpan pengaturan</button><button id="resetBtn" type="button">Reset ke teks awal</button><button id="exportBtn" type="button">Export JSON</button><label class="file-label">Import JSON<input id="importFile" type="file" accept="application/json,.json"></label></div>
+<textarea id="layoutEditor" dir="rtl" lang="ar" spellcheck="false" aria-label="Seluruh lafadz dzikir"></textarea><div id="pageCount" class="stats"></div><div id="status" class="status" role="status" aria-live="polite"></div>
+</section>
+</main>
+<script type="module">
+import { tahlilSections } from './src/data/sections.js';
+import { dzikirSections } from './src/data/dzikir.js';
+const KEY='etahlil-page-layout-v1', IDX=2+tahlilSections.length, MARK='\n\n[[HALAMAN BARU]]\n\n';
+let base=dzikirSections.map(s=>s.text||'').filter(Boolean).join('\n\n'), saved={};
+try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch{}
+try{const r=await fetch('./src/data/dzikir-overrides.json',{cache:'no-store'});if(r.ok){const d=await r.json();if(Array.isArray(d.sections)&&d.sections.length){const all=d.sections.map(s=>typeof s.text==='string'?s.text:'').filter(Boolean).join('\n\n');if(all)base=all}}}catch{}
+const el=document.getElementById('layoutEditor'),status=document.getElementById('status'),count=document.getElementById('pageCount');
+function refresh(){count.textContent=el.value.split(/\n\s*\[\[HALAMAN BARU\]\]\s*\n/u).length+' kelompok halaman bertanda · '+el.value.length.toLocaleString('id-ID')+' karakter'}
+function say(s){status.textContent=s}
+document.getElementById('breakBtn').onclick=()=>{const a=el.selectionStart,b=el.selectionEnd,before=el.value.slice(0,a).replace(/\n+$/u,''),after=el.value.slice(b).replace(/^\n+/u,'');el.value=before+MARK+after;const p=(before+MARK).length;el.focus();el.setSelectionRange(p,p);refresh();say('Pemisah ditambahkan. Simpan pengaturan untuk menerapkannya.')};
+document.getElementById('removeBtn').onclick=()=>{const p=el.selectionStart,rx=/\n\s*\[\[HALAMAN BARU\]\]\s*\n/gu;let m,hit=null;while((m=rx.exec(el.value)))if(p>=m.index-40&&p<=m.index+m[0].length+40){hit=m;break}if(!hit){say('Tidak ada pemisah dekat kursor.');return}el.setRangeText('\n\n',hit.index,hit.index+hit[0].length,'end');refresh();say('Pemisah dihapus.')};
+document.getElementById('saveBtn').onclick=()=>{saved[IDX]=el.value;localStorage.setItem(KEY,JSON.stringify(saved));say('Tersimpan di browser ini. Muat ulang halaman bacaan untuk melihat hasilnya.')};
+document.getElementById('resetBtn').onclick=()=>{delete saved[IDX];localStorage.setItem(KEY,JSON.stringify(saved));el.value=base;refresh();say('Pengaturan dikembalikan ke teks awal.')};
+document.getElementById('exportBtn').onclick=()=>{const d={format:'etahlil-dzikir-page-layout',version:1,exportedAt:new Date().toISOString(),scope:'dzikir-ba-da-shalat',sectionIndex:IDX,text:el.value};const url=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='etahlil-pembagian-halaman-dzikir.json';a.click();URL.revokeObjectURL(url);say('File JSON berhasil diekspor.')};
+document.getElementById('importFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=='etahlil-dzikir-page-layout'||typeof d.text!=='string')throw Error('Format JSON tidak sesuai');el.value=d.text;refresh();say('JSON dimuat. Tekan Simpan pengaturan untuk menerapkannya.')}catch(err){say('Gagal import: '+err.message)}e.target.value=''};
+el.value=Object.prototype.hasOwnProperty.call(saved,IDX)?saved[IDX]:base;el.addEventListener('input',refresh);refresh();
+</script>
+</body></html>

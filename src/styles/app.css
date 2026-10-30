@@ -254,7 +254,7 @@ body.reader-active #readerFooter { display:block; }
 .hero-copy h2{font-family:'Amiri',serif;font-size:clamp(36px,4.2vw,53px);line-height:1.17;letter-spacing:-.5px;margin:22px 0 13px;font-weight:700}
 .hero-copy h2 em{font-weight:400;color:#e3c47d;font-style:normal}
 .hero-copy p{max-width:430px;color:#d4dfd2;font-size:13px;line-height:1.85;margin:0 0 23px}
-.continue-reading{display:flex;align-items:center;gap:12px;min-width:245px;text-align:left;background:#f8edcf;color:#173d2e;border-radius:14px;padding:12px 14px;box-shadow:0 8px 20px #071d1522}
+.continue-reading{display:flex;align-items:center;gap:12px;min-width:245px;text-align:left;background:#f8edcf;color:#123d2e;border-radius:14px;padding:12px 14px;box-shadow:0 8px 20px #071d1522}
 .continue-reading:hover{background:#fff6df;transform:translateY(-2px)}
 .continue-icon{width:36px;height:36px;border-radius:11px;background:#e6d5a8;display:grid;place-items:center;font-size:20px}
 .continue-reading strong,.continue-reading small{display:block}.continue-reading strong{font-size:12px}.continue-reading small{font-size:10px;color:#7d745f;margin-top:4px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -298,7 +298,7 @@ body.reader-active #readerFooter { display:block; }
 .home-index-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .index-group-title{grid-column:1/-1;display:flex;align-items:center;gap:11px;padding:16px 2px 7px;margin-top:4px;border-bottom:1px solid #e3d8c1}
 .index-group-icon{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#e8eddf;color:#244e3a;font-family:'Amiri',serif;font-size:22px;flex-shrink:0}
-.index-group-title strong,.index-group-title small{display:block}.index-group-title strong{font-size:13px;color:#234633}.index-group-title small{font-size:10px;color:#8d826c;margin-top:3px}.index-group-count{margin-left:auto;color:#a48a54;font-size:11px;letter-spacing:1px}
+.index-group-title strong,.index-group-title small{display:block}.index-group-title strong{font-size:13px;color:#123d2e}.index-group-title small{font-size:10px;color:#8d826c;margin-top:3px}.index-group-count{margin-left:auto;color:#a48a54;font-size:11px;letter-spacing:1px}
 .index-entry{display:grid;grid-template-columns:30px minmax(0,1fr) 20px;grid-template-rows:auto auto;align-items:center;gap:3px 10px;padding:12px 11px;text-align:left;background:#fffdf8;border:1px solid #eee5d2;border-radius:13px;color:#284434;min-height:66px}
 .index-entry:hover{border-color:#cbb47c;background:#fffaf0}
 .entry-number{grid-row:1/3;grid-column:1;color:#ae9561;font-size:10px;align-self:center}.entry-title{grid-column:2;grid-row:1;font-size:12px;font-weight:700;overflow-wrap:anywhere}.entry-subtitle{grid-column:2;grid-row:2;color:#938772;font-size:10px}.entry-arrow{grid-column:3;grid-row:1/3;color:#9b895d;font-size:16px;text-align:center}
@@ -585,3 +585,355 @@ header { justify-content: space-between; gap: 24px; }
   .header-font-control .header-icon { font-size:15px; font-weight:700; letter-spacing:-1px; }
   .header-select { min-height:28px; height:28px; padding:2px 5px; line-height:1; }
 }
+
+
+/* UI consistency: collection cards share one calm paper palette and icon treatment. */
+.collection-card,
+.collection-card.collection-tahlil,
+.collection-card.collection-yasin,
+.collection-card.collection-rahman,
+.collection-card.collection-dzikir {
+  background: linear-gradient(145deg, #fffaf0, #f7f0df);
+  border-color: #ded3ba;
+  color: #203d2d;
+}
+.collection-card .collection-symbol,
+.collection-card .surah-number {
+  color: #bd9854;
+}
+.collection-card .surah-number {
+  background: #f5edda;
+  border-color: #d5c18b;
+}
+.collection-card .round-arrow,
+.collection-yasin .round-arrow,
+.collection-rahman .round-arrow {
+  background: #e8eddf;
+  color: #244e3a;
+}
+
+/* Header controls use isolated flex items so backgrounds never overlap labels/icons. */
+header {
+  min-width: 0;
+}
+.brand {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.brand > div:last-child {
+  min-width: 0;
+}
+.header-actions {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.header-actions .header-btn,
+.header-actions .header-font-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0 12px;
+  gap: 8px;
+  border-radius: 11px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.header-actions .header-btn {
+  background: #ffffff16;
+  border: 1px solid #ffffff35;
+  color: #fff7e7;
+}
+.header-actions .header-icon {
+  position: static;
+  display: inline-flex;
+  flex: 0 0 20px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-size: 18px;
+}
+.header-actions .header-label {
+  position: static;
+  display: inline-block;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.header-actions .header-font-control {
+  color: #fff7e7;
+  background: #ffffff12;
+  border: 1px solid #ffffff35;
+}
+.header-actions .header-select {
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  margin: 0;
+  padding: 2px 5px;
+  line-height: 1;
+}
+@media (min-width: 769px) {
+  header { gap: 18px; }
+  .header-actions { gap: 8px; }
+}
+@media (max-width: 768px) {
+  header { gap: 7px; }
+  .header-actions { gap: 4px; flex: 0 0 auto; }
+  .header-actions .header-btn,
+  .header-actions .header-font-control {
+    min-height: 38px;
+    height: 38px;
+    padding: 0 8px;
+    gap: 0;
+    border-radius: 9px;
+  }
+  .header-actions .header-label,
+  .header-actions .header-font-control .header-label {
+    display: none;
+  }
+  .header-actions .header-icon {
+    flex-basis: 18px;
+    width: 18px;
+    min-width: 18px;
+    font-size: 16px;
+  }
+  .header-actions .header-select {
+    height: 28px;
+    min-height: 28px;
+    padding: 2px 3px;
+    font-size: 11px;
+  }
+}
+@media (max-width: 420px) {
+  header { padding-left: 8px; padding-right: 8px; }
+  .brand { gap: 6px; }
+  .seal { width: 32px; height: 32px; flex-basis: 32px; font-size: 17px; }
+  .brand h1 { font-size: 12px; }
+  .brand small { font-size: 9px; }
+  .header-actions { gap: 3px; }
+  .header-actions .header-btn,
+  .header-actions .header-font-control { padding: 0 6px; }
+}
+
+
+/* Reader navigation and appearance controls */
+.header-actions{display:flex;align-items:center;gap:7px}
+.mobile-font-icon{display:none}
+#themeBtn{width:auto;min-width:36px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:7px;padding:6px 10px}
+#readerMain{max-width:1480px!important;width:calc(100% - 48px)!important}
+body.reader-active #readerMain{max-width:1480px!important;width:calc(100% - 48px)!important}
+body.reader-active .paper{min-height: min(78vh, 900px);padding-left:clamp(36px,7vw,112px);padding-right:clamp(36px,7vw,112px)}
+body.reader-active .arabic{font-size:clamp(27px,2.2vw,36px);line-height:2.05}
+body.reader-active .controls{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);max-width:900px;margin:16px auto 0}
+.controls #homeBtn{height:48px;min-height:48px;width:54px;padding:6px;font-size:24px;line-height:1;border:1px solid #d9c8a5;background:#fffaf0;color:#24513c}
+#homeBtn:hover{background:#eee4cb}
+.paper{position:relative}
+.swipe-hint{position:absolute;z-index:3;top:50%;transform:translateY(-50%);width:34px;height:58px;min-height:58px;padding:0;border-radius:18px;background:#123d2e16;border:1px solid #bd98542b;color:#123d2e65;font-size:31px;font-weight:400;display:grid;place-items:center;opacity:.52;backdrop-filter:blur(3px)}
+.swipe-hint:hover{opacity:.9;background:#123d2e24}
+.swipe-hint-left{left:16px}
+.swipe-hint-right{right:16px}
+.swipe-hint:disabled{opacity:.12}
+body:not(.reader-active) .swipe-hint{display:none}
+body.toc-open .sidebar{display:flex!important;position:fixed;z-index:30;inset:18px auto 18px 18px;width:min(340px,calc(100vw - 36px));max-height:none;overflow:auto;box-shadow:0 16px 50px #102c2350}
+body.toc-open:after{content:"";position:fixed;inset:0;background:#091e1770;z-index:19}
+body.theme-dark{--paper:#202b26;--ink:#e9e3d4;--muted:#b4aa96;--bg:#121a16;background:radial-gradient(ellipse at top,#26352d,#101713);color:var(--ink)}
+body.theme-dark header{background:#0c2119}
+body.theme-dark .paper{background:var(--paper);border-color:#6c654d;box-shadow:0 14px 35px #0005,inset 12px 0 20px #0002}
+body.theme-dark .paper:before{border-color:#6c654d}
+body.theme-dark .page-title{color:#d9c28a}
+body.theme-dark .title-divider:after{background:var(--paper)}
+body.theme-dark .arabic{color:#f0eadb}
+body.theme-dark .page-note,body.theme-dark .page-number{color:#c3b184}
+body.theme-dark .controls #prevBtn,body.theme-dark .controls #homeBtn{background:#26352d;border-color:#53634e;color:#e7dfca}
+body.theme-dark .controls #nextBtn{background:linear-gradient(135deg,#315f47,#47795a)}
+body.theme-dark .swipe-hint{background:#e8e4d815;border-color:#e8e4d82b;color:#f4edda}
+body.theme-dark .sidebar,body.theme-dark .home-index-list,body.theme-dark .home-page{color:var(--ink)}
+body.theme-dark .home-page{background:transparent}
+body.theme-dark .home-section-heading h3,body.theme-dark .index-entry .entry-title{color:#e9e3d4}
+body.theme-dark .collection-card,body.theme-dark .index-entry{background:#202b26;border-color:#52604c;color:#e9e3d4}
+body.theme-dark .collection-title,body.theme-dark .entry-title{color:#e9e3d4}
+body.theme-dark .collection-desc,body.theme-dark .entry-subtitle{color:#b9b09e}
+body.theme-dark .home-kicker{color:#c6d9bd}
+body.theme-dark .home-footnote{color:#c3b99f}
+body.theme-dark .sidebar{background:#202b26;border-color:#53634e}
+body.theme-dark .contents button{color:#e9e3d4}
+body.theme-dark .contents button.active{background:#304638;color:#f1e5c4}
+body.theme-dark .progress{color:#c3b99f;border-color:#465247}
+body.theme-dark .bar{background:#3c493e}
+body.theme-dark .soft-btn{background:#26352d;border-color:#53634e;color:#e9e3d4}
+body.theme-dark #readerFooter{color:#b9b09e}
+@media(max-width:768px){
+ .header-actions{gap:4px}
+ .header-label{display:none}
+ .mobile-font-icon{display:inline}
+ .header-font-control .header-icon:not(.mobile-font-icon){display:none}
+ .header-font-control{display:flex;align-items:center}
+ #themeBtn{width:32px;min-width:32px;height:34px;min-height:34px;padding:4px;flex-basis:32px}
+ #themeBtn .header-label{display:none}
+ body.reader-active #readerMain{width:100%!important;max-width:none!important}
+ body.reader-active .paper{min-height:0;padding-left:12px;padding-right:12px}
+ body.reader-active .arabic{font-size:clamp(21px,5.4vw,26px);line-height:1.85}
+ body.reader-active .controls{grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr);max-width:none;margin:0}
+ .controls #homeBtn{width:38px;min-height:34px;height:100%;font-size:21px;padding:4px}
+ .swipe-hint{width:25px;height:42px;min-height:42px;font-size:24px;opacity:.34;border-radius:14px}
+ .swipe-hint-left{left:8px}.swipe-hint-right{right:8px}
+ body.toc-open .sidebar{inset:0;width:100%;max-height:100dvh;border-radius:0}
+}
+@media(min-width:1100px){
+ body.reader-active #readerMain{grid-template-columns:minmax(0,1fr)}
+ body.reader-active .paper{min-height: min(78vh, 900px)}
+ body.reader-active .arabic{max-width:100%;font-size:clamp(29px,2.15vw,38px)}
+}
+
+
+/* Bug fixes: reliable collection opening, fixed arrow direction and larger home button */
+.collection-card .round-arrow{display:grid;place-items:center;transform:translateX(0) rotate(0deg);transition:transform .22s ease,background-color .22s ease,box-shadow .22s ease}
+.collection-card:hover .round-arrow{transform:translateX(0) rotate(0deg)}
+.collection-card:active .round-arrow,.collection-card.is-activating .round-arrow{transform:translateX(3px);box-shadow:0 0 0 5px #bd985426}
+.collection-card.is-activating{animation:collectionTap .28s ease}
+@keyframes collectionTap{50%{transform:scale(.985)}100%{transform:scale(1)}}
+.collection-card .round-arrow{font-size:0}
+.collection-card .round-arrow:before{content:'→';font-size:19px;line-height:1;display:block}
+.controls #homeBtn{width:62px;min-width:62px;height:54px;min-height:54px;font-size:0;border-radius:14px;display:grid;place-items:center;position:relative}
+.controls #homeBtn:before{content:'⌂';font-family:Arial,sans-serif;font-size:34px;line-height:1;font-weight:400;display:block}
+@media(max-width:768px){
+ .header-font-control .mobile-font-icon{display:none!important}
+ .header-font-control{padding:0 5px!important;gap:0!important}
+ .header-font-control .header-select{width:38px;min-width:38px;flex:0 0 38px;height:32px;min-height:32px;text-align:center;padding:2px 1px;font-size:11px}
+ .controls #homeBtn{width:48px;min-width:48px;height:42px;min-height:42px;padding:4px;border-radius:12px}
+ .controls #homeBtn:before{font-size:29px}
+ body.reader-active #readerMain .controls{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr)}
+}
+
+
+/* Final polish: concise four-item collection menu, accessible dark menu, and aligned controls. */
+body.theme-dark.toc-open .sidebar {
+  background:#18231d!important;
+  color:#f1eadb!important;
+  border-color:#64745b!important;
+}
+body.theme-dark .toc-heading h2,
+body.theme-dark .toc-heading .eyebrow,
+body.theme-dark .contents button,
+body.theme-dark .progress,
+body.theme-dark #savedText { color:#f1eadb!important; }
+body.theme-dark .contents button { background:#202e25; border-color:#465a49; }
+body.theme-dark .contents button:hover,
+body.theme-dark .contents button.active { background:#385542; color:#fff4d5!important; }
+body.toc-open:after { z-index:29; }
+body.toc-open .sidebar { z-index:30!important; }
+@media(max-width:768px) {
+  .header-actions .header-btn,
+  .header-actions .header-font-control,
+  #themeBtn {
+    box-sizing:border-box!important;
+    width:38px!important; min-width:38px!important; max-width:38px!important;
+    height:38px!important; min-height:38px!important; max-height:38px!important;
+    padding:0!important; border-radius:9px!important;
+    display:inline-flex!important; align-items:center!important; justify-content:center!important;
+  }
+  .header-actions .header-font-control {
+    background:transparent!important; border:0!important; box-shadow:none!important;
+  }
+  .header-actions .header-font-control .header-select {
+    box-sizing:border-box; width:38px!important; min-width:38px!important;
+    height:38px!important; min-height:38px!important;
+    border:1px solid #ffffff35!important; border-radius:9px!important;
+    background:#ffffff16!important; color:#fff7e7!important;
+    font-size:11px!important; text-align:center; padding:0 2px!important;
+  }
+  body.theme-dark .header-actions .header-font-control .header-select { background:#ffffff16!important; color:#fff7e7!important; }
+}
+.collection-card .round-arrow {
+  position:relative; display:grid!important; place-items:center!important;
+  box-sizing:border-box; padding:0!important; line-height:1!important;
+  text-align:center; overflow:hidden;
+}
+.collection-card .round-arrow:before {
+  position:absolute; inset:0; display:grid!important; place-items:center!important;
+  width:100%; height:100%; line-height:1!important; margin:0!important;
+  transform:translate(0,-1px);
+}
+.collection-card.is-activating .round-arrow:before { animation:collectionArrowTap .32s ease both; }
+@keyframes collectionArrowTap {
+  0% { transform:translate(0,-1px); }
+  45% { transform:translate(4px,-1px); }
+  100% { transform:translate(0,-1px); }
+}
+.collection-card .surah-number {
+  width:auto!important; height:auto!important; min-width:0!important;
+  border:0!important; border-radius:0!important; background:transparent!important;
+  box-shadow:none!important; justify-content:start;
+}
+.swipe-hint { transition:opacity .16s ease,background-color .16s ease; }
+.swipe-hint.hint-fading { opacity:0!important; }
+.swipe-hint:active { opacity:0!important; }
+.controls #homeBtn:before { content:'⌂'; }
+
+/* Use a familiar house symbol for the reader's return-to-home action. */
+.controls #homeBtn:before { content:'⌂'; font-family:Arial,sans-serif; font-size:34px; }
+@media(max-width:768px){.controls #homeBtn:before{font-size:29px}}
+
+/* Clear, familiar home glyph rather than the previous roof-like symbol. */
+.controls #homeBtn:before { content:'🏠'; font-family:inherit; font-size:25px; }
+@media(max-width:768px){.controls #homeBtn:before{font-size:22px}}
+
+
+/* Brand refresh: match the supplied E-Tahlil identity green. */
+:root { --green:#123d2e; --green2:#1c5941; }
+header { background:#123d2e!important; }
+.primary, .play-icon { background:#123d2e!important; }
+.contents button.active { color:#123d2e; border-left-color:#123d2e; }
+.soft-btn { color:#006b3a; }
+.collection-card .collection-symbol img,
+.collection-card .surah-number img { display:block; width:100%; height:100%; object-fit:contain; }
+.collection-card .collection-symbol,
+.collection-card .surah-number { display:flex; align-items:center; justify-content:center; }
+.collection-card .collection-symbol { width:43px; height:43px; }
+.collection-card .surah-number { width:43px!important; height:43px!important; }
+.brand-logo { display:block; width:clamp(150px,24vw,270px); max-height:70px; height:auto; object-fit:contain; flex:0 1 auto; }
+.brand { min-width:0; }
+@media(max-width:768px) {
+ .brand-logo { width:clamp(112px,35vw,170px); max-height:48px; }
+ .collection-card .collection-symbol,.collection-card .surah-number { width:39px!important; height:39px!important; }
+}
+
+/* Header: hanya logo (tanpa teks), ukuran lebih besar. */
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.brand-logo{height:88px;width:auto;max-width:min(100%,360px);max-height:none;object-fit:contain}
+@media(max-width:768px){.brand-logo{height:60px;max-width:52vw}}
+
+/* Header: logo dan tulisan dipisah, dengan jarak di antaranya. */
+.brand{gap:28px}
+.brand-mark{display:block;height:88px;width:auto;flex:0 0 auto;object-fit:contain}
+.brand-text{display:block;height:39px;width:auto;flex:0 1 auto;min-width:0;object-fit:contain}
+@media(max-width:768px){
+ .brand{gap:16px}
+ .brand-mark{height:56px}
+ .brand-text{height:25px}
+}
+
+/* Tombol panah transparan: ketukan andal di layar sentuh, sembunyi di halaman pertama/terakhir. */
+.swipe-hint{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.swipe-hint:disabled{opacity:0!important;pointer-events:none}

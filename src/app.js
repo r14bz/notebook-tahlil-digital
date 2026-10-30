@@ -22,6 +22,30 @@ function splitSectionForScreen(section,sectionIndex,availableHeight,width){
   }
   if(part)push(part);
  };
+ // Explicit page groups saved by the page-layout editor take priority over automatic packing.
+ if(typeof section.pageLayoutText==='string'&&section.pageLayoutText.includes('[[HALAMAN BARU]]')){
+  // Manual layout is authoritative: split only on the explicit marker, not arbitrary whitespace.
+  // If a marked group is too tall, move complete source lines to the next page while preserving
+  // every newline within the source. Never run the group's text through addWords(), which flattens it.
+  const groups=section.pageLayoutText.split(/\n[ \t]*\[\[HALAMAN BARU\]\][ \t]*\n/u).map(x=>x.trim()).filter(Boolean);
+  for(const group of groups){
+   if(measure(group)<=availableHeight){push(group);continue;}
+   const lines=group.split(/(?<=\n)/u);
+   let lineChunk='';
+   for(const line of lines){
+    const candidate=lineChunk+line;
+    if(lineChunk&&measure(candidate.trim())>availableHeight){
+     push(lineChunk);
+     lineChunk=line;
+    }else{
+     lineChunk=candidate;
+    }
+   }
+   if(lineChunk.trim())push(lineChunk);
+  }
+  probe.remove();
+  return out.length?out:[{...section,sectionIndex,continuation:false}];
+ }
  // Match each complete ayah through its verse marker. Never split an ayah across pages.
  const units=section.quranSurah
   ? (section.text.match(/[\s\S]*?۝[٠-٩۰-۹0-9]{1,3}|[\s\S]+$/gu)||[section.text]).map(x=>x.trim()).filter(Boolean)
@@ -55,12 +79,26 @@ function buildPages(){
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
   if(pass!==layoutPass)return;
-  const available=Math.max(90,paper.clientHeight-$('pageTitle').offsetHeight-$('pageTitle').offsetTop-145);
+  const available=Math.max(90,paper.clientHeight-$('pageTitle').offsetHeight-$('pageTitle').offsetTop-85);
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
   const readingSections=[];
-  sections.forEach((s,si)=>readingSections.push({...s,originalIndex:si}));
+  let pageLayout={};
+  try{pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}')||{}}catch{}
+  // A complete exported Dzikir Ba'da Shalat layout already contains the whole collection.
+  // Render it once at its anchor section and skip the original dzikir entries that it replaces.
+  const manualDzikirLayoutIndex=Object.keys(pageLayout).map(Number).find(si=>
+   sections[si]?.collection==='dzikir' &&
+   typeof pageLayout[si]==='string' &&
+   pageLayout[si].includes('[[HALAMAN BARU]]')
+  );
+  sections.forEach((s,si)=>{
+   if(manualDzikirLayoutIndex!==undefined&&s.collection==='dzikir'&&si!==manualDzikirLayoutIndex)return;
+   const item={...s,originalIndex:si};
+   if(Object.prototype.hasOwnProperty.call(pageLayout,si)&&typeof pageLayout[si]==='string')item.pageLayoutText=pageLayout[si];
+   readingSections.push(item);
+  });
   readingSections.forEach((s,ri)=>{
    const originalIndex=s.originalIndex??ri;
    sectionStarts[originalIndex]=pages.length;
@@ -78,9 +116,10 @@ function buildPages(){
  });
 }
 const tocGroups=[
- {title:'Surah Yasin (ayat 1–83)',matches:s=>s.quranSurah===36},
- {title:'Surah Ar-Rahman (ayat 1–78)',matches:s=>s.quranSurah===55},
- ...tahlilSections.map(s=>({title:s.title,matches:page=>!page.quranSurah&&page.title===s.title}))
+ {title:'Tahlil',matches:s=>!s.quranSurah&&!s.collection},
+ {title:'Surah Yasin',matches:s=>s.quranSurah===36},
+ {title:'Surah Ar-Rahman',matches:s=>s.quranSurah===55},
+ {title:"Dzikir",matches:s=>s.collection==='dzikir'}
 ];
 const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
 function activateReader(sectionIndex){
@@ -93,11 +132,12 @@ function activateReader(sectionIndex){
 function renderHome(){
  const saved=Number(localStorage.getItem('tahlil-page')||0);
  const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
- $('continueReadingLabel').textContent=savedPage ? (savedPage.title+(savedPage.continuation?' · lanjutan':'')) : 'Mulai dari halaman pertama';
- $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah).length+' bagian bacaan';
+ $('continueReadingLabel').textContent=savedPage ? (savedPage.title) : 'Mulai dari halaman pertama';
+ $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah&&!s.collection).length+' bagian bacaan';
  const list=$('homeIndexList');list.innerHTML='';
  const groups=[
-  {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah,icon:'۞'},
+  {key:'tahlil',title:'Rangkaian Tahlil',sub:'Doa, zikir, tawasul, dan penutup',filter:s=>!s.quranSurah&&!s.collection,icon:'۞'},
+  {key:'dzikir',title:"Dzikir Ba'da Shalat",sub:'Istighfar, dzikir, ayat pilihan, dan doa',filter:s=>s.collection==='dzikir',icon:'۞'},
   {key:'yasin',title:'Surah Yasin',sub:'Surah ke-36 · Al-Qur’an',filter:s=>s.quranSurah===36,icon:'٣٦'},
   {key:'rahman',title:'Surah Ar-Rahman',sub:'Surah ke-55 · Al-Qur’an',filter:s=>s.quranSurah===55,icon:'٥٥'}
  ];
@@ -120,14 +160,14 @@ function renderHome(){
  $('homeSearchEmpty').hidden=shown!==0;
 }
 function openCollection(kind){
- const first=sections.findIndex(s=>kind==='tahlil'?!s.quranSurah:kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
+ const first=sections.findIndex(s=>kind==='tahlil'?(!s.quranSurah&&!s.collection):kind==='dzikir'?s.collection==='dzikir':kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
  if(first>=0)activateReader(first);
 }
 $('continueReadingBtn').addEventListener('click',()=>{
  const saved=Number(localStorage.getItem('tahlil-page')||0);
  document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
-document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>openCollection(b.dataset.homeTarget)));
+document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>{
  $('contents').innerHTML='';
@@ -141,28 +181,36 @@ const renderContents=()=>{
   $('contents').appendChild(b);
  });
 };
-let pageTurning=false;
+let pageTurning=false,queuedTurn=null;
 function paintPage(s){
- $('pageTitle').textContent=s.title+(s.continuation?' (lanjutan)':'');
+ $('pageTitle').textContent=s.title;
+ $('arabicText').style.whiteSpace='pre-wrap';
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
- $('pageNumber').textContent='— '+String(index+1).padStart(2,'0')+' —';
+ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+ const sectionFirst=pages.findIndex(page=>navGroup(page)===navGroup(s));
+ $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
  renderContents();
 }
 function showPage(i,animate=''){
  if(!pages.length)return;
  if(pageTurning&&animate)return;
  const target=Math.max(0,Math.min(i,pages.length-1));
- if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title+(pages[target].continuation?' (lanjutan)':'')&&$('arabicText').textContent===pages[target].text)return;
+ if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title&&$('arabicText').textContent===pages[target].text)return;
  index=target;
  const p=$('paper'),s=pages[index];
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
- const current=pages[index],previous=pages[index-1],following=pages[index+1];
- const quranBoundary=(a,b)=>Boolean(a?.quranSurah)&&Boolean(b)&&a.quranSurah!==b.quranSurah;
- $('prevBtn').disabled=index===0||quranBoundary(current,previous);
- $('nextBtn').disabled=index===pages.length-1||quranBoundary(current,following);
- $('progressText').textContent=Math.round((index+1)/pages.length*100)+'%';
- $('progressBar').style.width=((index+1)/pages.length*100)+'%';
+ const current=pages[index];
+ const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+ const currentGroup=navGroup(current);
+ const sectionFirst=pages.findIndex(page=>navGroup(page)===currentGroup);
+ let sectionLast=index;
+ while(sectionLast+1<pages.length&&navGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
+ const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
+ $('prevBtn').disabled=index<=sectionFirst;
+ $('nextBtn').disabled=index>=sectionLast;document.querySelectorAll('.swipe-hint-left').forEach(b=>{b.disabled=$('prevBtn').disabled});document.querySelectorAll('.swipe-hint-right').forEach(b=>{b.disabled=$('nextBtn').disabled});
+ $('progressText').textContent=Math.round(sectionPageIndex/sectionPageCount*100)+'%';
+ $('progressBar').style.width=(sectionPageIndex/sectionPageCount*100)+'%';
  localStorage.setItem('tahlil-page',index);
  if(animate){
   pageTurning=true;p.style.transformOrigin=animate==='turn-next'?'left center':'right center';
@@ -171,13 +219,26 @@ function showPage(i,animate=''){
    paintPage(s);p.classList.remove('turn-out-next','turn-out-prev');
    p.style.transformOrigin=animate==='turn-next'?'right center':'left center';
    p.classList.add(animate==='turn-next'?'turn-in-next':'turn-in-prev');
-   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false},350);
+   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false;if(queuedTurn){const q=queuedTurn;queuedTurn=null;if(q==='next')next();else prev();}},350);
   },175);
  }else paintPage(s);
 }
-function next(){if(pageTurning||index>=pages.length-1)return; if(pages[index]?.quranSurah&&pages[index+1]?.quranSurah!==pages[index].quranSurah)return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning||index<=0)return; if(pages[index]?.quranSurah&&pages[index-1]?.quranSurah!==pages[index].quranSurah)return;showPage(index-1,'turn-prev')}
+const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
+function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
+$('homeBtn').onclick=()=>{document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
+$('contentsBtn').onclick=()=>{
+ const open=!document.body.classList.contains('toc-open');
+ if(open){document.body.classList.add('reader-active');renderContents();}
+ document.body.classList.toggle('toc-open',open);
+ $('contentsBtn').setAttribute('aria-expanded',String(open));
+};
+$('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
+const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';localStorage.setItem('etahlil-theme',theme)};
+$('themeBtn').onclick=()=>applyTheme(document.body.classList.contains('theme-dark')?'light':'dark');
+applyTheme(localStorage.getItem('etahlil-theme')==='dark'?'dark':'light');
+
 // Swipe navigation on the paper: swipe left for next, right for previous.
 (function enablePaperSwipe(){
  const paper=$('paper');let startX=0,startY=0,startTime=0;
@@ -193,13 +254,40 @@ $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
   if(dx<0)next();else prev();
  },{passive:true});
  paper.setAttribute('aria-label','Halaman bacaan. Geser ke kiri untuk halaman berikutnya, geser ke kanan untuk halaman sebelumnya.');
+ const left=document.createElement('button');left.type='button';left.className='swipe-hint swipe-hint-left';left.setAttribute('aria-label','Halaman sebelumnya');left.title='Halaman sebelumnya';left.textContent='‹';left.onclick=e=>{e.stopPropagation();left.classList.add('hint-tapped');prev();window.setTimeout(()=>left.classList.remove('hint-tapped'),80)};
+ const right=document.createElement('button');right.type='button';right.className='swipe-hint swipe-hint-right';right.setAttribute('aria-label','Halaman berikutnya');right.title='Halaman berikutnya';right.textContent='›';right.onclick=e=>{e.stopPropagation();right.classList.add('hint-tapped');next();window.setTimeout(()=>right.classList.remove('hint-tapped'),80)};
+ paper.append(left,right);
+ [left,right].forEach(hint=>hint.addEventListener('click',()=>{hint.classList.add('hint-fading');window.setTimeout(()=>hint.classList.remove('hint-fading'),80)}));
 })();
 
 $('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
-$('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
-$('contentsBtn').onclick=()=>{document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false')};$('closeContents').onclick=()=>{document.body.classList.remove('reader-active');window.scrollTo({top:0,behavior:'smooth'});$('contentsBtn').setAttribute('aria-expanded','false')};document.body.classList.remove('reader-active');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
+// Fullscreen control has been replaced by the theme toggle; do not bind the removed button.
+document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
-loadAdditionalSurahs().then(()=>{buildPages();renderHome();}).catch(()=>{});
+loadAdditionalSurahs().then(async()=>{
+ try{
+  const response=await fetch('./src/data/dzikir-overrides.json');
+  if(response.ok){
+   const data=await response.json();
+   const dzikir=sections.filter(s=>s.collection==='dzikir');
+   data.sections?.forEach((item,i)=>{if(dzikir[i]&&typeof item.text==='string')dzikir[i].text=item.text;});
+  }
+  // Apply the latest manually exported page breaks from the feature branch.
+  // The Arabic text is used verbatim; only [[HALAMAN BARU]] markers control layout.
+  const layoutResponse=await fetch('./etahlil-pembagian-halaman-dzikir.json',{cache:'no-store'});
+  if(layoutResponse.ok){
+   const layout=await layoutResponse.json();
+   if(layout.format==='etahlil-dzikir-page-layout'&&layout.scope==='dzikir-ba-da-shalat'&&typeof layout.text==='string'&&layout.text.includes('[[HALAMAN BARU]]')){
+    const pageLayout=JSON.parse(localStorage.getItem('etahlil-page-layout-v1')||'{}');
+    pageLayout[Number(layout.sectionIndex)]=layout.text;
+    localStorage.setItem('etahlil-page-layout-v1',JSON.stringify(pageLayout));
+   }
+  }
+ }catch{}
+ // The reviewed, exported file committed with the app is authoritative.
+ // Do not overwrite it with stale device-local editor data.
+ buildPages();renderHome();
+}).catch(()=>{});
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
