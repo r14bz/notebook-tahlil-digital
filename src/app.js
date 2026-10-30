@@ -124,7 +124,7 @@ const tocGroups=[
  {title:'Surah Ar-Rahman',matches:s=>s.quranSurah===55},
  {title:"Dzikir",matches:s=>s.collection==='dzikir'}
 ];
-const sectionKind = s => s.quranSurah===36 ? 'yasin' : s.quranSurah===55 ? 'rahman' : 'tahlil';
+
 function activateReader(sectionIndex){
  readerViewRequested=true;
  if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
@@ -192,7 +192,7 @@ function paintPage(s){
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
  
- const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===navGroup(s));
+ const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===getReadingGroup(s));
  $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
  renderContents();
 }
@@ -206,10 +206,10 @@ function showPage(i,animate=''){
  p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
  const current=pages[index];
  const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
- const currentGroup=navGroup(current);
+ const currentGroup=getReadingGroup(current);
  const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===currentGroup);
  let sectionLast=index;
- while(sectionLast+1<pages.length&&navGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
+ while(sectionLast+1<pages.length&&getReadingGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
  const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
  $('prevBtn').disabled=index<=sectionFirst;
  $('nextBtn').disabled=index>=sectionLast;document.querySelectorAll('.swipe-hint-left').forEach(b=>{b.disabled=$('prevBtn').disabled});document.querySelectorAll('.swipe-hint-right').forEach(b=>{b.disabled=$('nextBtn').disabled});
