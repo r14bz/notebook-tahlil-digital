@@ -11,7 +11,7 @@ async function exists(target) {
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 
-for (const item of ['index.html', 'src', 'etahlil-pembagian-halaman-dzikir.json']) {
+for (const item of ['index.html', 'src', 'manifest.webmanifest', 'service-worker.js', 'etahlil-pembagian-halaman-dzikir.json']) {
   const source = path.join(root, item);
   if (await exists(source)) {
     await cp(source, path.join(out, item), { recursive: true });
