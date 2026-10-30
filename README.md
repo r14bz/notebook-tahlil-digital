@@ -26,7 +26,7 @@ Aplikasi web saat ini berupa HTML, CSS, dan JavaScript native tanpa bundler.
 Untuk Vercel:
 - Framework Preset: Other
 - Build Command: kosong
-- Output Directory: `. ` (folder root; masukkan `.` pada pengaturan Vercel)
+- Output Directory: `.` (folder root)
 - Root Directory: `.`
 
 ## Persiapan Android dengan Capacitor
