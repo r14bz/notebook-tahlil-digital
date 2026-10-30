@@ -1,0 +1,13 @@
+{
+  "id": "/",
+  "name": "e-Moeslife",
+  "short_name": "e-Moeslife",
+  "description": "Ruang baca Islami digital untuk tahlil, doa, zikir, dan tilawah Al-Qur'an.",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f0e5",
+  "theme_color": "#123d2e"
+}
