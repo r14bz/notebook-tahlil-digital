@@ -933,3 +933,7 @@ header { background:#123d2e!important; }
  .brand-mark{height:56px}
  .brand-text{height:25px}
 }
+
+/* Tombol panah transparan: ketukan andal di layar sentuh, sembunyi di halaman pertama/terakhir. */
+.swipe-hint{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.swipe-hint:disabled{opacity:0!important;pointer-events:none}

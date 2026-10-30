@@ -181,7 +181,7 @@ const renderContents=()=>{
   $('contents').appendChild(b);
  });
 };
-let pageTurning=false;
+let pageTurning=false,queuedTurn=null;
 function paintPage(s){
  $('pageTitle').textContent=s.title;
  $('arabicText').style.whiteSpace='pre-wrap';
@@ -208,7 +208,7 @@ function showPage(i,animate=''){
  while(sectionLast+1<pages.length&&navGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
  const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
  $('prevBtn').disabled=index<=sectionFirst;
- $('nextBtn').disabled=index>=sectionLast;
+ $('nextBtn').disabled=index>=sectionLast;document.querySelectorAll('.swipe-hint-left').forEach(b=>{b.disabled=$('prevBtn').disabled});document.querySelectorAll('.swipe-hint-right').forEach(b=>{b.disabled=$('nextBtn').disabled});
  $('progressText').textContent=Math.round(sectionPageIndex/sectionPageCount*100)+'%';
  $('progressBar').style.width=(sectionPageIndex/sectionPageCount*100)+'%';
  localStorage.setItem('tahlil-page',index);
@@ -219,13 +219,13 @@ function showPage(i,animate=''){
    paintPage(s);p.classList.remove('turn-out-next','turn-out-prev');
    p.style.transformOrigin=animate==='turn-next'?'right center':'left center';
    p.classList.add(animate==='turn-next'?'turn-in-next':'turn-in-prev');
-   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false},350);
+   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false;if(queuedTurn){const q=queuedTurn;queuedTurn=null;if(q==='next')next();else prev();}},350);
   },175);
  }else paintPage(s);
 }
 const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
-function next(){if(pageTurning||index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning||index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
+function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 $('homeBtn').onclick=()=>{document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
