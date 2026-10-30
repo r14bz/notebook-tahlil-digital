@@ -898,3 +898,23 @@ body.toc-open .sidebar { z-index:30!important; }
 /* Clear, familiar home glyph rather than the previous roof-like symbol. */
 .controls #homeBtn:before { content:'🏠'; font-family:inherit; font-size:25px; }
 @media(max-width:768px){.controls #homeBtn:before{font-size:22px}}
+
+
+/* Brand refresh: match the supplied E-Tahlil identity green. */
+:root { --green:#009950; --green2:#009950; }
+header { background:#009950!important; }
+.primary, .play-icon { background:#009950!important; }
+.contents button.active { color:#009950; border-left-color:#009950; }
+.soft-btn { color:#006b3a; }
+.collection-card .collection-symbol img,
+.collection-card .surah-number img { display:block; width:100%; height:100%; object-fit:contain; }
+.collection-card .collection-symbol,
+.collection-card .surah-number { display:flex; align-items:center; justify-content:center; }
+.collection-card .collection-symbol { width:43px; height:43px; }
+.collection-card .surah-number { width:43px!important; height:43px!important; }
+.brand-logo { display:block; width:clamp(150px,24vw,270px); max-height:70px; height:auto; object-fit:contain; flex:0 1 auto; }
+.brand { min-width:0; }
+@media(max-width:768px) {
+ .brand-logo { width:clamp(112px,35vw,170px); max-height:48px; }
+ .collection-card .collection-symbol,.collection-card .surah-number { width:39px!important; height:39px!important; }
+}
