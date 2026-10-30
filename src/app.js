@@ -2,6 +2,7 @@ import { sections, tahlilSections, loadAdditionalSurahs } from './data/sections.
 import { mountAppShell } from './components/app-shell.js';
 import { registerOfflineSupport } from './services/offline/register-service-worker.js';
 import { readPreference, writePreference, readJsonPreference, writeJsonPreference } from './services/storage/preferences.js';
+import { getReadingGroup } from './features/reader/navigation.js';
 
 mountAppShell();
 registerOfflineSupport();
@@ -190,8 +191,8 @@ function paintPage(s){
  $('arabicText').style.whiteSpace='pre-wrap';
  $('arabicText').textContent=s.text;
  $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
- const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
- const sectionFirst=pages.findIndex(page=>navGroup(page)===navGroup(s));
+ 
+ const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===navGroup(s));
  $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
  renderContents();
 }
@@ -206,7 +207,7 @@ function showPage(i,animate=''){
  const current=pages[index];
  const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
  const currentGroup=navGroup(current);
- const sectionFirst=pages.findIndex(page=>navGroup(page)===currentGroup);
+ const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===currentGroup);
  let sectionLast=index;
  while(sectionLast+1<pages.length&&navGroup(pages[sectionLast+1])===currentGroup)sectionLast++;
  const sectionPageIndex=index-sectionFirst+1,sectionPageCount=sectionLast-sectionFirst+1;
@@ -227,10 +228,10 @@ function showPage(i,animate=''){
  }else paintPage(s);
 }
 const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
-function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||navGroup(pages[index+1])!==navGroup(pages[index]))return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||navGroup(pages[index-1])!==navGroup(pages[index]))return;showPage(index-1,'turn-prev')}
+function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||getReadingGroup(pages[index+1])!==getReadingGroup(pages[index]))return;showPage(index+1,'turn-next')}
+function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||getReadingGroup(pages[index-1])!==getReadingGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
-$('homeBtn').onclick=()=>{readerViewRequested=false;readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
+$('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
  const open=!document.body.classList.contains('toc-open');
  if(open){readerViewRequested=true;document.body.classList.add('reader-active');renderContents();}
