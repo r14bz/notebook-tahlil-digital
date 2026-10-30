@@ -1,0 +1,19 @@
+{
+  "name": "e-moeslife",
+  "private": true,
+  "version": "1.0.0",
+  "description": "e-Moeslife — ruang baca Islami digital",
+  "type": "module",
+  "scripts": {
+    "prepare:mobile": "node scripts/prepare-mobile.mjs",
+    "cap:sync": "npm run prepare:mobile && cap sync",
+    "cap:open:android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
