@@ -1,7 +1,9 @@
 import { sections, tahlilSections, loadAdditionalSurahs } from './data/sections.js';
 import { mountAppShell } from './components/app-shell.js';
+import { registerOfflineSupport } from './services/offline/register-service-worker.js';
 
 mountAppShell();
+registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0;
