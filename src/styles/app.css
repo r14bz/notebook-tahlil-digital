@@ -976,3 +976,7 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
 
 /* Audio TTS and qari are temporarily hidden without removing their implementation. */
 #readerAudioPanel[hidden]{display:none!important}
+
+/* Force-hide the complete audio UI on every reader page, regardless of runtime hidden-attribute changes. */
+#readerMain #readerAudioPanel,
+#readerMain .playbar#readerAudioPanel { display:none !important; visibility:hidden !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:hidden !important; }
