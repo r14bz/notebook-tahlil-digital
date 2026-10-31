@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-moeslife-shell-v4';
+const CACHE_NAME = 'e-moeslife-shell-v5';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
@@ -30,6 +30,7 @@ const CORE_ASSETS = [
   '/assets/logo-mark.webp',
   '/assets/logo-text.webp',
   '/assets/collection-icon.webp',
+  '/assets/mosque-banner.png',
   '/assets/app-icon/icon.png',
   '/src/data/dzikir-overrides.json',
   '/etahlil-pembagian-halaman-dzikir.json'
