@@ -184,6 +184,9 @@ test('preferences persist through localStorage using mapped keys', () => {
   assert.equal(values.get('tahlil-page'), '12');
   assert.equal(readPreference('page'), '12');
   assert.equal(readPreference('missing-key', 'fallback'), 'fallback');
+  assert.equal(writePreference('ttsVoice', 'arabic-voice'), true);
+  assert.equal(values.get('etahlil-tts-voice-v1'), 'arabic-voice');
+  assert.equal(readPreference('ttsVoice'), 'arabic-voice');
 });
 
 test('preferences use memory fallback when browser storage is unavailable', () => {
