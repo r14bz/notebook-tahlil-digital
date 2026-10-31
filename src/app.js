@@ -14,12 +14,14 @@ import { applyReaderTheme, applyReaderFontSize } from './features/reader/appeara
 import { splitSectionForScreen } from './features/reader/pagination.js';
 import { renderReadingList } from './features/home/reading-list.js';
 import { findCollectionStart } from './features/collections/navigation.js';
+import { initPrayerTimes } from './features/prayer/prayer-times.js';
 
 mountAppShell();
+initPrayerTimes();
 registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
-let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
+let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false,pendingReaderSection=null,pendingCollection=null,readerContentReady=false;
 const readPageLayout=()=>{
  const value=readJsonPreference('pageLayout', {});
  return value&&typeof value==='object'&&!Array.isArray(value)?value:{};
@@ -31,7 +33,6 @@ const readSavedPageIndex=()=>{
 
 function buildPages(){
  const pass=++layoutPass;
- const wasReaderActive=readerViewRequested;
  document.body.classList.add('reader-active');
  const saved=readSavedPageIndex(),currentPage=pages[index],currentSection=currentPage?.sectionIndex;
  const currentSectionOffset=currentSection===undefined?0:pages.slice(0,index).filter(page=>page.sectionIndex===currentSection).length;
@@ -57,23 +58,46 @@ function buildPages(){
   },[]);
   index=sectionPages.length?sectionPages[Math.min(currentSectionOffset,sectionPages.length-1)]:Math.min(saved,Math.max(0,pages.length-1));
   showPage(index);
-  if(!wasReaderActive)document.body.classList.remove('reader-active');
+  if(pendingReaderSection!==null){const target=pendingReaderSection;pendingReaderSection=null;showPage(Math.max(0,sectionStarts[target]??0));}
+  // Jangan sembunyikan reader jika pengguna sudah meminta membuka koleksi saat layout masih dihitung.
+  if(!readerViewRequested)document.body.classList.remove('reader-active');
  });
 }
 function activateReader(sectionIndex){
  readerViewRequested=true;
- if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
- const start=Math.max(0,sectionStarts[sectionIndex]??0);
+ if(!pages.length){pendingReaderSection=sectionIndex;readerViewRequested=true;buildPages();return;}
+ // Pastikan indeks awal benar-benar menunjuk section yang diminta.
+ // Indeks lama bisa berubah ketika data surah opsional dimuat di depan daftar.
+ const mappedStart=sectionStarts[sectionIndex];
+ const start=Number.isInteger(mappedStart)&&pages[mappedStart]?.sectionIndex===sectionIndex
+  ? mappedStart
+  : pages.findIndex(page=>page.sectionIndex===sectionIndex);
+ if(start<0){readerViewRequested=false;return;}
  document.body.classList.add('reader-active');
  showPage(start);
  window.scrollTo({top:0,behavior:'smooth'});
 }
 const renderHome = () => renderReadingList({ sections, pages, $, activateReader });
 function openCollection(kind){
+ // Tunggu sampai daftar section dan halaman selesai memakai urutan data yang sama.
+ if(!readerContentReady){pendingCollection=kind;return;}
  const first=findCollectionStart(sections,kind);
- if(first>=0)activateReader(first);
+ if(first<0)return;
+ const target=sections[first];
+ const pageSetMatches=pages.some(page=>
+  page.sectionIndex===first&&page.title===target.title&&
+  page.quranSurah===target.quranSurah&&page.collection===target.collection
+ );
+ if(!pageSetMatches){
+  pendingReaderSection=first;
+  readerViewRequested=true;
+  buildPages();
+  return;
+ }
+ activateReader(first);
 }
-$('continueReadingBtn').addEventListener('click',()=>{
+const continueReadingButton = $('continueReadingBtn');
+if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
  const saved=readSavedPageIndex();
  readerViewRequested=true;document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
@@ -144,10 +168,14 @@ loadOptionalReaderContent({
  writePageLayout:layout=>writeJsonPreference('pageLayout',layout)
 }).then(()=>{
  // Optional files are isolated: the local reader remains usable if either one is unavailable.
+ readerContentReady=true;
  buildPages();renderHome();
+ if(pendingCollection){const kind=pendingCollection;pendingCollection=null;openCollection(kind);}
 }).catch(()=>{
  // Keep the bundled reading sections available even if optional content cannot be loaded.
+ readerContentReady=true;
  buildPages();renderHome();
+ if(pendingCollection){const kind=pendingCollection;pendingCollection=null;openCollection(kind);}
 });
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
