@@ -45,6 +45,8 @@ export function createReaderAudioController({
   SpeechSynthesisUtterance,
   audioElement,
   voiceSelect,
+  voiceLabel,
+  audioDescription,
   qariButton,
   statusElement
 }) {
@@ -81,6 +83,7 @@ export function createReaderAudioController({
     });
     if (voices.some(voice => voice.voiceURI === previous)) voiceSelect.value = previous;
     voiceSelect.hidden = voices.length === 0;
+    if (voiceLabel) voiceLabel.hidden = voices.length === 0;
     selectedVoice = voices.find(voice => voice.voiceURI === voiceSelect.value) || null;
   }
 
@@ -201,8 +204,12 @@ export function createReaderAudioController({
       if (speechActive) stopSpeech();
       const nextSurah = Number(page?.quranSurah);
       if (currentSurah !== null && nextSurah !== currentSurah) stopQari();
+      const supported = Boolean(QURAN_CHAPTERS[nextSurah]);
+      if (audioElement) audioElement.hidden = !supported;
+      if (audioDescription) audioDescription.textContent = supported
+        ? 'Rekaman ' + QURAN_CHAPTERS[nextSurah].title + ' oleh Mishary Alafasy; audio memerlukan internet.'
+        : 'TTS tersedia untuk teks Arab; rekaman qari tersedia pada Surah Yasin dan Ar-Rahman.';
       if (qariButton) {
-        const supported = Boolean(QURAN_CHAPTERS[nextSurah]);
         qariButton.disabled = !supported;
         qariButton.title = supported ? 'Putar rekaman qari untuk ' + QURAN_CHAPTERS[nextSurah].title : 'Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman';
       }
