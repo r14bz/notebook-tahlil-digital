@@ -66,16 +66,23 @@ function buildPages(){
 function activateReader(sectionIndex){
  readerViewRequested=true;
  if(!pages.length){pendingReaderSection=sectionIndex;readerViewRequested=true;buildPages();return;}
- const start=Math.max(0,sectionStarts[sectionIndex]??0);
+ // Pastikan indeks awal benar-benar menunjuk section yang diminta.
+ // Indeks lama bisa berubah ketika data surah opsional dimuat di depan daftar.
+ const mappedStart=sectionStarts[sectionIndex];
+ const start=Number.isInteger(mappedStart)&&pages[mappedStart]?.sectionIndex===sectionIndex
+  ? mappedStart
+  : pages.findIndex(page=>page.sectionIndex===sectionIndex);
+ if(start<0){readerViewRequested=false;return;}
  document.body.classList.add('reader-active');
  showPage(start);
  window.scrollTo({top:0,behavior:'smooth'});
 }
 const renderHome = () => renderReadingList({ sections, pages, $, activateReader });
 function openCollection(kind){
+ // Tunggu sampai daftar section dan halaman selesai memakai urutan data yang sama.
+ if(!readerContentReady){pendingCollection=kind;return;}
  const first=findCollectionStart(sections,kind);
  if(first>=0)activateReader(first);
- else if(!readerContentReady)pendingCollection=kind;
 }
 const continueReadingButton = $('continueReadingBtn');
 if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
