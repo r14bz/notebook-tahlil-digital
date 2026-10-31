@@ -21,7 +21,7 @@ initPrayerTimes();
 registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
-let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
+let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false,pendingReaderSection=null,pendingCollection=null,readerContentReady=false;
 const readPageLayout=()=>{
  const value=readJsonPreference('pageLayout', {});
  return value&&typeof value==='object'&&!Array.isArray(value)?value:{};
@@ -59,12 +59,13 @@ function buildPages(){
   },[]);
   index=sectionPages.length?sectionPages[Math.min(currentSectionOffset,sectionPages.length-1)]:Math.min(saved,Math.max(0,pages.length-1));
   showPage(index);
+  if(pendingReaderSection!==null){const target=pendingReaderSection;pendingReaderSection=null;showPage(Math.max(0,sectionStarts[target]??0));}
   if(!wasReaderActive)document.body.classList.remove('reader-active');
  });
 }
 function activateReader(sectionIndex){
  readerViewRequested=true;
- if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
+ if(!pages.length){pendingReaderSection=sectionIndex;readerViewRequested=true;buildPages();return;}
  const start=Math.max(0,sectionStarts[sectionIndex]??0);
  document.body.classList.add('reader-active');
  showPage(start);
@@ -74,6 +75,7 @@ const renderHome = () => renderReadingList({ sections, pages, $, activateReader 
 function openCollection(kind){
  const first=findCollectionStart(sections,kind);
  if(first>=0)activateReader(first);
+ else if(!readerContentReady)pendingCollection=kind;
 }
 $('continueReadingBtn').addEventListener('click',()=>{
  const saved=readSavedPageIndex();
@@ -146,10 +148,14 @@ loadOptionalReaderContent({
  writePageLayout:layout=>writeJsonPreference('pageLayout',layout)
 }).then(()=>{
  // Optional files are isolated: the local reader remains usable if either one is unavailable.
+ readerContentReady=true;
  buildPages();renderHome();
+ if(pendingCollection){const kind=pendingCollection;pendingCollection=null;openCollection(kind);}
 }).catch(()=>{
  // Keep the bundled reading sections available even if optional content cannot be loaded.
+ readerContentReady=true;
  buildPages();renderHome();
+ if(pendingCollection){const kind=pendingCollection;pendingCollection=null;openCollection(kind);}
 });
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
