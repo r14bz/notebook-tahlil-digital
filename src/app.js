@@ -14,8 +14,10 @@ import { applyReaderTheme, applyReaderFontSize } from './features/reader/appeara
 import { splitSectionForScreen } from './features/reader/pagination.js';
 import { renderReadingList } from './features/home/reading-list.js';
 import { findCollectionStart } from './features/collections/navigation.js';
+import { initPrayerTimes } from './features/prayer/prayer-times.js';
 
 mountAppShell();
+initPrayerTimes();
 registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
