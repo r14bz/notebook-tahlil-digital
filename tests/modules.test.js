@@ -6,6 +6,7 @@ import { getSwipeDirection } from '../src/features/reader/gestures.js';
 import { getReadingGroupBounds, getPageProgress } from '../src/features/reader/page-state.js';
 import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/appearance.js';
 import { prepareReadingSections, completeSectionStarts } from '../src/features/reader/sections.js';
+import { getReaderContentsGroups } from '../src/features/reader/contents.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -194,4 +195,14 @@ test('reader section preparation preserves source indexes and authoritative manu
 test('reader section starts fill grouped entries without changing known page indexes', () => {
   assert.deepEqual(completeSectionStarts([0, 2, undefined, 5, undefined], 5), [0, 2, 2, 5, 5]);
   assert.deepEqual(completeSectionStarts([], 3), [0, 0, 0]);
+});
+
+test('reader contents expose distinct collection groups with the correct section matching', () => {
+  const groups = getReaderContentsGroups();
+  assert.deepEqual(groups.map(group => group.title), ['Tahlil', 'Surah Yasin', 'Surah Ar-Rahman', 'Dzikir']);
+  assert.equal(groups[0].matches({ title: 'Doa pembuka' }), true);
+  assert.equal(groups[0].matches({ collection: 'dzikir' }), false);
+  assert.equal(groups[1].matches({ quranSurah: 36 }), true);
+  assert.equal(groups[2].matches({ quranSurah: 55 }), true);
+  assert.equal(groups[3].matches({ collection: 'dzikir' }), true);
 });
