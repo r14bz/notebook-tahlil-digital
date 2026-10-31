@@ -1,9 +1,10 @@
-import { sections, tahlilSections, loadAdditionalSurahs } from './data/sections.js';
+import { sections, loadAdditionalSurahs } from './data/sections.js';
 import { mountAppShell } from './components/app-shell.js';
 import { registerOfflineSupport } from './services/offline/register-service-worker.js';
 import { readPreference, writePreference, readJsonPreference, writeJsonPreference } from './services/storage/preferences.js';
 import { getReadingGroup } from './features/reader/navigation.js';
 import { getReadingGroupBounds, getPageProgress } from './features/reader/page-state.js';
+import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
@@ -15,7 +16,6 @@ registerOfflineSupport();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
-const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
 const readPageLayout=()=>{
  const value=readJsonPreference('pageLayout', {});
  return value&&typeof value==='object'&&!Array.isArray(value)?value:{};
@@ -39,32 +39,14 @@ function buildPages(){
   const width=Math.max(100,text.clientWidth);
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
-  const readingSections=[];
   const pageLayout=readPageLayout();
-  // A complete exported Dzikir Ba'da Shalat layout already contains the whole collection.
-  // Render it once at its anchor section and skip the original dzikir entries that it replaces.
-  const manualDzikirLayoutIndex=Object.keys(pageLayout).map(Number).find(si=>
-   sections[si]?.collection==='dzikir' &&
-   typeof pageLayout[si]==='string' &&
-   pageLayout[si].includes('[[HALAMAN BARU]]')
-  );
-  sections.forEach((s,si)=>{
-   if(manualDzikirLayoutIndex!==undefined&&s.collection==='dzikir'&&si!==manualDzikirLayoutIndex)return;
-   const item={...s,originalIndex:si};
-   if(Object.prototype.hasOwnProperty.call(pageLayout,si)&&typeof pageLayout[si]==='string')item.pageLayoutText=pageLayout[si];
-   readingSections.push(item);
-  });
-  readingSections.forEach((s,ri)=>{
-   const originalIndex=s.originalIndex??ri;
+  const readingSections=prepareReadingSections(sections,pageLayout);
+  readingSections.forEach(s=>{
+   const originalIndex=s.originalIndex;
    sectionStarts[originalIndex]=pages.length;
    pages.push(...splitSectionForScreen(s,originalIndex,available,width,text));
   });
-  // Point all grouped Tahlil entries to the page that contains their combined text.
-  let pageCursor=0;
-  sections.forEach((s,si)=>{
-   if(sectionStarts[si]===undefined)sectionStarts[si]=Math.max(0,pageCursor);
-   pageCursor=sectionStarts[si];
-  });
+  sectionStarts=completeSectionStarts(sectionStarts,sections.length);
   const sectionPages=currentSection===undefined?[]:pages.reduce((matches,page,pageIndex)=>{
    if(page.sectionIndex===currentSection)matches.push(pageIndex);
    return matches;
@@ -149,7 +131,6 @@ function showPage(i,animate=''){
   },175);
  }else paintPage(s);
 }
-const navGroup=page=>page.quranSurah?'quran-'+page.quranSurah:page.collection==='dzikir'?'dzikir':'tahlil';
 function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||getReadingGroup(pages[index+1])!==getReadingGroup(pages[index]))return;showPage(index+1,'turn-next')}
 function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||getReadingGroup(pages[index-1])!==getReadingGroup(pages[index]))return;showPage(index-1,'turn-prev')}
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
