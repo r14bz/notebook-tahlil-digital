@@ -48,6 +48,8 @@ export function createReaderAudioController({
   voiceLabel,
   audioDescription,
   qariButton,
+  readPreference,
+  writePreference,
   statusElement
 }) {
   let speechQueue = [];
@@ -68,7 +70,7 @@ export function createReaderAudioController({
 
   function refreshVoices() {
     if (!voiceSelect) return;
-    const previous = voiceSelect.value;
+    const previous = voiceSelect.value || readPreference?.('ttsVoice', '') || '';
     const voices = availableArabicVoices();
     voiceSelect.replaceChildren();
     const automatic = document.createElement('option');
@@ -187,6 +189,7 @@ export function createReaderAudioController({
   if (voiceSelect) {
     voiceSelect.addEventListener('change', () => {
       selectedVoice = availableArabicVoices().find(voice => voice.voiceURI === voiceSelect.value) || null;
+      writePreference?.('ttsVoice', voiceSelect.value || '');
     });
   }
   if (speechSynthesis?.addEventListener) speechSynthesis.addEventListener('voiceschanged', refreshVoices);
