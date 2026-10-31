@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import { getReadingGroup } from '../src/features/reader/navigation.js';
 import { getSwipeDirection } from '../src/features/reader/gestures.js';
+import { getReadingGroupBounds, getPageProgress } from '../src/features/reader/page-state.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -107,4 +108,20 @@ test('reader swipe gestures recognize horizontal navigation and reject accidenta
   assert.equal(getSwipeDirection({ dx: -80, dy: 70, duration: 300 }), null);
   assert.equal(getSwipeDirection({ dx: -120, dy: 10, duration: 901 }), null);
   assert.equal(getSwipeDirection({ dx: Number.NaN, dy: 0, duration: 100 }), null);
+});
+
+test('reader page state calculates group boundaries and scoped progress', () => {
+  const pages = [
+    { title: 'Tahlil 1' },
+    { title: 'Tahlil 2' },
+    { quranSurah: 36, title: 'Yasin 1' },
+    { quranSurah: 36, title: 'Yasin 2' },
+    { quranSurah: 55, title: 'Ar-Rahman' }
+  ];
+
+  const bounds = getReadingGroupBounds(pages, 3);
+  assert.deepEqual(bounds, { start: 2, end: 3 });
+  assert.deepEqual(getPageProgress(3, bounds), { current: 2, total: 2, percent: 100 });
+  assert.deepEqual(getReadingGroupBounds([], 0), { start: 0, end: -1 });
+  assert.deepEqual(getPageProgress(0, { start: 0, end: -1 }), { current: 0, total: 0, percent: 0 });
 });
