@@ -41,6 +41,7 @@ jobs:
           test -f www/src/features/reader/navigation.js
           test -f www/src/features/reader/pagination.js
           test -f www/src/features/home/search.js
+          test -f www/src/features/collections/navigation.js
           test -f www/src/data/sections.js
           test -f www/src/data/dzikir-overrides.json
           test -f www/etahlil-pembagian-halaman-dzikir.json
