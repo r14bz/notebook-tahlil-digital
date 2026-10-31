@@ -96,11 +96,6 @@ function openCollection(kind){
  }
  activateReader(first);
 }
-const continueReadingButton = $('continueReadingBtn');
-if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
- const saved=readSavedPageIndex();
- readerViewRequested=true;document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
-});
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
@@ -114,6 +109,15 @@ const readerController=createReaderController({
  getReadingGroup,getReadingGroupBounds,getPageProgress,onPageChange:page=>readerAudio.update(page)
 });
 const showPage=(...args)=>readerController.showPage(...args);
+const continueReadingButton = $('continueReadingBtn');
+if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
+ if(!pages.length)return;
+ const saved=readSavedPageIndex();
+ readerViewRequested=true;
+ document.body.classList.add('reader-active');
+ showPage(Math.min(saved,pages.length-1));
+ window.scrollTo({top:0,behavior:'smooth'});
+});
 const next=()=>readerController.next();
 const prev=()=>readerController.prev();
 const isPageTurning=()=>readerController.isTurning();
