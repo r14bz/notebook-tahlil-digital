@@ -9,8 +9,8 @@ Website: https://e-moeslife.vercel.app
 - Daftar isi serta pencarian bacaan.
 - Posisi bacaan dan preferensi tampilan tersimpan di perangkat.
 - Mode terang/gelap dan pengaturan ukuran tulisan Arab.
-- TTS Arab melalui suara yang tersedia di perangkat/browser.
-- Audio qari untuk bagian yang didukung.
+- TTS teks Arab menggunakan engine dan pilihan suara Arab yang tersedia pada perangkat.
+- Pemutaran rekaman qari Mishary Rashid Alafasy untuk Surah Yasin dan Ar-Rahman, berurutan per ayat.
 - Layout responsif untuk ponsel dan desktop.
 
 ## Identitas
@@ -32,7 +32,7 @@ Untuk Vercel:
 ## Arsitektur aplikasi
 
 - UI shell dipecah menjadi komponen header, beranda, reader, dan footer pada `src/components/shell/`.
-- Logika aplikasi tetap berada di modul terpisah dan akan dipecah bertahap per domain; jangan menambahkan seluruh halaman atau fitur ke satu file.
+- Logika aplikasi dipisah ke modul domain untuk reader, audio, pemuatan konten, pencarian, navigasi koleksi, penyimpanan, dan dukungan offline; hindari file aplikasi monolitik.
 - Arah arsitektur: tanpa akun, local-first, dan fitur inti dapat digunakan offline.
 - Service worker PWA menggunakan cache-first untuk aset same-origin dan fallback dokumen saat offline.
 - Preferensi serta progres bacaan tetap menggunakan penyimpanan lokal; key lama dipertahankan untuk kompatibilitas.
@@ -69,7 +69,9 @@ Catatan:
 - Folder `android/` berisi proyek native Android dan akan di-commit setelah platform Android dibuat.
 - Jangan memasukkan signing key, password keystore, token, atau kredensial ke Git.
 - Izin native seperti notifikasi, audio, penyimpanan, dan status bar perlu ditambahkan hanya jika fitur tersebut benar-benar digunakan dan sudah diuji.
-- TTS Arab bergantung pada engine dan voice yang tersedia di perangkat. Audio qari perlu disiapkan sebagai aset unduhan agar dapat diputar offline.
+- TTS Arab memakai voice yang tersedia di perangkat; untuk TTS offline, pasang voice Arab pada pengaturan text-to-speech Android.
+- Rekaman qari dialirkan dari EveryAyah dan memerlukan internet. File audio tidak dibundel ke APK sehingga pemutaran qari offline belum dijamin.
+- Rekaman qari saat ini tersedia untuk Surah Yasin dan Ar-Rahman; bacaan tahlil/dzikir tetap dapat dibacakan melalui TTS.
 - Periksa teks Al-Qur'an dan bacaan bersama sumber tepercaya/guru setempat.
 
 ## Kompatibilitas data
