@@ -11,6 +11,7 @@ const CORE_ASSETS = [
   '/src/services/storage/preferences.js',
   '/src/features/reader/navigation.js',
   '/src/features/home/search.js',
+  '/src/features/collections/navigation.js',
   '/src/features/reader/pagination.js',
   '/src/data/sections.js',
   '/src/data/dzikir-overrides.json',
