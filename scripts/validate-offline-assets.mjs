@@ -33,3 +33,33 @@ if (missing.length) {
 } else {
   console.log(`Verified all ${assets.length} service-worker precache assets in ./www`);
 }
+
+const precached = new Set(assets);
+const visitedModules = new Set();
+const missingImports = [];
+
+async function verifyImportedModules(asset) {
+  if (visitedModules.has(asset)) return;
+  visitedModules.add(asset);
+  const relative = asset.replace(/^\\/+/, '');
+  const source = await readFile(path.join(output, relative), 'utf8');
+  const imports = [...source.matchAll(/\\bfrom\\s*['"]([^'"]+)['"]/g)].map(([, specifier]) => specifier);
+
+  for (const specifier of imports) {
+    if (!specifier.startsWith('.')) continue;
+    const importedPath = path.posix.resolve(path.posix.dirname(asset), specifier);
+    const importedAsset = importedPath.startsWith('/') ? importedPath : '/' + importedPath;
+    if (!precached.has(importedAsset)) missingImports.push({ importer: asset, imported: importedAsset });
+    await verifyImportedModules(importedAsset);
+  }
+}
+
+await verifyImportedModules('/src/app.js');
+
+if (missingImports.length) {
+  console.error('Local JavaScript modules imported by the app but missing from service-worker precache:');
+  for (const item of missingImports) console.error(` - ${item.importer} -> ${item.imported}`);
+  process.exitCode = 1;
+} else {
+  console.log(`Verified all ${visitedModules.size} local JavaScript modules imported by the app are included in the offline precache`);
+}
