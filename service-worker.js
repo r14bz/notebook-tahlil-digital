@@ -14,6 +14,8 @@ const CORE_ASSETS = [
   '/src/features/reader/sections.js',
   '/src/features/reader/contents.js',
   '/src/features/reader/controller.js',
+  '/src/features/reader/audio.js',
+  '/src/features/reader/content-loader.js',
   '/src/features/reader/gestures.js',
   '/src/features/reader/appearance.js',
   '/src/features/home/search.js',
