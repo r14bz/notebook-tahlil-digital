@@ -87,7 +87,7 @@ async function detectLocation() {
   let city = null;
   for (const candidate of cityCandidates) { city = findRegion(cities, candidate); if (city) break; }
   if (!city) throw new Error('Kota belum cocok dengan data jadwal shalat. Silakan pilih kota secara manual.');
-  return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\\.)\\s*/i, ''), ...zone };
+  return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.|Kabupaten)\s*/i, ''), ...zone };
 }
 
 function createLocationDialog(state, onSelect, onAuto) {
