@@ -1,5 +1,5 @@
 /** Controller interaksi halaman pembaca: render, animasi, dan navigasi per kelompok. */
-export function createReaderController({ getPages, getIndex, setIndex, $, writePreference, renderContents, getReadingGroup, getReadingGroupBounds, getPageProgress }) {
+export function createReaderController({ getPages, getIndex, setIndex, $, writePreference, renderContents, getReadingGroup, getReadingGroupBounds, getPageProgress, onPageChange = () => {} }) {
   let pageTurning = false;
   let queuedTurn = null;
 
@@ -36,6 +36,7 @@ export function createReaderController({ getPages, getIndex, setIndex, $, writeP
     $('progressText').textContent = progress.percent + '%';
     $('progressBar').style.width = progress.percent + '%';
     writePreference('page', index);
+    onPageChange(section);
 
     if (!animate) {
       paintPage(section);
