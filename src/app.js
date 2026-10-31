@@ -7,6 +7,8 @@ import { getReadingGroupBounds, getPageProgress } from './features/reader/page-s
 import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
 import { renderReaderContents } from './features/reader/contents.js';
 import { createReaderController } from './features/reader/controller.js';
+import { createReaderAudioController } from './features/reader/audio.js';
+import { loadOptionalReaderContent } from './features/reader/content-loader.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
@@ -78,15 +80,23 @@ $('continueReadingBtn').addEventListener('click',()=>{
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
+const readerAudio=createReaderAudioController({
+ speechSynthesis:window.speechSynthesis,
+ SpeechSynthesisUtterance:window.SpeechSynthesisUtterance,
+ audioElement:$('qariAudio'),voiceSelect:$('ttsVoice'),qariButton:$('qariPlayBtn'),statusElement:$('audioStatus')
+});
 const readerController=createReaderController({
  getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
- getReadingGroup,getReadingGroupBounds,getPageProgress
+ getReadingGroup,getReadingGroupBounds,getPageProgress,onPageChange:page=>readerAudio.update(page)
 });
 const showPage=(...args)=>readerController.showPage(...args);
 const next=()=>readerController.next();
 const prev=()=>readerController.prev();
 const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
+$('ttsPlayBtn').onclick=()=>readerAudio.speak($('arabicText').textContent);
+$('qariPlayBtn').onclick=()=>readerAudio.playQari(pages[index]);
+$('audioStopBtn').onclick=()=>readerAudio.stop();
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
  const open=!document.body.classList.contains('toc-open');
@@ -128,29 +138,16 @@ document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setA
 applyFontSize(readPreference('fontSize','normal'));
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
-loadAdditionalSurahs().then(async()=>{
- try{
-  const response=await fetch('./src/data/dzikir-overrides.json');
-  if(response.ok){
-   const data=await response.json();
-   const dzikir=sections.filter(s=>s.collection==='dzikir');
-   data.sections?.forEach((item,i)=>{if(dzikir[i]&&typeof item.text==='string')dzikir[i].text=item.text;});
-  }
-  // Apply the latest manually exported page breaks from the feature branch.
-  // The Arabic text is used verbatim; only [[HALAMAN BARU]] markers control layout.
-  const layoutResponse=await fetch('./etahlil-pembagian-halaman-dzikir.json',{cache:'no-store'});
-  if(layoutResponse.ok){
-   const layout=await layoutResponse.json();
-   if(layout.format==='etahlil-dzikir-page-layout'&&layout.scope==='dzikir-ba-da-shalat'&&typeof layout.text==='string'&&layout.text.includes('[[HALAMAN BARU]]')){
-    const pageLayout=readPageLayout();
-    pageLayout[Number(layout.sectionIndex)]=layout.text;
-    writeJsonPreference('pageLayout', pageLayout);
-   }
-  }
- }catch{}
- // The reviewed, exported file committed with the app is authoritative.
- // Do not overwrite it with stale device-local editor data.
+loadOptionalReaderContent({
+ sections,loadAdditionalSurahs,fetchImpl:fetch,
+ readPageLayout,
+ writePageLayout:layout=>writeJsonPreference('pageLayout',layout)
+}).then(()=>{
+ // Optional files are isolated: the local reader remains usable if either one is unavailable.
  buildPages();renderHome();
-}).catch(()=>{});
+}).catch(()=>{
+ // Keep the bundled reading sections available even if optional content cannot be loaded.
+ buildPages();renderHome();
+});
 window.addEventListener('resize',()=>{if(!document.body.classList.contains('reader-active'))return;clearTimeout(window.__tahlilResize);window.__tahlilResize=setTimeout(buildPages,220)});
 if(document.fonts?.ready)document.fonts.ready.then(()=>setTimeout(()=>{if(document.body.classList.contains('reader-active'))buildPages()},80));
