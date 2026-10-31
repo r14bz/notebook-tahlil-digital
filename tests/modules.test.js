@@ -8,6 +8,7 @@ import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/ap
 import { prepareReadingSections, completeSectionStarts } from '../src/features/reader/sections.js';
 import { getReaderContentsGroups } from '../src/features/reader/contents.js';
 import { createReaderController } from '../src/features/reader/controller.js';
+import { readerPageMarkup } from '../src/components/shell/reader-page.js';
 
 import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from '../src/features/reader/audio.js';
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
@@ -459,4 +460,13 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
   } finally {
     if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
   }
+});
+
+test('reader shell exposes accessible TTS and qari playback controls', () => {
+  assert.match(readerPageMarkup, /id="readerAudioPanel"/);
+  assert.match(readerPageMarkup, /id="ttsPlayBtn"/);
+  assert.match(readerPageMarkup, /id="qariPlayBtn"/);
+  assert.match(readerPageMarkup, /id="audioStopBtn"/);
+  assert.match(readerPageMarkup, /id="qariAudio" hidden controls/);
+  assert.match(readerPageMarkup, /aria-live="polite"/);
 });
