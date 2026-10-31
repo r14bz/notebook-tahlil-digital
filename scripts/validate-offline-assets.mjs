@@ -6,21 +6,16 @@ const output = path.join(root, 'www');
 const worker = await readFile(path.join(root, 'service-worker.js'), 'utf8');
 const match = worker.match(/const CORE_ASSETS = \[([\s\S]*?)\];/);
 
-if (!match) {
-  throw new Error('Could not locate CORE_ASSETS in service-worker.js');
-}
+if (!match) throw new Error('Could not locate CORE_ASSETS in service-worker.js');
 
 const assets = [...match[1].matchAll(/'([^']+)'/g)].map(([, asset]) => asset);
-if (!assets.length) {
-  throw new Error('CORE_ASSETS is empty; offline shell would have no precached files');
-}
+if (!assets.length) throw new Error('CORE_ASSETS is empty; offline shell would have no precached files');
 
 const missing = [];
 for (const asset of assets) {
   const relative = asset.replace(/^\/+/, '');
-  const target = path.join(output, relative);
   try {
-    await access(target);
+    await access(path.join(output, relative));
   } catch {
     missing.push(asset);
   }
@@ -28,10 +23,10 @@ for (const asset of assets) {
 
 if (missing.length) {
   console.error('Missing offline precache assets:');
-  for (const asset of missing) console.error(\` - \${asset}\`);
+  for (const asset of missing) console.error(' - ' + asset);
   process.exitCode = 1;
 } else {
-  console.log(\`Verified all \${assets.length} service-worker precache assets in ./www\`);
+  console.log('Verified all ' + assets.length + ' service-worker precache assets in ./www');
 }
 
 const precached = new Set(assets);
@@ -58,8 +53,8 @@ await verifyImportedModules('/src/app.js');
 
 if (missingImports.length) {
   console.error('Local JavaScript modules imported by the app but missing from service-worker precache:');
-  for (const item of missingImports) console.error(\` - \${item.importer} -> \${item.imported}\`);
+  for (const item of missingImports) console.error(' - ' + item.importer + ' -> ' + item.imported);
   process.exitCode = 1;
 } else {
-  console.log(\`Verified all \${visitedModules.size} local JavaScript modules imported by the app are included in the offline precache\`);
+  console.log('Verified all ' + visitedModules.size + ' local JavaScript modules imported by the app are included in the offline precache');
 }
