@@ -9,5 +9,12 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f5f0e5",
-  "theme_color": "#123d2e"
+  "theme_color": "#123d2e",
+  "icons": [
+    {
+      "src": "/assets/app-icon/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
