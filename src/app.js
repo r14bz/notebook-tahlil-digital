@@ -33,7 +33,6 @@ const readSavedPageIndex=()=>{
 
 function buildPages(){
  const pass=++layoutPass;
- const wasReaderActive=readerViewRequested;
  document.body.classList.add('reader-active');
  const saved=readSavedPageIndex(),currentPage=pages[index],currentSection=currentPage?.sectionIndex;
  const currentSectionOffset=currentSection===undefined?0:pages.slice(0,index).filter(page=>page.sectionIndex===currentSection).length;
@@ -60,7 +59,8 @@ function buildPages(){
   index=sectionPages.length?sectionPages[Math.min(currentSectionOffset,sectionPages.length-1)]:Math.min(saved,Math.max(0,pages.length-1));
   showPage(index);
   if(pendingReaderSection!==null){const target=pendingReaderSection;pendingReaderSection=null;showPage(Math.max(0,sectionStarts[target]??0));}
-  if(!wasReaderActive)document.body.classList.remove('reader-active');
+  // Jangan sembunyikan reader jika pengguna sudah meminta membuka koleksi saat layout masih dihitung.
+  if(!readerViewRequested)document.body.classList.remove('reader-active');
  });
 }
 function activateReader(sectionIndex){
