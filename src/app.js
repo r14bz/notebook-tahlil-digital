@@ -5,6 +5,7 @@ import { readPreference, writePreference, readJsonPreference, writeJsonPreferenc
 import { getReadingGroup } from './features/reader/navigation.js';
 import { getReadingGroupBounds, getPageProgress } from './features/reader/page-state.js';
 import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
+import { renderReaderContents } from './features/reader/contents.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
@@ -56,13 +57,6 @@ function buildPages(){
   if(!wasReaderActive)document.body.classList.remove('reader-active');
  });
 }
-const tocGroups=[
- {title:'Tahlil',matches:s=>!s.quranSurah&&!s.collection},
- {title:'Surah Yasin',matches:s=>s.quranSurah===36},
- {title:'Surah Ar-Rahman',matches:s=>s.quranSurah===55},
- {title:"Dzikir",matches:s=>s.collection==='dzikir'}
-];
-
 function activateReader(sectionIndex){
  readerViewRequested=true;
  if(!pages.length){$('continueReadingLabel').textContent='Bacaan sedang disiapkan…';return;}
@@ -82,18 +76,7 @@ $('continueReadingBtn').addEventListener('click',()=>{
 });
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
-const renderContents=()=>{
- $('contents').innerHTML='';
- tocGroups.forEach((group,i)=>{
-  const firstSection=sections.findIndex(group.matches);
-  if(firstSection<0)return;
-  const b=document.createElement('button');
-  b.textContent=(i+1)+'. '+group.title;
-  b.className=group.matches(pages[index]||{})?'active':'';
-  b.onclick=()=>{showPage(Math.max(0,sectionStarts[firstSection]??0));document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
-  $('contents').appendChild(b);
- });
-};
+const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
 let pageTurning=false,queuedTurn=null;
 function paintPage(s){
  $('pageTitle').textContent=s.title;
