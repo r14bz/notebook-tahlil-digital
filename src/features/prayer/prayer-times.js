@@ -91,6 +91,7 @@ function createLocationDialog(state, onSelect) {
     if (preferred) provinceSelect.value = preferred;
     return getCities(provinceSelect.value);
   }).then(items => {
+    wrapper.querySelector('#prayerTimezone').value = state.location.zone || 'WIB';
     cities = items;
     citySelect.innerHTML = cities.map(item => `<option value="${item.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">${item}</option>`).join('');
     const preferred = findRegion(cities, state.location.kabkota) || cities.find(item => normalize(item).includes('jakartapusat'));
