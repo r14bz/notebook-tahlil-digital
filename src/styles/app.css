@@ -969,3 +969,6 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
  #readerAudioPanel audio:not([hidden]){display:block!important;width:100%;min-height:34px}
  #readerAudioPanel .audio-status{display:block!important}
 }
+
+/* Reserve the audio-control slot while unavailable so mobile pagination does not jump. */
+#readerAudioPanel audio[hidden]{display:block!important;visibility:hidden!important}
