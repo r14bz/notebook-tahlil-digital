@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { getReadingGroup } from '../src/features/reader/navigation.js';
+import { getSwipeDirection } from '../src/features/reader/gestures.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -97,4 +98,13 @@ test('JSON preferences serialize and restore structured values', () => {
 
   assert.equal(writeJsonPreference('pageLayout', layout), true);
   assert.deepEqual(readJsonPreference('pageLayout'), layout);
+});
+
+test('reader swipe gestures recognize horizontal navigation and reject accidental swipes', () => {
+  assert.equal(getSwipeDirection({ dx: -80, dy: 10, duration: 300 }), 'next');
+  assert.equal(getSwipeDirection({ dx: 80, dy: 10, duration: 300 }), 'prev');
+  assert.equal(getSwipeDirection({ dx: -47, dy: 0, duration: 300 }), null);
+  assert.equal(getSwipeDirection({ dx: -80, dy: 70, duration: 300 }), null);
+  assert.equal(getSwipeDirection({ dx: -120, dy: 10, duration: 901 }), null);
+  assert.equal(getSwipeDirection({ dx: Number.NaN, dy: 0, duration: 100 }), null);
 });
