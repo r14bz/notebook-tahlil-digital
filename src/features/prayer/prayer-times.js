@@ -62,10 +62,10 @@ async function detectLocation() {
   const cityName = reverse.city || reverse.locality || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 6)?.name;
   if (!provinceName || !cityName) throw new Error('Nama kota dari lokasi tidak ditemukan.');
   const provinces = await getProvinces();
-  const province = provinces.find(item => normalize(item) === normalize(provinceName)) || provinces.find(item => normalize(item).includes(normalize(provinceName)) || normalize(provinceName).includes(normalize(item)));
+  const province = /jakarta/i.test(provinceName) ? (provinces.find(item => normalize(item) === normalize('DKI Jakarta')) || findRegion(provinces, provinceName)) : findRegion(provinces, provinceName);
   if (!province) throw new Error('Provinsi belum cocok dengan data jadwal shalat.');
   const cities = await getCities(province);
-  const city = cities.find(item => normalize(item) === normalize(cityName)) || cities.find(item => normalize(item).includes(normalize(cityName)) || normalize(cityName).includes(normalize(item)));
+  const city = findRegion(cities, cityName);
   if (!city) throw new Error('Kota belum cocok dengan data jadwal shalat.');
   return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone };
 }
@@ -74,7 +74,7 @@ function createLocationDialog(state, onSelect) {
   const wrapper = document.createElement('div');
   wrapper.className = 'prayer-location-modal';
   wrapper.id = 'prayerLocationModal';
-  wrapper.innerHTML = '<div class="prayer-location-dialog" role="dialog" aria-modal="true" aria-labelledby="prayerLocationTitle"><button class="prayer-modal-close" type="button" aria-label="Tutup">×</button><span class="prayer-kicker">PENGATURAN LOKASI</span><h3 id="prayerLocationTitle">Pilih lokasi jadwal</h3><p>Jadwal shalat akan mengikuti kota yang kamu pilih.</p><label for="prayerProvince">Provinsi</label><select id="prayerProvince"><option>Memuat provinsi…</option></select><label for="prayerCity">Kabupaten / Kota</label><select id="prayerCity" disabled><option>Pilih provinsi dahulu</option></select><p class="prayer-dialog-error" id="prayerDialogError" role="status"></p><button class="prayer-dialog-save" id="prayerSaveLocation" type="button" disabled>Gunakan lokasi ini</button></div>';
+  wrapper.innerHTML = '<div class="prayer-location-dialog" role="dialog" aria-modal="true" aria-labelledby="prayerLocationTitle"><button class="prayer-modal-close" type="button" aria-label="Tutup">×</button><span class="prayer-kicker">PENGATURAN LOKASI</span><h3 id="prayerLocationTitle">Pilih lokasi jadwal</h3><p>Jadwal shalat akan mengikuti kota yang kamu pilih.</p><label for="prayerProvince">Provinsi</label><select id="prayerProvince"><option>Memuat provinsi…</option></select><label for="prayerCity">Kabupaten / Kota</label><select id="prayerCity" disabled><option>Pilih provinsi dahulu</option></select><label for="prayerTimezone">Zona waktu</label><select id="prayerTimezone"><option value="WIB">WIB · UTC+7</option><option value="WITA">WITA · UTC+8</option><option value="WIT">WIT · UTC+9</option></select><p class="prayer-dialog-error" id="prayerDialogError" role="status"></p><button class="prayer-dialog-save" id="prayerSaveLocation" type="button" disabled>Gunakan lokasi ini</button></div>';
   document.body.append(wrapper);
   const close = () => wrapper.classList.remove('open');
   wrapper.querySelector('.prayer-modal-close').addEventListener('click', close);
@@ -85,13 +85,13 @@ function createLocationDialog(state, onSelect) {
   let cities = [];
   getProvinces().then(provinces => {
     provinceSelect.innerHTML = provinces.map(item => `<option value="${item.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">${item}</option>`).join('');
-    const preferred = provinces.find(item => normalize(item) === normalize(state.location.provinsi)) || provinces.find(item => normalize(item) === normalize('DKI Jakarta'));
+    const preferred = findRegion(provinces, state.location.provinsi) || provinces.find(item => normalize(item) === normalize('DKI Jakarta'));
     if (preferred) provinceSelect.value = preferred;
     return getCities(provinceSelect.value);
   }).then(items => {
     cities = items;
     citySelect.innerHTML = cities.map(item => `<option value="${item.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">${item}</option>`).join('');
-    const preferred = cities.find(item => normalize(item) === normalize(state.location.kabkota)) || cities.find(item => normalize(item).includes('jakartapusat'));
+    const preferred = findRegion(cities, state.location.kabkota) || cities.find(item => normalize(item).includes('jakartapusat'));
     if (preferred) citySelect.value = preferred;
     citySelect.disabled = false; save.disabled = false;
   }).catch(error => { wrapper.querySelector('#prayerDialogError').textContent = error.message; });
@@ -223,10 +223,10 @@ export function initPrayerTimes() {
         const provinceName = reverse.principalSubdivision || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 4)?.name;
         const cityName = reverse.city || reverse.locality || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 6)?.name;
         const provinces = await getProvinces();
-        const province = provinces.find(item => normalize(item) === normalize(provinceName)) || provinces.find(item => normalize(item).includes(normalize(provinceName)) || normalize(provinceName).includes(normalize(item)));
+        const province = /jakarta/i.test(provinceName) ? (provinces.find(item => normalize(item) === normalize('DKI Jakarta')) || findRegion(provinces, provinceName)) : findRegion(provinces, provinceName);
         if (!province) throw new Error('Provinsi tidak cocok');
         const cities = await getCities(province);
-        const city = cities.find(item => normalize(item) === normalize(cityName)) || cities.find(item => normalize(item).includes(normalize(cityName)) || normalize(cityName).includes(normalize(item)));
+        const city = findRegion(cities, cityName);
         if (!city) throw new Error('Kota tidak cocok');
         await selectLocation({ provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone, detected: true });
       } catch { await useFallback(); }
