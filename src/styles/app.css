@@ -1049,3 +1049,5 @@ body.theme-dark .prayer-location-dialog h3,body.theme-dark .prayer-location-dial
 }
 @media(max-width:380px){.prayer-banner-content{padding:16px 11px 12px}.prayer-banner h2{font-size:26px}.prayer-time strong{font-size:12px}.prayer-date{max-width:120px}}
 @media(prefers-reduced-motion:reduce){.prayer-banner,.prayer-sky,.prayer-landscape,.prayer-sun,.prayer-moon,.prayer-stars,.prayer-time{transition:none!important}}
+
+.prayer-landscape:after{content:"";position:absolute;z-index:0;left:var(--sun-x);bottom:0;width:42%;height:32px;transform:translateX(-50%) skewX(-24deg);transform-origin:center bottom;background:linear-gradient(90deg,#071d1b00,#071d1b65,#071d1b00);filter:blur(8px);opacity:.35;transition:left 2s ease,opacity 2s ease}.prayer-scene-night .prayer-landscape:after{opacity:.08}.prayer-scene-sunrise .prayer-landscape:after,.prayer-scene-sunset .prayer-landscape:after{opacity:.55}
