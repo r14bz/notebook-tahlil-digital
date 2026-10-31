@@ -4,6 +4,7 @@ import { registerOfflineSupport } from './services/offline/register-service-work
 import { readPreference, writePreference, readJsonPreference, writeJsonPreference } from './services/storage/preferences.js';
 import { getReadingGroup } from './features/reader/navigation.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
+import { filterReadingSections } from './features/home/search.js';
 
 mountAppShell();
 registerOfflineSupport();
@@ -85,7 +86,7 @@ function renderHome(){
  const query=($('homeSearch').value||'').trim().toLocaleLowerCase('id');
  let shown=0;
  groups.forEach((group,gi)=>{
-  const entries=sections.map((s,i)=>({s,i})).filter(x=>group.filter(x.s)&&(!query||(x.s.title||'').toLocaleLowerCase('id').includes(query)));
+  const entries=filterReadingSections(sections,query,group.filter);
   if(!entries.length)return;
   const heading=document.createElement('div');heading.className='index-group-title';heading.innerHTML='<span class="index-group-icon">'+group.icon+'</span><span><strong>'+group.title+'</strong><small>'+group.sub+'</small></span><span class="index-group-count">'+String(entries.length).padStart(2,'0')+'</span>';
   list.appendChild(heading);
