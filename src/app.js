@@ -82,7 +82,19 @@ function openCollection(kind){
  // Tunggu sampai daftar section dan halaman selesai memakai urutan data yang sama.
  if(!readerContentReady){pendingCollection=kind;return;}
  const first=findCollectionStart(sections,kind);
- if(first>=0)activateReader(first);
+ if(first<0)return;
+ const target=sections[first];
+ const pageSetMatches=pages.some(page=>
+  page.sectionIndex===first&&page.title===target.title&&
+  page.quranSurah===target.quranSurah&&page.collection===target.collection
+ );
+ if(!pageSetMatches){
+  pendingReaderSection=first;
+  readerViewRequested=true;
+  buildPages();
+  return;
+ }
+ activateReader(first);
 }
 const continueReadingButton = $('continueReadingBtn');
 if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
