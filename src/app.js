@@ -6,6 +6,7 @@ import { getReadingGroup } from './features/reader/navigation.js';
 import { getReadingGroupBounds, getPageProgress } from './features/reader/page-state.js';
 import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
 import { renderReaderContents } from './features/reader/contents.js';
+import { createReaderController } from './features/reader/controller.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
@@ -77,45 +78,15 @@ $('continueReadingBtn').addEventListener('click',()=>{
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
-let pageTurning=false,queuedTurn=null;
-function paintPage(s){
- $('pageTitle').textContent=s.title;
- $('arabicText').style.whiteSpace='pre-wrap';
- $('arabicText').textContent=s.text;
- $('arabicText').classList.toggle('quran-text',Boolean(s.quranSurah));
- 
- const sectionFirst=pages.findIndex(page=>getReadingGroup(page)===getReadingGroup(s));
- $('pageNumber').textContent='— '+String(index-sectionFirst+1).padStart(2,'0')+' —';
- renderContents();
-}
-function showPage(i,animate=''){
- if(!pages.length)return;
- if(pageTurning&&animate)return;
- const target=Math.max(0,Math.min(i,pages.length-1));
- if(target===index&&!animate&&$('pageTitle').textContent===pages[target].title&&$('arabicText').textContent===pages[target].text)return;
- index=target;
- const p=$('paper'),s=pages[index];
- p.classList.remove('turn-next','turn-prev','turn-out-next','turn-out-prev','turn-in-next','turn-in-prev');
- const bounds=getReadingGroupBounds(pages,index);
- const progress=getPageProgress(index,bounds);
- $('prevBtn').disabled=index<=bounds.start;
- $('nextBtn').disabled=index>=bounds.end;document.querySelectorAll('.swipe-hint-left').forEach(b=>{b.disabled=$('prevBtn').disabled});document.querySelectorAll('.swipe-hint-right').forEach(b=>{b.disabled=$('nextBtn').disabled});
- $('progressText').textContent=progress.percent+'%';
- $('progressBar').style.width=progress.percent+'%';
- writePreference('page', index);
- if(animate){
-  pageTurning=true;p.style.transformOrigin=animate==='turn-next'?'left center':'right center';
-  p.classList.add(animate==='turn-next'?'turn-out-next':'turn-out-prev');
-  window.setTimeout(()=>{
-   paintPage(s);p.classList.remove('turn-out-next','turn-out-prev');
-   p.style.transformOrigin=animate==='turn-next'?'right center':'left center';
-   p.classList.add(animate==='turn-next'?'turn-in-next':'turn-in-prev');
-   window.setTimeout(()=>{p.classList.remove('turn-in-next','turn-in-prev');p.style.transformOrigin='left center';pageTurning=false;if(queuedTurn){const q=queuedTurn;queuedTurn=null;if(q==='next')next();else prev();}},350);
-  },175);
- }else paintPage(s);
-}
-function next(){if(pageTurning){queuedTurn='next';return}if(index>=pages.length-1||getReadingGroup(pages[index+1])!==getReadingGroup(pages[index]))return;showPage(index+1,'turn-next')}
-function prev(){if(pageTurning){queuedTurn='prev';return}if(index<=0||getReadingGroup(pages[index-1])!==getReadingGroup(pages[index]))return;showPage(index-1,'turn-prev')}
+const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
+const readerController=createReaderController({
+ getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
+ getReadingGroup,getReadingGroupBounds,getPageProgress
+});
+const showPage=(...args)=>readerController.showPage(...args);
+const next=()=>readerController.next();
+const prev=()=>readerController.prev();
+const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
@@ -137,7 +108,7 @@ applyTheme(readPreference('theme')==='dark'?'dark':'light');
   startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTime=Date.now();
  },{passive:true});
  paper.addEventListener('touchend',e=>{
-  if(!startTime||!e.changedTouches.length||pageTurning)return;
+  if(!startTime||!e.changedTouches.length||isPageTurning())return;
   const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY,duration=Date.now()-startTime;
   startTime=0;
   const direction=getSwipeDirection({dx,dy,duration});
