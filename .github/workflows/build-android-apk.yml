@@ -30,6 +30,8 @@ jobs:
         run: npm run prepare:mobile
       - name: Add Android platform
         run: npx cap add android
+      - name: Generate Android launcher icons
+        run: npx --yes @capacitor/assets generate --android --assetPath assets/app-icon --iconBackgroundColor '#123d2e'
       - name: Sync Capacitor
         run: npx cap sync android
       - name: Build debug APK
