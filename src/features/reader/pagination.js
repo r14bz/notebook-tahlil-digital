@@ -2,9 +2,9 @@
  * Mesin pemenggalan halaman reader.
  * Mempertahankan batas ayat, pemisah manual, dan pemenggalan teks sesuai tinggi layar.
  */
-export function splitSectionForScreen(section,sectionIndex,availableHeight,width){
+export function splitSectionForScreen(section,sectionIndex,availableHeight,width,textElement){
  const out=[];let chunk='';
- const probe=$('arabicText').cloneNode(false);probe.removeAttribute('id');
+ const probe=textElement.cloneNode(false);probe.removeAttribute('id');
  probe.style.cssText='position:fixed;left:-10000px;top:0;visibility:hidden;display:block;flex:none;min-height:0;height:auto;max-height:none;overflow:visible;width:'+width+'px;';
  probe.classList.toggle('quran-text',Boolean(section.quranSurah));
  document.body.appendChild(probe);
