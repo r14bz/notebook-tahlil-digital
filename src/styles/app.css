@@ -972,3 +972,7 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
 
 /* Reserve the audio-control slot while unavailable so mobile pagination does not jump. */
 #readerAudioPanel audio[hidden]{display:block!important;visibility:hidden!important}
+
+
+/* Audio TTS and qari are temporarily hidden without removing their implementation. */
+#readerAudioPanel[hidden]{display:none!important}
