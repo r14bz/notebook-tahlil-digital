@@ -4,7 +4,7 @@ import path from 'node:path';
 const root = process.cwd();
 const output = path.join(root, 'www');
 const worker = await readFile(path.join(root, 'service-worker.js'), 'utf8');
-const match = worker.match(/const CORE_ASSETS = \\[([\\s\\S]*?)\\];/);
+const match = worker.match(/const CORE_ASSETS = \[([\s\S]*?)\];/);
 
 if (!match) {
   throw new Error('Could not locate CORE_ASSETS in service-worker.js');
@@ -17,7 +17,7 @@ if (!assets.length) {
 
 const missing = [];
 for (const asset of assets) {
-  const relative = asset.replace(/^\\/+/, '');
+  const relative = asset.replace(/^\/+/, '');
   const target = path.join(output, relative);
   try {
     await access(target);
