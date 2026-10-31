@@ -426,9 +426,10 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
     value: 'arabic-voice',
     hidden: false,
     options: [],
+    listeners: {},
     replaceChildren() { this.options = []; },
     append(option) { this.options.push(option); },
-    addEventListener() {}
+    addEventListener(name, callback) { this.listeners[name] = callback; }
   };
   class FakeUtterance {
     constructor(text) { this.text = text; }
@@ -442,6 +443,7 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
     }
   };
   const status = { textContent: '' };
+  const savedPreferences = new Map([['ttsVoice', 'arabic-voice']]);
   globalThis.document = { createElement: () => ({}) };
 
   try {
@@ -449,12 +451,18 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
       speechSynthesis,
       SpeechSynthesisUtterance: FakeUtterance,
       voiceSelect,
-      statusElement: status
+      statusElement: status,
+      readPreference: key => savedPreferences.get(key) || '',
+      writePreference: (key, value) => savedPreferences.set(key, value)
     });
     const longText = 'اللَّهُ الرَّحْمَٰنُ الرَّحِيمُ '.repeat(20);
     assert.equal(controller.speak(longText), true);
     assert.ok(spoken.length > 1);
     assert.ok(spoken.every(item => item.voice === voice && item.lang === 'ar-SA'));
+    assert.equal(voiceSelect.value, 'arabic-voice');
+    voiceSelect.value = '';
+    voiceSelect.listeners.change();
+    assert.equal(savedPreferences.get('ttsVoice'), '');
     assert.match(status.textContent, /TTS selesai/);
     assert.equal(controller.getAvailableVoices().length, 1);
   } finally {
