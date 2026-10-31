@@ -1077,10 +1077,11 @@ body.theme-dark .prayer-location-dialog h3,body.theme-dark .prayer-location-dial
 .prayer-dialog-auto{width:100%;margin-top:9px;background:#e9e2d1;color:#31523e;border:1px solid #cfc09e;font-size:12px}
 body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-color:#60745f}
 
-/* Prayer banner layout: move prayer schedule further down while keeping the bottom row clear. */
-.prayer-times { margin-top: 48px !important; }
+/* Prayer banner layout: anchor the prayer schedule directly above the manual-location row. */
+.prayer-banner-content { justify-content: flex-start !important; }
+.prayer-times { margin-top: auto !important; margin-bottom: 8px !important; }
 .prayer-mosque { bottom: 27px !important; }
 @media (max-width: 760px) {
-  .prayer-times { margin-top: 42px !important; }
+  .prayer-times { margin-bottom: 7px !important; }
   .prayer-mosque { bottom: 23px !important; }
 }
