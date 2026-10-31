@@ -190,6 +190,7 @@ export function createReaderAudioController({
     });
   }
   if (speechSynthesis?.addEventListener) speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+  else if (speechSynthesis && 'onvoiceschanged' in speechSynthesis) speechSynthesis.onvoiceschanged = refreshVoices;
   refreshVoices();
 
   return {
