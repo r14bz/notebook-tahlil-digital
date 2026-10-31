@@ -2,7 +2,8 @@ const STORAGE_KEYS = Object.freeze({
   page: 'tahlil-page',
   pageLayout: 'etahlil-page-layout-v1',
   theme: 'etahlil-theme',
-  fontSize: 'etahlil-font-size'
+  fontSize: 'etahlil-font-size',
+  ttsVoice: 'etahlil-tts-voice-v1'
 });
 
 // Memory fallback keeps preferences usable for the current session when browser
