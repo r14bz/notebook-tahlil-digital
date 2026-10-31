@@ -13,6 +13,10 @@ registerOfflineSupport();
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
 const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
+const readPageLayout=()=>{
+ const value=readJsonPreference('pageLayout', {});
+ return value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+};
 const readSavedPageIndex=()=>{
  const value=Number.parseInt(readPreference('page','0'),10);
  return Number.isSafeInteger(value)&&value>=0?value:0;
@@ -33,7 +37,7 @@ function buildPages(){
   pages=[];sectionStarts=[];
   // Kelompok Tahlil sudah ditentukan di data; jangan gabungkan ulang berdasarkan panjang teks.
   const readingSections=[];
-  const pageLayout=readJsonPreference('pageLayout', {});
+  const pageLayout=readPageLayout();
   // A complete exported Dzikir Ba'da Shalat layout already contains the whole collection.
   // Render it once at its anchor section and skip the original dzikir entries that it replaces.
   const manualDzikirLayoutIndex=Object.keys(pageLayout).map(Number).find(si=>
@@ -212,7 +216,7 @@ loadAdditionalSurahs().then(async()=>{
   if(layoutResponse.ok){
    const layout=await layoutResponse.json();
    if(layout.format==='etahlil-dzikir-page-layout'&&layout.scope==='dzikir-ba-da-shalat'&&typeof layout.text==='string'&&layout.text.includes('[[HALAMAN BARU]]')){
-    const pageLayout=readJsonPreference('pageLayout', {});
+    const pageLayout=readPageLayout();
     pageLayout[Number(layout.sectionIndex)]=layout.text;
     writeJsonPreference('pageLayout', pageLayout);
    }
