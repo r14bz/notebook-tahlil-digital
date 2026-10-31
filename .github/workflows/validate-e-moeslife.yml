@@ -43,6 +43,11 @@ jobs:
           test -f www/src/app.js
           test -f www/src/services/offline/register-service-worker.js
           test -f www/src/features/reader/navigation.js
+          test -f www/src/features/reader/page-state.js
+          test -f www/src/features/reader/sections.js
+          test -f www/src/features/reader/contents.js
+          test -f www/src/features/reader/gestures.js
+          test -f www/src/features/reader/appearance.js
           test -f www/src/features/reader/pagination.js
           test -f www/src/features/home/search.js
           test -f www/src/features/home/reading-list.js
