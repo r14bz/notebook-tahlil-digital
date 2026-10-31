@@ -43,7 +43,7 @@ function buildPages(){
   readingSections.forEach((s,ri)=>{
    const originalIndex=s.originalIndex??ri;
    sectionStarts[originalIndex]=pages.length;
-   pages.push(...splitSectionForScreen(s,originalIndex,available,width));
+   pages.push(...splitSectionForScreen(s,originalIndex,available,width,text));
   });
   // Point all grouped Tahlil entries to the page that contains their combined text.
   let pageCursor=0;
