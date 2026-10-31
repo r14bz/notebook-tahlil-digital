@@ -937,3 +937,22 @@ header { background:#123d2e!important; }
 /* Tombol panah transparan: ketukan andal di layar sentuh, sembunyi di halaman pertama/terakhir. */
 .swipe-hint{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .swipe-hint:disabled{opacity:0!important;pointer-events:none}
+
+/* Reader audio: compact controls that follow the kitab-inspired palette. */
+#readerAudioPanel{align-items:center;gap:10px}
+#readerAudioPanel .audio-voice-label{font-size:10px;color:var(--muted)}
+#readerAudioPanel .audio-voice-select{max-width:190px;min-width:0;padding:7px 9px;border:1px solid #ded2b7;border-radius:9px;background:#fffaf0;color:var(--green);font-size:11px}
+#readerAudioPanel audio{width:100%;height:34px;min-width:0}
+#readerAudioPanel .audio-status{line-height:1.5}
+body.theme-dark #readerAudioPanel{background:#202e25;border-color:#465a49}
+body.theme-dark #readerAudioPanel .play-info strong,
+body.theme-dark #readerAudioPanel .audio-status,
+body.theme-dark #readerAudioPanel .audio-voice-label{color:#e9e3d4}
+body.theme-dark #readerAudioPanel .audio-voice-select{background:#26352d;color:#e9e3d4;border-color:#53634e}
+@media(max-width:768px){
+ #readerAudioPanel{padding:10px;gap:7px}
+ #readerAudioPanel .play-info{min-width:100px}
+ #readerAudioPanel .play-actions{width:auto;flex:1 1 100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #readerAudioPanel .play-actions button{min-width:0;padding:8px 5px;font-size:10px}
+ #readerAudioPanel .audio-voice-select{flex:1 1 100%;max-width:none}
+}
