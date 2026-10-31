@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   '/src/features/reader/page-state.js',
   '/src/features/reader/sections.js',
   '/src/features/reader/contents.js',
+  '/src/features/reader/controller.js',
   '/src/features/reader/gestures.js',
   '/src/features/reader/appearance.js',
   '/src/features/home/search.js',
