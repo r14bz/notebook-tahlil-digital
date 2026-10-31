@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { getReadingGroup } from '../src/features/reader/navigation.js';
 import { getSwipeDirection } from '../src/features/reader/gestures.js';
 import { getReadingGroupBounds, getPageProgress } from '../src/features/reader/page-state.js';
+import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/appearance.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -124,4 +125,52 @@ test('reader page state calculates group boundaries and scoped progress', () => 
   assert.deepEqual(getPageProgress(3, bounds), { current: 2, total: 2, percent: 100 });
   assert.deepEqual(getReadingGroupBounds([], 0), { start: 0, end: -1 });
   assert.deepEqual(getPageProgress(0, { start: 0, end: -1 }), { current: 0, total: 0, percent: 0 });
+});
+
+test('reader appearance applies and persists only supported themes and font sizes', () => {
+  const classes = new Set();
+  const body = {
+    classList: {
+      toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); },
+      remove(...names) { names.forEach(name => classes.delete(name)); },
+      add(name) { classes.add(name); }
+    }
+  };
+  const icon = {}, label = {};
+  const attributes = {};
+  const button = {
+    querySelector(selector) { return selector === '.header-icon' ? icon : label; },
+    setAttribute(name, value) { attributes[name] = value; },
+    title: ''
+  };
+  const arabicText = { classList: { toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); } } };
+  const control = {};
+  const saved = new Map();
+  const writePreference = (key, value) => saved.set(key, value);
+
+  assert.equal(applyReaderTheme('dark', { body, button, writePreference }), 'dark');
+  assert.equal(classes.has('theme-dark'), true);
+  assert.equal(icon.textContent, '☀');
+  assert.equal(attributes['aria-label'], 'Aktifkan mode terang');
+  assert.equal(saved.get('theme'), 'dark');
+
+  assert.equal(applyReaderTheme('unexpected', { body, button, writePreference }), 'light');
+  assert.equal(classes.has('theme-dark'), false);
+  assert.equal(icon.textContent, '☾');
+  assert.equal(saved.get('theme'), 'light');
+
+  assert.equal(applyReaderFontSize('large', { body, control, arabicText, writePreference }), 'large');
+  assert.equal(control.value, 'large');
+  assert.equal(classes.has('font-large'), true);
+  assert.equal(classes.has('compact'), false);
+  assert.equal(saved.get('fontSize'), 'large');
+
+  assert.equal(applyReaderFontSize('small', { body, control, arabicText, writePreference }), 'small');
+  assert.equal(classes.has('font-small'), true);
+  assert.equal(classes.has('compact'), true);
+  assert.equal(applyReaderFontSize('invalid', { body, control, arabicText, writePreference }), 'normal');
+  assert.equal(control.value, 'normal');
+  assert.equal(classes.has('font-normal'), true);
+  assert.equal(classes.has('compact'), false);
+  assert.equal(saved.get('fontSize'), 'normal');
 });
