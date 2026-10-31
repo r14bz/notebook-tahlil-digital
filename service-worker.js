@@ -18,6 +18,10 @@ const CORE_ASSETS = [
   '/src/data/dzikir.js',
   '/src/data/yasin.js',
   '/src/data/rahman.js',
+  '/assets/logo-mark.webp',
+  '/assets/logo-text.webp',
+  '/assets/collection-icon.webp',
+  '/assets/app-icon/icon.png',
   '/src/data/dzikir-overrides.json',
   '/etahlil-pembagian-halaman-dzikir.json'
 ];
