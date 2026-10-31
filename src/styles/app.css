@@ -959,3 +959,13 @@ body.theme-dark #readerAudioPanel .audio-voice-select{background:#26352d;color:#
 
 #readerAudioPanel .audio-source{font-size:10px;color:var(--green2);text-decoration:underline;text-underline-offset:2px}
 body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
+
+/* Keep the new audio panel independent from legacy controls-row audio styles. */
+#readerAudioPanel{display:flex;flex-wrap:wrap!important;min-height:0}
+#readerAudioPanel .audio-status{display:block!important}
+#readerAudioPanel audio:not([hidden]){display:block!important}
+@media(max-width:768px){
+ #readerAudioPanel{flex-wrap:wrap!important;min-height:0}
+ #readerAudioPanel audio:not([hidden]){display:block!important;width:100%;min-height:34px}
+ #readerAudioPanel .audio-status{display:block!important}
+}
