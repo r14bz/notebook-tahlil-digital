@@ -416,3 +416,47 @@ test('manual page layout is persisted only when its target is a dzikir section',
   await loadOptionalReaderContent({ ...options, fetchImpl: makeFetch(1) });
   assert.equal(saved[1], 'awal\n[[HALAMAN BARU]]\nlanjutan');
 });
+
+test('Arabic TTS selects an installed Arabic voice and reads queued text chunks', () => {
+  const previousDocument = globalThis.document;
+  const voice = { lang: 'ar-SA', name: 'Arabic Voice', voiceURI: 'arabic-voice' };
+  const spoken = [];
+  const voiceSelect = {
+    value: 'arabic-voice',
+    hidden: false,
+    options: [],
+    replaceChildren() { this.options = []; },
+    append(option) { this.options.push(option); },
+    addEventListener() {}
+  };
+  class FakeUtterance {
+    constructor(text) { this.text = text; }
+  }
+  const speechSynthesis = {
+    getVoices: () => [voice, { lang: 'en-US', name: 'English', voiceURI: 'english' }],
+    cancel() {},
+    speak(utterance) {
+      spoken.push(utterance);
+      utterance.onend();
+    }
+  };
+  const status = { textContent: '' };
+  globalThis.document = { createElement: () => ({}) };
+
+  try {
+    const controller = createReaderAudioController({
+      speechSynthesis,
+      SpeechSynthesisUtterance: FakeUtterance,
+      voiceSelect,
+      statusElement: status
+    });
+    const longText = 'اللَّهُ الرَّحْمَٰنُ الرَّحِيمُ '.repeat(20);
+    assert.equal(controller.speak(longText), true);
+    assert.ok(spoken.length > 1);
+    assert.ok(spoken.every(item => item.voice === voice && item.lang === 'ar-SA'));
+    assert.match(status.textContent, /TTS selesai/);
+    assert.equal(controller.getAvailableVoices().length, 1);
+  } finally {
+    if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
+  }
+});
