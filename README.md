@@ -10,7 +10,7 @@ Website: https://e-moeslife.vercel.app
 - Posisi bacaan dan preferensi tampilan tersimpan di perangkat.
 - Mode terang/gelap dan pengaturan ukuran tulisan Arab.
 - TTS teks Arab menggunakan engine dan pilihan suara Arab yang tersedia pada perangkat.
-- Pemutaran rekaman qari Mishary Rashid Alafasy untuk Surah Yasin dan Ar-Rahman, berurutan per ayat.
+- Pemutaran rekaman qari Mishary Rashid Alafasy untuk Surah Yasin dan Ar-Rahman, berurutan per ayat (stream dari [EveryAyah.com](https://everyayah.com/), tanpa membundel atau mengubah file audio).
 - Layout responsif untuk ponsel dan desktop.
 
 ## Identitas
