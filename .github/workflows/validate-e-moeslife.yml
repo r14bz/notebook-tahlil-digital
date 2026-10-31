@@ -46,6 +46,7 @@ jobs:
           test -f www/src/features/reader/page-state.js
           test -f www/src/features/reader/sections.js
           test -f www/src/features/reader/contents.js
+          test -f www/src/features/reader/controller.js
           test -f www/src/features/reader/gestures.js
           test -f www/src/features/reader/appearance.js
           test -f www/src/features/reader/pagination.js
