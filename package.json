@@ -8,7 +8,8 @@
     "prepare:mobile": "node scripts/prepare-mobile.mjs",
     "cap:sync": "npm run prepare:mobile && cap sync",
     "cap:open:android": "cap open android",
-    "cap:add:android": "cap add android"
+    "cap:add:android": "cap add android",
+    "test": "node --test"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
