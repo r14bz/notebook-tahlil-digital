@@ -5,6 +5,8 @@ const PRAYERS = [{ key: 'subuh', label: 'Subuh' }, { key: 'dzuhur', label: 'Dzuh
 const $ = id => document.getElementById(id);
 const pad = value => String(value).padStart(2, '0');
 const normalize = value => String(value || '').toLocaleLowerCase('id').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+const regionKey = value => normalize(value).replace(/^(daerahkhususibukota|provinsi|kabupatenadministrasi|kabupaten|kab|kotaadministrasi|kota)/, '');
+const findRegion = (items, value) => items.find(item => regionKey(item) === regionKey(value)) || items.find(item => regionKey(item).includes(regionKey(value)) || regionKey(value).includes(regionKey(item)));
 const safeJson = async response => { if (!response.ok) throw new Error('Layanan jadwal shalat tidak merespons.'); return response.json(); };
 
 function localParts(date, timezone) {
@@ -104,7 +106,8 @@ function createLocationDialog(state, onSelect) {
     } catch (error) { wrapper.querySelector('#prayerDialogError').textContent = error.message; }
   });
   save.addEventListener('click', async () => {
-    const zone = state.location.zone ? { timezone: state.location.timezone, zone: state.location.zone } : { timezone: 'Asia/Jakarta', zone: 'WIB' };
+    const zoneCode = wrapper.querySelector('#prayerTimezone').value;
+    const zone = zoneCode === 'WIT' ? { timezone: 'Asia/Jayapura', zone: 'WIT' } : zoneCode === 'WITA' ? { timezone: 'Asia/Makassar', zone: 'WITA' } : { timezone: 'Asia/Jakarta', zone: 'WIB' };
     const selected = { provinsi: provinceSelect.value, kabkota: citySelect.value, label: citySelect.value.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone, manual: true };
     save.disabled = true; save.textContent = 'Memuat jadwal…';
     try { await onSelect(selected); close(); }
@@ -163,8 +166,6 @@ function updateClockAndCountdown(location, schedule) {
   let target = new Date(now);
   if (next.minutes <= current) target.setDate(target.getDate() + 1);
   const [hour, minute] = String(schedule[next.key] || '00:00').split(':').map(Number);
-  const targetParts = localParts(target, location.timezone);
-  const localTarget = new Date(`${targetParts.year}-${targetParts.month}-${pad(Number(targetParts.day) + (next.minutes <= current ? 0 : 0))}T00:00:00`);
   const delta = (next.minutes + (next.minutes <= current ? 1440 : 0) - current) * 60000 - Number(parts.second) * 1000;
   $('nextPrayerLabel').textContent = `Menuju ${next.label}`;
   $('nextPrayerCountdown').textContent = formatCountdown(delta);
@@ -181,9 +182,11 @@ export function initPrayerTimes() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (saved?.provinsi && saved?.kabkota) state.location = { ...DEFAULT_LOCATION, ...saved };
   } catch {}
+  let activeDateKey = '';
   const refresh = async () => {
     const now = new Date();
     const parts = localParts(now, state.location.timezone);
+    activeDateKey = `${parts.year}-${parts.month}-${parts.day}`;
     const month = Number(parts.month), year = Number(parts.year), day = Number(parts.day);
     const data = await loadMonthlySchedule(state.location, year, month);
     const schedule = data.jadwal.find(item => Number(item.tanggal) === day);
@@ -191,6 +194,9 @@ export function initPrayerTimes() {
     state.schedule = { ...schedule, timezone: state.location.timezone };
     renderTimes(schedule);
     const tick = () => {
+      const tickParts = localParts(new Date(), state.location.timezone);
+      const tickDateKey = `${tickParts.year}-${tickParts.month}-${tickParts.day}`;
+      if (tickDateKey !== activeDateKey) { refresh().catch(() => {}); return; }
       const scene = updateClockAndCountdown(state.location, state.schedule) || 'day';
       updateSky(scene, new Date(), state.schedule);
     };
