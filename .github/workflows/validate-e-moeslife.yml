@@ -47,6 +47,9 @@ jobs:
           test -f www/src/features/reader/sections.js
           test -f www/src/features/reader/contents.js
           test -f www/src/features/reader/controller.js
+          test -f www/src/features/reader/audio.js
+          test -f www/src/features/reader/content-loader.js
+          grep -q 'readerAudioPanel' www/src/components/shell/reader-page.js
           test -f www/src/features/reader/gestures.js
           test -f www/src/features/reader/appearance.js
           test -f www/src/features/reader/pagination.js
