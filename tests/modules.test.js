@@ -5,6 +5,7 @@ import { getReadingGroup } from '../src/features/reader/navigation.js';
 import { getSwipeDirection } from '../src/features/reader/gestures.js';
 import { getReadingGroupBounds, getPageProgress } from '../src/features/reader/page-state.js';
 import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/appearance.js';
+import { prepareReadingSections, completeSectionStarts } from '../src/features/reader/sections.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -173,4 +174,24 @@ test('reader appearance applies and persists only supported themes and font size
   assert.equal(classes.has('font-normal'), true);
   assert.equal(classes.has('compact'), false);
   assert.equal(saved.get('fontSize'), 'normal');
+});
+
+test('reader section preparation preserves source indexes and authoritative manual dzikir layout', () => {
+  const sections = [
+    { title: 'Pembukaan' },
+    { title: 'Dzikir pertama', collection: 'dzikir' },
+    { title: 'Dzikir kedua', collection: 'dzikir' },
+    { title: 'Surah Yasin', quranSurah: 36 }
+  ];
+  const prepared = prepareReadingSections(sections, { 1: 'bagian A\\n[[HALAMAN BARU]]\\nbagian B' });
+  assert.deepEqual(prepared.map(section => section.originalIndex), [0, 1, 3]);
+  assert.equal(prepared[1].pageLayoutText, 'bagian A\\n[[HALAMAN BARU]]\\nbagian B');
+  assert.equal(prepared[1].title, 'Dzikir pertama');
+  assert.equal(sections.length, 4);
+  assert.equal(sections[1].pageLayoutText, undefined);
+});
+
+test('reader section starts fill grouped entries without changing known page indexes', () => {
+  assert.deepEqual(completeSectionStarts([0, 2, undefined, 5, undefined], 5), [0, 2, 2, 5, 5]);
+  assert.deepEqual(completeSectionStarts([], 3), [0, 0, 0]);
 });
