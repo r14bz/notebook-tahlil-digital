@@ -38,11 +38,22 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).then(response => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then(cache => cache.put('/index.html', copy));
-      return response;
-    }).catch(() => caches.match('/index.html')));
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request);
+        if (response.ok) {
+          try {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put('/index.html', response.clone());
+          } catch {
+            // A cache write failure must not block a successful navigation.
+          }
+        }
+        return response;
+      } catch {
+        return (await caches.match('/index.html')) || Response.error();
+      }
+    })());
     return;
   }
   event.respondWith(caches.match(request).then(cached => {
