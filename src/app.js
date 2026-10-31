@@ -77,7 +77,8 @@ function openCollection(kind){
  if(first>=0)activateReader(first);
  else if(!readerContentReady)pendingCollection=kind;
 }
-$('continueReadingBtn').addEventListener('click',()=>{
+const continueReadingButton = $('continueReadingBtn');
+if(continueReadingButton)continueReadingButton.addEventListener('click',()=>{
  const saved=readSavedPageIndex();
  readerViewRequested=true;document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
