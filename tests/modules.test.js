@@ -7,6 +7,7 @@ import { getReadingGroupBounds, getPageProgress } from '../src/features/reader/p
 import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/appearance.js';
 import { prepareReadingSections, completeSectionStarts } from '../src/features/reader/sections.js';
 import { getReaderContentsGroups } from '../src/features/reader/contents.js';
+import { createReaderController } from '../src/features/reader/controller.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -205,4 +206,64 @@ test('reader contents expose distinct collection groups with the correct section
   assert.equal(groups[1].matches({ quranSurah: 36 }), true);
   assert.equal(groups[2].matches({ quranSurah: 55 }), true);
   assert.equal(groups[3].matches({ collection: 'dzikir' }), true);
+});
+
+test('reader controller navigates inside groups, updates progress, and persists the active page', () => {
+  const previousDocument = globalThis.document;
+  const previousWindow = globalThis.window;
+  const classes = new Set();
+  const makeNode = () => ({
+    textContent: '', disabled: false, title: '', style: {},
+    classList: {
+      add(name) { classes.add(name); },
+      remove(...names) { names.forEach(name => classes.delete(name)); },
+      toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); }
+    }
+  });
+  const nodes = new Map(['pageTitle','arabicText','pageNumber','paper','prevBtn','nextBtn','progressText','progressBar'].map(id => [id, makeNode()]));
+  const $ = id => nodes.get(id);
+  const pages = [
+    { title: 'Tahlil 1', text: 'نص ١' },
+    { title: 'Tahlil 2', text: 'نص ٢' },
+    { title: 'Yasin 1', text: 'نص ٣', quranSurah: 36 },
+    { title: 'Yasin 2', text: 'نص ٤', quranSurah: 36 }
+  ];
+  let index = 0;
+  const saved = [];
+  let renders = 0;
+  globalThis.document = { querySelectorAll: () => [] };
+  globalThis.window = { setTimeout(callback) { callback(); return 1; } };
+
+  try {
+    const controller = createReaderController({
+      getPages: () => pages,
+      getIndex: () => index,
+      setIndex: value => { index = value; },
+      $,
+      writePreference: (key, value) => saved.push([key, value]),
+      renderContents: () => { renders += 1; },
+      getReadingGroup,
+      getReadingGroupBounds,
+      getPageProgress
+    });
+
+    controller.showPage(0);
+    assert.equal($('progressText').textContent, '50%');
+    controller.next();
+    assert.equal(index, 1);
+    assert.equal($('pageTitle').textContent, 'Tahlil 2');
+    controller.next();
+    assert.equal(index, 1, 'navigation must not cross into the next reading group');
+    controller.showPage(2);
+    controller.prev();
+    assert.equal(index, 2, 'previous must not cross into the previous reading group');
+    controller.next();
+    assert.equal(index, 3);
+    assert.equal($('progressText').textContent, '100%');
+    assert.deepEqual(saved.at(-1), ['page', 3]);
+    assert.ok(renders >= 4);
+  } finally {
+    if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
+    if (previousWindow === undefined) delete globalThis.window; else globalThis.window = previousWindow;
+  }
 });
