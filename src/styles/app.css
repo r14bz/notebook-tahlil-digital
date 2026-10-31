@@ -1076,3 +1076,11 @@ body.theme-dark .prayer-location-dialog h3,body.theme-dark .prayer-location-dial
 }
 .prayer-dialog-auto{width:100%;margin-top:9px;background:#e9e2d1;color:#31523e;border:1px solid #cfc09e;font-size:12px}
 body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-color:#60745f}
+
+/* Prayer banner layout: lower the prayer schedule and lift the mosque illustration slightly. */
+.prayer-times { margin-top: 30px !important; }
+.prayer-mosque { bottom: 27px !important; }
+@media (max-width: 760px) {
+  .prayer-times { margin-top: 27px !important; }
+  .prayer-mosque { bottom: 23px !important; }
+}
