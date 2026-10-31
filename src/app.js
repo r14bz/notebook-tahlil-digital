@@ -5,6 +5,7 @@ import { readPreference, writePreference, readJsonPreference, writeJsonPreferenc
 import { getReadingGroup } from './features/reader/navigation.js';
 import { getReadingGroupBounds, getPageProgress } from './features/reader/page-state.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
+import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
 import { renderReadingList } from './features/home/reading-list.js';
 import { findCollectionStart } from './features/collections/navigation.js';
@@ -160,7 +161,7 @@ $('contentsBtn').onclick=()=>{
  $('contentsBtn').setAttribute('aria-expanded',String(open));
 };
 $('closeContents').onclick=()=>{document.body.classList.remove('toc-open');$('contentsBtn').setAttribute('aria-expanded','false')};
-const applyTheme=theme=>{document.body.classList.toggle('theme-dark',theme==='dark');$('themeBtn').querySelector('.header-icon').textContent=theme==='dark'?'☀':'☾';$('themeBtn').querySelector('.header-label').textContent=theme==='dark'?'Mode terang':'Mode gelap';$('themeBtn').setAttribute('aria-label',theme==='dark'?'Aktifkan mode terang':'Aktifkan mode gelap');$('themeBtn').title=theme==='dark'?'Mode terang':'Mode gelap';writePreference('theme', theme)};
+const applyTheme=theme=>applyReaderTheme(theme,{body:document.body,button:$('themeBtn'),writePreference});
 $('themeBtn').onclick=()=>applyTheme(document.body.classList.contains('theme-dark')?'light':'dark');
 applyTheme(readPreference('theme')==='dark'?'dark':'light');
 
@@ -186,14 +187,7 @@ applyTheme(readPreference('theme')==='dark'?'dark':'light');
  [left,right].forEach(hint=>hint.addEventListener('click',()=>{hint.classList.add('hint-fading');window.setTimeout(()=>hint.classList.remove('hint-fading'),80)}));
 })();
 
-const applyFontSize=value=>{
- const safeValue=['small','normal','large'].includes(value)?value:'normal';
- $('fontSize').value=safeValue;
- document.body.classList.remove('font-small','font-normal','font-large');
- document.body.classList.add('font-'+safeValue);
- $('arabicText').classList.toggle('compact',safeValue==='small');
- writePreference('fontSize',safeValue);
-};
+const applyFontSize=value=>applyReaderFontSize(value,{body:document.body,control:$('fontSize'),arabicText:$('arabicText'),writePreference});
 $('fontSize').onchange=e=>{applyFontSize(e.target.value);buildPages()};
 // Fullscreen control has been replaced by the theme toggle; do not bind the removed button.
 document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');
