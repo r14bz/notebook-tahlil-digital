@@ -3,7 +3,8 @@ import { filterReadingSections } from './search.js';
 
 /** Merender indeks bacaan dan pencarian di halaman beranda. */
 export function renderReadingList({ sections, pages, $, activateReader }) {
- const saved=Number(readPreference('page', '0')||0);
+ const parsedPage=Number.parseInt(readPreference('page','0'),10);
+ const saved=Number.isSafeInteger(parsedPage)&&parsedPage>=0?parsedPage:0;
  const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
  $('continueReadingLabel').textContent=savedPage ? (savedPage.title) : 'Mulai dari halaman pertama';
  $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah&&!s.collection).length+' bagian bacaan';
