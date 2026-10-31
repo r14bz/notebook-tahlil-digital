@@ -5,6 +5,7 @@ import { readPreference, writePreference, readJsonPreference, writeJsonPreferenc
 import { getReadingGroup } from './features/reader/navigation.js';
 import { splitSectionForScreen } from './features/reader/pagination.js';
 import { filterReadingSections } from './features/home/search.js';
+import { findCollectionStart } from './features/collections/navigation.js';
 
 mountAppShell();
 registerOfflineSupport();
@@ -72,7 +73,7 @@ function activateReader(sectionIndex){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderHome(){
- const saved=Number(localStorage.getItem('tahlil-page')||0);
+ const saved=Number(readPreference('page', '0')||0);
  const savedPage=pages[Math.min(saved,Math.max(0,pages.length-1))];
  $('continueReadingLabel').textContent=savedPage ? (savedPage.title) : 'Mulai dari halaman pertama';
  $('tahlilMeta').textContent=sections.filter(s=>!s.quranSurah&&!s.collection).length+' bagian bacaan';
@@ -102,7 +103,7 @@ function renderHome(){
  $('homeSearchEmpty').hidden=shown!==0;
 }
 function openCollection(kind){
- const first=sections.findIndex(s=>kind==='tahlil'?(!s.quranSurah&&!s.collection):kind==='dzikir'?s.collection==='dzikir':kind==='yasin'?s.quranSurah===36:s.quranSurah===55);
+ const first=findCollectionStart(sections,kind);
  if(first>=0)activateReader(first);
 }
 $('continueReadingBtn').addEventListener('click',()=>{
