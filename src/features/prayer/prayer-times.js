@@ -24,10 +24,16 @@ function formatCountdown(ms) {
   return `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor(seconds % 3600 / 60))}:${pad(seconds % 60)}`;
 }
 function cacheKey(location, year, month) { return `em-prayer-cache:${normalize(location.provinsi)}:${normalize(location.kabkota)}:${year}-${pad(month)}`; }
-async function post(path, body) {
-  return safeJson(await fetch(`${API}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }));
+async function request(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000);
+  try { return await safeJson(await fetch(url, { ...options, signal: controller.signal })); }
+  finally { clearTimeout(timeout); }
 }
-async function getJson(url) { return safeJson(await fetch(url)); }
+async function post(path, body) {
+  return request(`${API}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+}
+async function getJson(url) { return request(url); }
 
 async function loadMonthlySchedule(location, year, month) {
   const key = cacheKey(location, year, month);
@@ -72,11 +78,11 @@ async function detectLocation() {
   return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone };
 }
 
-function createLocationDialog(state, onSelect) {
+function createLocationDialog(state, onSelect, onAuto) {
   const wrapper = document.createElement('div');
   wrapper.className = 'prayer-location-modal';
   wrapper.id = 'prayerLocationModal';
-  wrapper.innerHTML = '<div class="prayer-location-dialog" role="dialog" aria-modal="true" aria-labelledby="prayerLocationTitle"><button class="prayer-modal-close" type="button" aria-label="Tutup">×</button><span class="prayer-kicker">PENGATURAN LOKASI</span><h3 id="prayerLocationTitle">Pilih lokasi jadwal</h3><p>Jadwal shalat akan mengikuti kota yang kamu pilih.</p><label for="prayerProvince">Provinsi</label><select id="prayerProvince"><option>Memuat provinsi…</option></select><label for="prayerCity">Kabupaten / Kota</label><select id="prayerCity" disabled><option>Pilih provinsi dahulu</option></select><label for="prayerTimezone">Zona waktu</label><select id="prayerTimezone"><option value="WIB">WIB · UTC+7</option><option value="WITA">WITA · UTC+8</option><option value="WIT">WIT · UTC+9</option></select><p class="prayer-dialog-error" id="prayerDialogError" role="status"></p><button class="prayer-dialog-save" id="prayerSaveLocation" type="button" disabled>Gunakan lokasi ini</button></div>';
+  wrapper.innerHTML = '<div class="prayer-location-dialog" role="dialog" aria-modal="true" aria-labelledby="prayerLocationTitle"><button class="prayer-modal-close" type="button" aria-label="Tutup">×</button><span class="prayer-kicker">PENGATURAN LOKASI</span><h3 id="prayerLocationTitle">Pilih lokasi jadwal</h3><p>Jadwal shalat akan mengikuti kota yang kamu pilih.</p><label for="prayerProvince">Provinsi</label><select id="prayerProvince"><option>Memuat provinsi…</option></select><label for="prayerCity">Kabupaten / Kota</label><select id="prayerCity" disabled><option>Pilih provinsi dahulu</option></select><label for="prayerTimezone">Zona waktu</label><select id="prayerTimezone"><option value="WIB">WIB · UTC+7</option><option value="WITA">WITA · UTC+8</option><option value="WIT">WIT · UTC+9</option></select><p class="prayer-dialog-error" id="prayerDialogError" role="status"></p><button class="prayer-dialog-save" id="prayerSaveLocation" type="button" disabled>Gunakan lokasi ini</button><button class="prayer-dialog-auto" id="prayerUseGps" type="button">Gunakan lokasi otomatis (GPS)</button></div>';
   document.body.append(wrapper);
   const close = () => wrapper.classList.remove('open');
   wrapper.querySelector('.prayer-modal-close').addEventListener('click', close);
@@ -105,6 +111,13 @@ function createLocationDialog(state, onSelect) {
       citySelect.innerHTML = cities.map(item => `<option value="${item.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">${item}</option>`).join('');
       citySelect.disabled = false; save.disabled = false;
     } catch (error) { wrapper.querySelector('#prayerDialogError').textContent = error.message; }
+  });
+  wrapper.querySelector('#prayerUseGps').addEventListener('click', async event => {
+    const button = event.currentTarget; button.disabled = true; button.textContent = 'Mendeteksi lokasi…';
+    wrapper.querySelector('#prayerDialogError').textContent = '';
+    try { await onAuto(); close(); }
+    catch (error) { wrapper.querySelector('#prayerDialogError').textContent = error.message || 'Lokasi otomatis gagal dideteksi.'; }
+    finally { button.disabled = false; button.textContent = 'Gunakan lokasi otomatis (GPS)'; }
   });
   save.addEventListener('click', async () => {
     const zoneCode = wrapper.querySelector('#prayerTimezone').value;
@@ -214,29 +227,24 @@ export function initPrayerTimes() {
       $('prayerLocation').textContent = `${location.label} · ${location.zone}`;
     } catch (error) { state.location = previous; throw error; }
   };
-  state.dialog = createLocationDialog(state, selectLocation);
+  const useAutomaticLocation = async () => {
+    const detected = await detectLocation();
+    await selectLocation({ ...detected, detected: true });
+    localStorage.removeItem(STORAGE_KEY);
+  };
+  state.dialog = createLocationDialog(state, selectLocation, useAutomaticLocation);
   $('prayerLocationBtn').addEventListener('click', () => state.dialog.open());
   const useFallback = async () => {
     state.location = { ...DEFAULT_LOCATION };
     try { await refresh(); } catch (error) { $('nextPrayerLabel').textContent = 'Jadwal belum dapat dimuat'; $('nextPrayerCountdown').textContent = 'Periksa koneksi'; }
   };
-  if (state.location.manual) refresh().catch(useFallback);
-  else if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(async position => {
-      try {
-        const { latitude, longitude } = position.coords;
-        const zone = getZone(longitude);
-        const reverse = await getJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=id`);
-        const provinceName = reverse.principalSubdivision || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 4)?.name;
-        const cityName = reverse.city || reverse.locality || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 6)?.name;
-        const provinces = await getProvinces();
-        const province = /jakarta/i.test(provinceName) ? (provinces.find(item => normalize(item) === normalize('DKI Jakarta')) || findRegion(provinces, provinceName)) : findRegion(provinces, provinceName);
-        if (!province) throw new Error('Provinsi tidak cocok');
-        const cities = await getCities(province);
-        const city = findRegion(cities, cityName);
-        if (!city) throw new Error('Kota tidak cocok');
-        await selectLocation({ provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone, detected: true });
-      } catch { await useFallback(); }
-    }, useFallback, { enableHighAccuracy: false, timeout: 9000, maximumAge: 3600000 });
-  } else useFallback();
+  if (state.location.manual) {
+    refresh().catch(useFallback);
+  } else {
+    // Jadwal default ditampilkan segera; GPS berjalan paralel dan menggantinya saat berhasil.
+    refresh().catch(() => {});
+    detectLocation().then(location => {
+      if (!state.location.manual) return selectLocation({ ...location, detected: true });
+    }).catch(() => {});
+  }
 }
