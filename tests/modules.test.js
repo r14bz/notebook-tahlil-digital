@@ -8,6 +8,10 @@ import { applyReaderTheme, applyReaderFontSize } from '../src/features/reader/ap
 import { prepareReadingSections, completeSectionStarts } from '../src/features/reader/sections.js';
 import { getReaderContentsGroups } from '../src/features/reader/contents.js';
 import { createReaderController } from '../src/features/reader/controller.js';
+
+import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from '../src/features/reader/audio.js';
+import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
+
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -16,6 +20,115 @@ import {
   readJsonPreference,
   writeJsonPreference
 } from '../src/services/storage/preferences.js';
+
+
+test('audio helpers build complete qari ayah playlists for supported surahs', () => {
+  const yasin = buildQariAyahUrls(36);
+  const rahman = buildQariAyahUrls(55);
+  assert.equal(yasin.length, 83);
+  assert.equal(yasin[0], 'https://everyayah.com/data/Alafasy_128kbps/036001.mp3');
+  assert.equal(yasin.at(-1), 'https://everyayah.com/data/Alafasy_128kbps/036083.mp3');
+  assert.equal(rahman.length, 78);
+  assert.equal(rahman.at(-1), 'https://everyayah.com/data/Alafasy_128kbps/055078.mp3');
+  assert.deepEqual(buildQariAyahUrls(2), []);
+  assert.deepEqual(buildQariAyahUrls(36, 'unknown'), []);
+});
+
+test('speech text is chunked at word boundaries without losing content', () => {
+  const text = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ '.repeat(30);
+  const chunks = splitSpeechText(text, 80);
+  assert.ok(chunks.length > 1);
+  assert.ok(chunks.every(chunk => chunk.length <= 80));
+  assert.equal(chunks.join(' '), text.trim());
+  assert.deepEqual(splitSpeechText('   '), []);
+});
+
+test('reader audio controller sequences qari ayat and stops when changing surah', async () => {
+  const handlers = {};
+  const audio = {
+    src: '',
+    paused: true,
+    addEventListener(name, callback) { handlers[name] = callback; },
+    removeAttribute(name) { if (name === 'src') this.src = ''; },
+    load() {},
+    pause() { this.paused = true; },
+    async play() { this.paused = false; }
+  };
+  const button = { disabled: true, title: '' };
+  const status = { textContent: '' };
+  const controller = createReaderAudioController({
+    audioElement: audio,
+    qariButton: button,
+    statusElement: status
+  });
+
+  controller.update({ quranSurah: 36 });
+  assert.equal(button.disabled, false);
+  assert.equal(controller.playQari({ quranSurah: 36 }), true);
+  assert.match(audio.src, /036001\\.mp3$/);
+  await handlers.ended();
+  assert.match(audio.src, /036002\\.mp3$/);
+
+  controller.update({ quranSurah: 55 });
+  assert.equal(audio.src, '');
+  assert.equal(button.disabled, false);
+  controller.update({ title: 'Tahlil' });
+  assert.equal(button.disabled, true);
+  assert.match(button.title, /Yasin dan Ar-Rahman/);
+});
+
+test('reader audio reports unavailable speech support without throwing', () => {
+  const status = { textContent: '' };
+  const controller = createReaderAudioController({ statusElement: status });
+  assert.equal(controller.speak('بِسْمِ اللَّهِ'), false);
+  assert.match(status.textContent, /TTS tidak tersedia/);
+});
+
+test('dzikir overrides apply only valid text entries to dzikir sections', () => {
+  const sections = [
+    { title: 'Tahlil' },
+    { title: 'Dzikir 1', collection: 'dzikir', text: 'lama' },
+    { title: 'Dzikir 2', collection: 'dzikir', text: 'lama 2' }
+  ];
+  const count = applyDzikirOverrides(sections, {
+    sections: [{ text: 'baru' }, { text: '' }, { text: 'jangan diterapkan' }]
+  });
+  assert.equal(count, 1);
+  assert.equal(sections[1].text, 'baru');
+  assert.equal(sections[2].text, 'lama 2');
+  assert.equal(applyDzikirOverrides(sections, {}), 0);
+});
+
+test('manual dzikir page layout accepts only the exported supported format', () => {
+  assert.equal(isValidManualDzikirLayout({
+    format: 'etahlil-dzikir-page-layout',
+    scope: 'dzikir-ba-da-shalat',
+    sectionIndex: 3,
+    text: 'bagian 1\\n[[HALAMAN BARU]]\\nbagian 2'
+  }), true);
+  assert.equal(isValidManualDzikirLayout({ format: 'other', scope: 'dzikir-ba-da-shalat', sectionIndex: 3, text: 'x [[HALAMAN BARU]] y' }), false);
+  assert.equal(isValidManualDzikirLayout({ format: 'etahlil-dzikir-page-layout', scope: 'dzikir-ba-da-shalat', sectionIndex: -1, text: 'x [[HALAMAN BARU]] y' }), false);
+});
+
+test('optional reader content loads independently and returns recoverable file errors', async () => {
+  const sections = [{ title: 'Dzikir', collection: 'dzikir', text: 'lama' }];
+  let savedLayout = null;
+  const result = await loadOptionalReaderContent({
+    sections,
+    loadAdditionalSurahs: async () => {},
+    fetchImpl: async url => {
+      if (url.includes('dzikir-overrides')) return { ok: true, json: async () => ({ sections: [{ text: 'teks terbaru' }] }) };
+      return { ok: false, status: 404 };
+    },
+    readPageLayout: () => ({}),
+    writePageLayout: value => { savedLayout = value; }
+  });
+  assert.equal(result.overridesApplied, 1);
+  assert.equal(sections[0].text, 'teks terbaru');
+  assert.equal(result.pageLayoutApplied, false);
+  assert.equal(result.errors.length, 1);
+  assert.equal(savedLayout, null);
+});
 
 test('reader navigation keeps Quran surahs and collections in separate groups', () => {
   assert.equal(getReadingGroup({ quranSurah: 36 }), 'quran-36');
