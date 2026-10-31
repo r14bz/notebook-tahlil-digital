@@ -13,12 +13,18 @@ registerOfflineSupport();
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false;
 const mobileReader=()=>window.matchMedia('(max-width: 768px)').matches;
+const readSavedPageIndex=()=>{
+ const value=Number.parseInt(readPreference('page','0'),10);
+ return Number.isSafeInteger(value)&&value>=0?value:0;
+};
 
 function buildPages(){
  const pass=++layoutPass;
  const wasReaderActive=readerViewRequested;
  document.body.classList.add('reader-active');
- const saved=Number(readPreference('page', '0')),currentSection=pages[index]?.sectionIndex,paper=$('paper'),text=$('arabicText');
+ const saved=readSavedPageIndex(),currentPage=pages[index],currentSection=currentPage?.sectionIndex;
+ const currentSectionOffset=currentSection===undefined?0:pages.slice(0,index).filter(page=>page.sectionIndex===currentSection).length;
+ const paper=$('paper'),text=$('arabicText');
  $('pageTitle').textContent='Mengukur halaman';text.textContent='بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيمِ';
  requestAnimationFrame(()=>{
   if(pass!==layoutPass)return;
@@ -52,8 +58,12 @@ function buildPages(){
    if(sectionStarts[si]===undefined)sectionStarts[si]=Math.max(0,pageCursor);
    pageCursor=sectionStarts[si];
   });
-  const sectionPage=currentSection===undefined?-1:pages.findIndex(p=>p.sectionIndex===currentSection&&!p.continuation);
-  index=sectionPage>=0?sectionPage:Math.min(saved,pages.length-1);showPage(index);
+  const sectionPages=currentSection===undefined?[]:pages.reduce((matches,page,pageIndex)=>{
+   if(page.sectionIndex===currentSection)matches.push(pageIndex);
+   return matches;
+  },[]);
+  index=sectionPages.length?sectionPages[Math.min(currentSectionOffset,sectionPages.length-1)]:Math.min(saved,Math.max(0,pages.length-1));
+  showPage(index);
   if(!wasReaderActive)document.body.classList.remove('reader-active');
  });
 }
@@ -78,7 +88,7 @@ function openCollection(kind){
  if(first>=0)activateReader(first);
 }
 $('continueReadingBtn').addEventListener('click',()=>{
- const saved=Number(readPreference('page', '0')||0);
+ const saved=readSavedPageIndex();
  readerViewRequested=true;document.body.classList.add('reader-active');showPage(Math.min(saved,Math.max(0,pages.length-1)));window.scrollTo({top:0,behavior:'smooth'});
 });
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
@@ -174,9 +184,18 @@ applyTheme(readPreference('theme')==='dark'?'dark':'light');
  [left,right].forEach(hint=>hint.addEventListener('click',()=>{hint.classList.add('hint-fading');window.setTimeout(()=>hint.classList.remove('hint-fading'),80)}));
 })();
 
-$('fontSize').onchange=e=>{const value=e.target.value;document.body.classList.remove('font-small','font-normal','font-large');document.body.classList.add('font-'+value);$('arabicText').classList.toggle('compact',value==='small');buildPages()};
+const applyFontSize=value=>{
+ const safeValue=['small','normal','large'].includes(value)?value:'normal';
+ $('fontSize').value=safeValue;
+ document.body.classList.remove('font-small','font-normal','font-large');
+ document.body.classList.add('font-'+safeValue);
+ $('arabicText').classList.toggle('compact',safeValue==='small');
+ writePreference('fontSize',safeValue);
+};
+$('fontSize').onchange=e=>{applyFontSize(e.target.value);buildPages()};
 // Fullscreen control has been replaced by the theme toggle; do not bind the removed button.
-document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');document.body.classList.add('font-'+$('fontSize').value);
+document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');
+applyFontSize(readPreference('fontSize','normal'));
 // Render local content immediately so taps work even while optional surah data is loading.
 buildPages();renderHome();
 loadAdditionalSurahs().then(async()=>{
