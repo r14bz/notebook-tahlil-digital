@@ -383,3 +383,36 @@ test('reader controller navigates inside groups, updates progress, and persists 
     if (previousWindow === undefined) delete globalThis.window; else globalThis.window = previousWindow;
   }
 });
+
+test('manual page layout is persisted only when its target is a dzikir section', async () => {
+  const sections = [
+    { title: 'Tahlil' },
+    { title: 'Dzikir Ba’da Shalat', collection: 'dzikir' }
+  ];
+  const makeFetch = sectionIndex => async url => ({
+    ok: true,
+    async json() {
+      return url.includes('dzikir-overrides')
+        ? { sections: [] }
+        : {
+            format: 'etahlil-dzikir-page-layout',
+            scope: 'dzikir-ba-da-shalat',
+            sectionIndex,
+            text: 'awal\n[[HALAMAN BARU]]\nlanjutan'
+          };
+    }
+  });
+  let saved = null;
+  const options = {
+    sections,
+    loadAdditionalSurahs: async () => {},
+    readPageLayout: () => ({}),
+    writePageLayout: value => { saved = value; }
+  };
+
+  await loadOptionalReaderContent({ ...options, fetchImpl: makeFetch(0) });
+  assert.equal(saved, null, 'must not attach a dzikir layout to a Tahlil section');
+
+  await loadOptionalReaderContent({ ...options, fetchImpl: makeFetch(1) });
+  assert.equal(saved[1], 'awal\n[[HALAMAN BARU]]\nlanjutan');
+});
