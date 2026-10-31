@@ -937,3 +937,46 @@ header { background:#123d2e!important; }
 /* Tombol panah transparan: ketukan andal di layar sentuh, sembunyi di halaman pertama/terakhir. */
 .swipe-hint{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .swipe-hint:disabled{opacity:0!important;pointer-events:none}
+
+/* Reader audio: compact controls that follow the kitab-inspired palette. */
+#readerAudioPanel{align-items:center;gap:10px}
+#readerAudioPanel .audio-voice-label{font-size:10px;color:var(--muted)}
+#readerAudioPanel .audio-voice-select{max-width:190px;min-width:0;padding:7px 9px;border:1px solid #ded2b7;border-radius:9px;background:#fffaf0;color:var(--green);font-size:11px}
+#readerAudioPanel audio{width:100%;height:34px;min-width:0}
+#readerAudioPanel .audio-status{line-height:1.5}
+body.theme-dark #readerAudioPanel{background:#202e25;border-color:#465a49}
+body.theme-dark #readerAudioPanel .play-info strong,
+body.theme-dark #readerAudioPanel .audio-status,
+body.theme-dark #readerAudioPanel .audio-voice-label{color:#e9e3d4}
+body.theme-dark #readerAudioPanel .audio-voice-select{background:#26352d;color:#e9e3d4;border-color:#53634e}
+@media(max-width:768px){
+ #readerAudioPanel{padding:10px;gap:7px}
+ #readerAudioPanel .play-info{min-width:100px}
+ #readerAudioPanel .play-actions{width:auto;flex:1 1 100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #readerAudioPanel .play-actions button{min-width:0;padding:8px 5px;font-size:10px}
+ #readerAudioPanel .audio-voice-select{flex:1 1 100%;max-width:none}
+}
+
+#readerAudioPanel .audio-source{font-size:10px;color:var(--green2);text-decoration:underline;text-underline-offset:2px}
+body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
+
+/* Keep the new audio panel independent from legacy controls-row audio styles. */
+#readerAudioPanel{display:flex;flex-wrap:wrap!important;min-height:0}
+#readerAudioPanel .audio-status{display:block!important}
+#readerAudioPanel audio:not([hidden]){display:block!important}
+@media(max-width:768px){
+ #readerAudioPanel{flex-wrap:wrap!important;min-height:0}
+ #readerAudioPanel audio:not([hidden]){display:block!important;width:100%;min-height:34px}
+ #readerAudioPanel .audio-status{display:block!important}
+}
+
+/* Reserve the audio-control slot while unavailable so mobile pagination does not jump. */
+#readerAudioPanel audio[hidden]{display:block!important;visibility:hidden!important}
+
+
+/* Audio TTS and qari are temporarily hidden without removing their implementation. */
+#readerAudioPanel[hidden]{display:none!important}
+
+/* Force-hide the complete audio UI on every reader page, regardless of runtime hidden-attribute changes. */
+#readerMain #readerAudioPanel,
+#readerMain .playbar#readerAudioPanel { display:none !important; visibility:hidden !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:hidden !important; }

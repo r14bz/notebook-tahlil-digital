@@ -1,0 +1,65 @@
+name: Validate e-Moeslife
+
+on:
+  push:
+    branches:
+      - feature/e-moeslife-rebrand-capacitor
+  pull_request:
+    branches:
+      - feature/e-moeslife-rebrand-capacitor
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Check JavaScript syntax
+        run: |
+          find src scripts -type f -name '*.js' -o -name '*.mjs' | while read file; do
+            node --check "$file"
+          done
+          node --check service-worker.js
+      - name: Run unit tests
+        run: npm test
+      - name: Prepare offline and Android web assets
+        run: npm run prepare:mobile
+      - name: Verify every service-worker precache asset
+        run: node scripts/validate-offline-assets.mjs
+      - name: Verify required offline assets
+        run: |
+          test -f www/index.html
+          test -f www/service-worker.js
+          test -f www/src/app.js
+          test -f www/src/services/offline/register-service-worker.js
+          test -f www/src/features/reader/navigation.js
+          test -f www/src/features/reader/page-state.js
+          test -f www/src/features/reader/sections.js
+          test -f www/src/features/reader/contents.js
+          test -f www/src/features/reader/controller.js
+          test -f www/src/features/reader/audio.js
+          test -f www/src/features/reader/content-loader.js
+          grep -q 'readerAudioPanel' www/src/components/shell/reader-page.js
+          test -f www/src/features/reader/gestures.js
+          test -f www/src/features/reader/appearance.js
+          test -f www/src/features/reader/pagination.js
+          test -f www/src/features/home/search.js
+          test -f www/src/features/home/reading-list.js
+          test -f www/src/features/collections/navigation.js
+          test -f www/src/data/sections.js
+          test -f www/src/data/dzikir-overrides.json
+          test -f www/etahlil-pembagian-halaman-dzikir.json
+          test -f www/assets/collection-icon.webp
+          test -f www/assets/app-icon/icon.png
+          grep -q 'assets/app-icon/icon.png' www/index.html
+          grep -q 'assets/app-icon/icon.png' www/manifest.webmanifest
