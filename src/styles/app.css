@@ -1088,5 +1088,5 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 
 
 /* Uploaded mosque illustration for the prayer banner */
-.prayer-mosque-image { position:absolute; z-index:1; left:50%; bottom:0; transform:translateX(-50%); width:auto; height:100%; max-width:none; max-height:none; object-fit:contain; object-position:center bottom; filter:drop-shadow(0 8px 7px #091e1733); pointer-events:none; }
-@media (max-width:760px) { .prayer-mosque-image { width:auto; height:100%; bottom:0; } }
+.prayer-mosque-image { position:absolute; z-index:1; left:0; right:0; bottom:0; width:100%; height:100%; max-width:none; max-height:none; object-fit:contain; object-position:center bottom; filter:drop-shadow(0 8px 7px #091e1733); pointer-events:none; }
+@media (max-width:760px) { .prayer-mosque-image { left:0; right:0; width:100%; height:100%; bottom:0; } }
