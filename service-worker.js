@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-moeslife-shell-v1';
+const CACHE_NAME = 'e-moeslife-shell-v2';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
@@ -15,6 +15,9 @@ const CORE_ASSETS = [
   '/src/features/collections/navigation.js',
   '/src/features/reader/pagination.js',
   '/src/data/sections.js',
+  '/src/data/dzikir.js',
+  '/src/data/yasin.js',
+  '/src/data/rahman.js',
   '/src/data/dzikir-overrides.json',
   '/etahlil-pembagian-halaman-dzikir.json'
 ];
