@@ -34,6 +34,8 @@ jobs:
         run: npm test
       - name: Prepare offline and Android web assets
         run: npm run prepare:mobile
+      - name: Verify every service-worker precache asset
+        run: node scripts/validate-offline-assets.mjs
       - name: Verify required offline assets
         run: |
           test -f www/index.html
