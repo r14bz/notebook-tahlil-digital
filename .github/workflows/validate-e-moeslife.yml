@@ -42,3 +42,6 @@ jobs:
           test -f www/src/data/dzikir-overrides.json
           test -f www/etahlil-pembagian-halaman-dzikir.json
           test -f www/assets/collection-icon.webp
+          test -f www/assets/app-icon/icon.png
+          grep -q 'assets/app-icon/icon.png' www/index.html
+          grep -q 'assets/app-icon/icon.png' www/manifest.webmanifest
