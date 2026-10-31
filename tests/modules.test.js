@@ -65,9 +65,9 @@ test('reader audio controller sequences qari ayat and stops when changing surah'
   controller.update({ quranSurah: 36 });
   assert.equal(button.disabled, false);
   assert.equal(controller.playQari({ quranSurah: 36 }), true);
-  assert.match(audio.src, /036001\\.mp3$/);
+  assert.match(audio.src, /036001\.mp3$/);
   await handlers.ended();
-  assert.match(audio.src, /036002\\.mp3$/);
+  assert.match(audio.src, /036002\.mp3$/);
 
   controller.update({ quranSurah: 55 });
   assert.equal(audio.src, '');
@@ -104,7 +104,7 @@ test('manual dzikir page layout accepts only the exported supported format', () 
     format: 'etahlil-dzikir-page-layout',
     scope: 'dzikir-ba-da-shalat',
     sectionIndex: 3,
-    text: 'bagian 1\\n[[HALAMAN BARU]]\\nbagian 2'
+    text: 'bagian 1\n[[HALAMAN BARU]]\nbagian 2'
   }), true);
   assert.equal(isValidManualDzikirLayout({ format: 'other', scope: 'dzikir-ba-da-shalat', sectionIndex: 3, text: 'x [[HALAMAN BARU]] y' }), false);
   assert.equal(isValidManualDzikirLayout({ format: 'etahlil-dzikir-page-layout', scope: 'dzikir-ba-da-shalat', sectionIndex: -1, text: 'x [[HALAMAN BARU]] y' }), false);
@@ -344,6 +344,7 @@ test('reader controller navigates inside groups, updates progress, and persists 
   let index = 0;
   const saved = [];
   let renders = 0;
+  const changedPages = [];
   globalThis.document = { querySelectorAll: () => [] };
   globalThis.window = { setTimeout(callback) { callback(); return 1; } };
 
@@ -357,7 +358,8 @@ test('reader controller navigates inside groups, updates progress, and persists 
       renderContents: () => { renders += 1; },
       getReadingGroup,
       getReadingGroupBounds,
-      getPageProgress
+      getPageProgress,
+      onPageChange: page => changedPages.push(page.title)
     });
 
     controller.showPage(0);
@@ -375,6 +377,7 @@ test('reader controller navigates inside groups, updates progress, and persists 
     assert.equal($('progressText').textContent, '100%');
     assert.deepEqual(saved.at(-1), ['page', 3]);
     assert.ok(renders >= 4);
+    assert.ok(changedPages.includes('Yasin 2'));
   } finally {
     if (previousDocument === undefined) delete globalThis.document; else globalThis.document = previousDocument;
     if (previousWindow === undefined) delete globalThis.window; else globalThis.window = previousWindow;
