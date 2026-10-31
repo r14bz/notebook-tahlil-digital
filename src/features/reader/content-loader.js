@@ -45,8 +45,10 @@ export async function loadOptionalReaderContent({
     if (!response.ok) throw new Error('Manual page layout HTTP ' + response.status);
     const layout = await response.json();
     if (!isValidManualDzikirLayout(layout)) return;
+    const sectionIndex = Number(layout.sectionIndex);
+    if (!sections[sectionIndex] || sections[sectionIndex].collection !== 'dzikir') return;
     const pageLayout = readPageLayout();
-    pageLayout[Number(layout.sectionIndex)] = layout.text;
+    pageLayout[sectionIndex] = layout.text;
     writePageLayout(pageLayout);
     results.pageLayoutApplied = true;
   })();
