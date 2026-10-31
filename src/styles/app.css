@@ -980,3 +980,72 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
 /* Force-hide the complete audio UI on every reader page, regardless of runtime hidden-attribute changes. */
 #readerMain #readerAudioPanel,
 #readerMain .playbar#readerAudioPanel { display:none !important; visibility:hidden !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:hidden !important; }
+
+/* Dynamic prayer banner */
+.prayer-banner{--sun-x:50%;--sun-y:30%;position:relative;isolation:isolate;min-height:310px;overflow:hidden;border-radius:25px;color:#fff8e8;background:linear-gradient(180deg,#233d62 0%,#d58d6b 58%,#f0c58b 100%);box-shadow:0 18px 42px #123d2e24;transition:background 2.2s ease}
+.prayer-sky{position:absolute;inset:0;overflow:hidden;z-index:-2;background:linear-gradient(180deg,#284d73,#d59b79 68%,#eac08d);transition:background 2s ease}
+.prayer-sun,.prayer-moon{position:absolute;left:var(--sun-x);top:var(--sun-y);width:58px;height:58px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#fff8cf 0 42%,#ffdc8c 58%,#ffcf7a00 72%);box-shadow:0 0 45px 18px #ffcf7a55;transition:top 2s ease,left 2s ease,opacity 1.8s ease}
+.prayer-moon{width:48px;height:48px;left:78%;top:24%;background:radial-gradient(circle at 35% 35%,#fff9d9 0 48%,#d9d7c6 52%,#d9d7c600 70%);box-shadow:0 0 32px 8px #e8eddf30}
+.prayer-stars{position:absolute;inset:0;opacity:0;background-image:radial-gradient(2px 2px at 12% 18%,#fff 98%,transparent),radial-gradient(1px 1px at 25% 33%,#fff 98%,transparent),radial-gradient(2px 2px at 43% 14%,#fff 98%,transparent),radial-gradient(1px 1px at 58% 29%,#fff 98%,transparent),radial-gradient(2px 2px at 73% 12%,#fff 98%,transparent),radial-gradient(1px 1px at 88% 35%,#fff 98%,transparent),radial-gradient(1px 1px at 92% 17%,#fff 98%,transparent);transition:opacity 2s ease}
+.prayer-cloud{position:absolute;width:150px;height:32px;border-radius:50%;background:#fff7e72a;filter:blur(12px);top:33%;left:8%;transition:opacity 2s}
+.prayer-cloud-two{left:auto;right:12%;top:48%;width:190px}
+.prayer-landscape{position:absolute;z-index:-1;inset:40% 0 0;background:linear-gradient(180deg,#315b4b00,#183d32 78%);overflow:hidden;transition:background 2s}
+.prayer-mosque{position:absolute;bottom:13px;left:50%;transform:translateX(-50%);width:min(48%,390px);height:155px;filter:drop-shadow(0 10px 8px #091e1740)}
+.mosque-building{position:absolute;bottom:0;left:12%;right:12%;height:75px;background:#153c32;border-radius:8px 8px 0 0}
+.mosque-dome{position:absolute;bottom:70px;left:34%;width:32%;height:68px;background:#1c4a3c;border-radius:70% 70% 0 0}
+.mosque-dome:after{content:"";position:absolute;left:50%;top:-15px;width:2px;height:18px;background:#d9bd7c}
+.mosque-minaret{position:absolute;bottom:0;width:13px;height:125px;background:#173f35;border-radius:7px 7px 0 0}
+.mosque-minaret:before{content:"";position:absolute;top:-12px;left:-5px;width:23px;height:20px;background:#1d4b3c;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.minaret-left{left:13%}.minaret-right{right:13%;height:112px}
+.prayer-trees{position:absolute;bottom:0;left:0;right:0;height:85px;background:linear-gradient(135deg,transparent 0 5%,#173d31 5% 11%,transparent 11% 15%,#173d31 15% 23%,transparent 23% 78%,#173d31 78% 84%,transparent 84% 90%,#173d31 90%);opacity:.85}
+.prayer-banner-content{position:relative;z-index:2;padding:25px 28px 18px;display:flex;flex-direction:column;min-height:310px;justify-content:space-between;text-shadow:0 1px 8px #0b251d55}
+.prayer-banner-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.prayer-kicker{font-size:9px;letter-spacing:2px;font-weight:700;color:#f1d89c}
+.prayer-banner h2{font-family:'Amiri',serif;font-size:clamp(30px,4vw,43px);line-height:1.1;margin:7px 0 3px;color:#fff8e8}
+.prayer-banner-top p{font-size:11px;margin:0;color:#f5ead4}
+.prayer-clock-wrap{text-align:right;display:flex;flex-direction:column;gap:3px}
+.prayer-date{font-size:10px;color:#fff0d0}.prayer-clock{font-size:clamp(24px,3.5vw,34px);font-weight:700;letter-spacing:1px;font-variant-numeric:tabular-nums}.prayer-location{font-size:10px;color:#f4dfb8}
+.prayer-times{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:23px}
+.prayer-time{display:flex;flex-direction:column;gap:5px;padding:10px 8px;border:1px solid #fff8e84a;border-radius:12px;background:#092c2838;backdrop-filter:blur(7px);text-align:center;transition:background .5s,border-color .5s}
+.prayer-time span{font-size:10px;color:#f3e5c8}.prayer-time strong{font-size:17px;font-variant-numeric:tabular-nums;color:#fff9e9}.prayer-time.is-passed{background:#102c286e;border-color:#e5c98280}
+.prayer-banner-bottom{display:flex;align-items:center;gap:10px;margin-top:13px;font-size:11px;color:#fff2d7}
+#nextPrayerCountdown{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.prayer-location-btn{margin-left:auto;min-height:32px;padding:6px 11px;font-size:10px;background:#f4e4bd;color:#234533;text-shadow:none;border-radius:9px}
+.prayer-scene-night .prayer-sky{background:linear-gradient(180deg,#101d3b,#283b5c 68%,#596077)}
+.prayer-scene-night .prayer-landscape{background:linear-gradient(180deg,#16263b00,#101e2b 75%)}
+.prayer-scene-night .mosque-building,.prayer-scene-night .mosque-dome,.prayer-scene-night .mosque-minaret,.prayer-scene-night .mosque-minaret:before{background:#101f2d}
+.prayer-scene-dawn .prayer-sky{background:linear-gradient(180deg,#233b61,#776e85 55%,#d38d78)}
+.prayer-scene-sunrise .prayer-sky{background:linear-gradient(180deg,#547c9a,#e7a47d 62%,#f2cf9c)}
+.prayer-scene-day .prayer-sky{background:linear-gradient(180deg,#4e8eb1,#8ec0c8 75%,#d8d6b0)}
+.prayer-scene-day .prayer-landscape{background:linear-gradient(180deg,#7eaa8b00,#28533d 85%)}
+.prayer-scene-afternoon .prayer-sky{background:linear-gradient(180deg,#64869a,#d8a47e 70%,#d8b58c)}
+.prayer-scene-sunset .prayer-sky{background:linear-gradient(180deg,#463d66,#c16d65 56%,#f0aa70)}
+.prayer-scene-sunset .prayer-landscape{background:linear-gradient(180deg,#653f4c00,#1d382f 75%)}
+.prayer-location-modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:18px;background:#071b16b8;backdrop-filter:blur(5px)}
+.prayer-location-modal.open{display:grid}
+.prayer-location-dialog{position:relative;width:min(100%,420px);max-height:90dvh;overflow:auto;padding:25px;border-radius:20px;background:#fff8e8;color:#2f2a21;box-shadow:0 20px 60px #0004}
+.prayer-modal-close{position:absolute;right:14px;top:12px;width:34px;height:34px;padding:0;background:#eee5d3;color:#31523e;font-size:23px}
+.prayer-location-dialog h3{font-family:'Amiri',serif;font-size:27px;color:#173f30;margin:7px 0}
+.prayer-location-dialog p{font-size:12px;color:#827966;line-height:1.6}
+.prayer-location-dialog label{display:block;font-size:11px;font-weight:700;margin:15px 0 6px;color:#36513e}
+.prayer-location-dialog select{width:100%;min-height:44px;border:1px solid #d8c9a8;border-radius:10px;padding:8px;background:white;color:#284434}
+.prayer-dialog-error{min-height:16px;color:#a34e40!important}
+.prayer-dialog-save{width:100%;background:#174b38;color:#fff8e8}
+body.theme-dark .prayer-location-dialog{background:#202c25;color:#e9e3d4}
+body.theme-dark .prayer-location-dialog h3,body.theme-dark .prayer-location-dialog label{color:#e8d6a8}
+@media(max-width:760px){
+ .prayer-banner{min-height:330px;border-radius:19px}
+ .prayer-banner-content{min-height:330px;padding:19px 15px 13px}
+ .prayer-banner-top{gap:7px}
+ .prayer-banner h2{font-size:29px}.prayer-banner-top p{font-size:9px}
+ .prayer-clock{font-size:24px}.prayer-date{font-size:8px}.prayer-location{font-size:9px}
+ .prayer-times{gap:4px;margin-top:19px}
+ .prayer-time{padding:9px 3px;border-radius:9px;gap:5px}
+ .prayer-time span{font-size:9px}.prayer-time strong{font-size:14px}
+ .prayer-banner-bottom{gap:6px;font-size:9px;flex-wrap:wrap}
+ #nextPrayerCountdown{font-size:12px}
+ .prayer-location-btn{font-size:9px;padding:5px 8px;min-height:30px}
+ .prayer-mosque{width:65%;height:130px}.mosque-building{height:63px}.mosque-dome{bottom:59px;height:58px}.mosque-minaret{height:105px}.minaret-right{height:94px}
+}
+@media(max-width:380px){.prayer-banner-content{padding:16px 11px 12px}.prayer-banner h2{font-size:26px}.prayer-time strong{font-size:12px}.prayer-date{max-width:120px}}
+@media(prefers-reduced-motion:reduce){.prayer-banner,.prayer-sky,.prayer-landscape,.prayer-sun,.prayer-moon,.prayer-stars,.prayer-time{transition:none!important}}
