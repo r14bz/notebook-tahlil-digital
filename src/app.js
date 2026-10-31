@@ -78,7 +78,6 @@ $('continueReadingBtn').addEventListener('click',()=>{
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
-const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
 const readerController=createReaderController({
  getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
  getReadingGroup,getReadingGroupBounds,getPageProgress
