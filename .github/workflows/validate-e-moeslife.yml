@@ -30,6 +30,8 @@ jobs:
             node --check "$file"
           done
           node --check service-worker.js
+      - name: Run unit tests
+        run: npm test
       - name: Prepare offline and Android web assets
         run: npm run prepare:mobile
       - name: Verify required offline assets
