@@ -956,3 +956,6 @@ body.theme-dark #readerAudioPanel .audio-voice-select{background:#26352d;color:#
  #readerAudioPanel .play-actions button{min-width:0;padding:8px 5px;font-size:10px}
  #readerAudioPanel .audio-voice-select{flex:1 1 100%;max-width:none}
 }
+
+#readerAudioPanel .audio-source{font-size:10px;color:var(--green2);text-decoration:underline;text-underline-offset:2px}
+body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
