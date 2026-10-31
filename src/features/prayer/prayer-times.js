@@ -62,20 +62,32 @@ async function getCities(province) {
 }
 async function detectLocation() {
   if (!navigator.geolocation) throw new Error('GPS tidak tersedia.');
-  const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 9000, maximumAge: 3600000 }));
+  const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 12000, maximumAge: 3600000 }));
   const { latitude, longitude } = position.coords;
   const zone = getZone(longitude);
   const reverse = await getJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=id`);
-  const provinceName = reverse.principalSubdivision || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 4)?.name;
-  const cityName = reverse.city || reverse.locality || reverse.localityInfo?.administrative?.find(item => item.adminLevel === 6)?.name;
-  if (!provinceName || !cityName) throw new Error('Nama kota dari lokasi tidak ditemukan.');
+  const admin = reverse.localityInfo?.administrative || [];
+  const provinceAliases = {
+    'ID-JK':'DKI Jakarta','ID-JB':'Jawa Barat','ID-JT':'Jawa Tengah','ID-JI':'Jawa Timur','ID-BT':'Banten','ID-YO':'DI Yogyakarta',
+    'ID-AC':'Aceh','ID-SU':'Sumatera Utara','ID-SB':'Sumatera Barat','ID-RI':'Riau','ID-SS':'Sumatera Selatan','ID-LA':'Lampung',
+    'ID-KI':'Kalimantan Timur','ID-KS':'Kalimantan Selatan','ID-KB':'Kalimantan Barat','ID-KT':'Kalimantan Tengah','ID-KU':'Kalimantan Utara',
+    'ID-BA':'Bali','ID-NB':'Nusa Tenggara Barat','ID-NT':'Nusa Tenggara Timur','ID-SN':'Sulawesi Selatan','ID-ST':'Sulawesi Tengah',
+    'ID-SG':'Sulawesi Tenggara','ID-SA':'Sulawesi Utara','ID-MA':'Maluku','ID-MU':'Maluku Utara','ID-PA':'Papua','ID-PB':'Papua Barat',
+    'ID-PD':'Papua Barat Daya','ID-PE':'Papua Pegunungan','ID-PS':'Papua Selatan','ID-PT':'Papua Tengah'
+  };
+  const provinceCandidates = [provinceAliases[reverse.principalSubdivisionCode], reverse.principalSubdivision, ...admin.filter(item => [3,4].includes(item.adminLevel)).map(item => item.name)].filter(Boolean);
+  const cityCandidates = [reverse.city, reverse.locality, ...admin.filter(item => [4,5,6].includes(item.adminLevel)).map(item => item.name)].filter(Boolean);
+  if (!provinceCandidates.length || !cityCandidates.length) throw new Error('Nama kota dari lokasi tidak ditemukan.');
   const provinces = await getProvinces();
-  const province = /jakarta/i.test(provinceName) ? (provinces.find(item => normalize(item) === normalize('DKI Jakarta')) || findRegion(provinces, provinceName)) : findRegion(provinces, provinceName);
+  let province = null;
+  for (const candidate of provinceCandidates) { province = findRegion(provinces, candidate); if (province) break; }
+  if (!province && provinceCandidates.some(name => /jakarta/i.test(name))) province = findRegion(provinces, 'DKI Jakarta');
   if (!province) throw new Error('Provinsi belum cocok dengan data jadwal shalat.');
   const cities = await getCities(province);
-  const city = findRegion(cities, cityName);
-  if (!city) throw new Error('Kota belum cocok dengan data jadwal shalat.');
-  return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.)\s*/i, ''), ...zone };
+  let city = null;
+  for (const candidate of cityCandidates) { city = findRegion(cities, candidate); if (city) break; }
+  if (!city) throw new Error('Kota belum cocok dengan data jadwal shalat. Silakan pilih kota secara manual.');
+  return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\\.)\\s*/i, ''), ...zone };
 }
 
 function createLocationDialog(state, onSelect, onAuto) {
@@ -168,6 +180,13 @@ function updateSky(scene, now, schedule) {
   banner.querySelector('.prayer-moon').style.opacity = scene === 'night' ? '1' : '0';
   banner.querySelector('.prayer-stars').style.opacity = scene === 'night' ? '1' : (scene === 'dawn' ? '.18' : '0');
 }
+function renderClockOnly(location) {
+  const now = new Date();
+  const parts = localParts(now, location.timezone);
+  $('prayerClock').textContent = `${parts.hour}:${parts.minute}:${parts.second}`;
+  $('prayerDate').textContent = new Intl.DateTimeFormat('id-ID', { timeZone: location.timezone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+  $('prayerLocation').textContent = `${location.label} · ${location.zone}`;
+}
 function updateClockAndCountdown(location, schedule) {
   const now = new Date();
   const parts = localParts(now, location.timezone);
@@ -234,6 +253,12 @@ export function initPrayerTimes() {
   };
   state.dialog = createLocationDialog(state, selectLocation, useAutomaticLocation);
   $('prayerLocationBtn').addEventListener('click', () => state.dialog.open());
+  // Jam realtime tetap tampil meski layanan jadwal sedang lambat atau gagal.
+  renderClockOnly(state.location);
+  const clockOnlyTimer = setInterval(() => {
+    if (!state.schedule) renderClockOnly(state.location);
+    else clearInterval(clockOnlyTimer);
+  }, 1000);
   const useFallback = async () => {
     state.location = { ...DEFAULT_LOCATION };
     try { await refresh(); } catch (error) { $('nextPrayerLabel').textContent = 'Jadwal belum dapat dimuat'; $('nextPrayerCountdown').textContent = 'Periksa koneksi'; }
