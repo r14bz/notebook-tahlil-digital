@@ -96,15 +96,15 @@ jobs:
           '''
 
           if "signingConfigs {" not in content:
-              marker = re.search(r"(?m)^android\\s*\\{", content)
+              marker = re.search(r"(?m)^android\s*\{", content)
               if not marker:
                   raise SystemExit("Could not find android { in app/build.gradle")
-              content = content[:marker.end()] + "\\n" + signing_config + content[marker.end():]
+              content = content[:marker.end()] + "\n" + signing_config + content[marker.end():]
 
-          pattern = r"(buildTypes\\s*\\{\\s*release\\s*\\{)"
+          pattern = r"(buildTypes\s*\{\s*release\s*\{)"
           if not re.search(pattern, content):
               raise SystemExit("Could not find buildTypes { release { in app/build.gradle")
-          content = re.sub(pattern, r"\\1\\n            signingConfig signingConfigs.release", content, count=1)
+          content = re.sub(pattern, r"\1\n            signingConfig signingConfigs.release", content, count=1)
 
           gradle_file.write_text(content, encoding="utf-8")
           print("Release signing configuration added.")
