@@ -1090,3 +1090,32 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 /* Uploaded mosque illustration for the prayer banner */
 .prayer-mosque-image { position:absolute; z-index:1; left:0; right:0; bottom:0; width:100%; height:100%; max-width:none; max-height:none; object-fit:contain; object-position:center bottom; filter:drop-shadow(0 8px 7px #091e1733); pointer-events:none; }
 @media (max-width:760px) { .prayer-mosque-image { left:0; right:0; width:100%; height:100%; bottom:0; } }
+
+
+/* Prayer banner: improve contrast for countdown and manual location control. */
+#nextPrayerCountdown {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border:1px solid #fff8e84a;
+  border-radius:9px;
+  background:#092c2838;
+  color:#fff9e9;
+  text-shadow:0 1px 5px #071d1b80;
+  backdrop-filter:blur(7px);
+}
+.prayer-location-btn {
+  background:#092c2838;
+  color:#fff9e9;
+  border:1px solid #fff8e84a;
+  backdrop-filter:blur(7px);
+  text-shadow:0 1px 5px #071d1b80;
+}
+.prayer-location-btn:active {
+  background:#102c286e;
+}
+@media(max-width:760px) {
+  #nextPrayerCountdown { padding:5px 8px; }
+  .prayer-location-btn { padding:5px 8px; }
+}
