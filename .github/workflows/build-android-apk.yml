@@ -6,6 +6,7 @@ on:
       - feature/e-moeslife-rebrand-capacitor
       - feature/prayer-times-dynamic-banner
       - fix/android-native-geolocation
+      - feat/android-release-signing
   workflow_dispatch:
 
 permissions:
@@ -58,9 +59,78 @@ jobs:
         run: npx cap sync android
       - name: Verify Android location permissions
         run: grep -E 'android.permission.ACCESS_(FINE|COARSE)_LOCATION' android/app/src/main/AndroidManifest.xml
+      - name: Prepare release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing GitHub Actions secret: $name"
+              exit 1
+            fi
+          done
+
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/e-moeslife-release.jks
+          test -s android/app/e-moeslife-release.jks
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          gradle_file = Path("android/app/build.gradle")
+          content = gradle_file.read_text(encoding="utf-8")
+
+          signing_config = '''
+              signingConfigs {
+                  release {
+                      storeFile file("e-moeslife-release.jks")
+                      storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                      keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                  }
+              }
+          '''
+
+          if "signingConfigs {" not in content:
+              marker = re.search(r"(?m)^android\\s*\\{", content)
+              if not marker:
+                  raise SystemExit("Could not find android { in app/build.gradle")
+              content = content[:marker.end()] + "\\n" + signing_config + content[marker.end():]
+
+          pattern = r"(buildTypes\\s*\\{\\s*release\\s*\\{)"
+          if not re.search(pattern, content):
+              raise SystemExit("Could not find buildTypes { release { in app/build.gradle")
+          content = re.sub(pattern, r"\\1\\n            signingConfig signingConfigs.release", content, count=1)
+
+          gradle_file.write_text(content, encoding="utf-8")
+          print("Release signing configuration added.")
+          PY
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
+      - name: Build signed release APK
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon
+      - name: Verify release APK signature
+        run: |
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)/apksigner" verify --verbose "$APK"
+      - name: Upload signed release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: e-Moeslife-signed-release-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 90
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
