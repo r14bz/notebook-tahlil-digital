@@ -1,6 +1,6 @@
 const OWNER = 'r14bz';
 const REPOSITORY = 'notebook-tahlil-digital';
-const CURRENT_VERSION = '1.0.0';
+const CURRENT_VERSION = '2.0.0';
 const RELEASE_API = `https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest`;
 const CHECK_KEY = 'em-update-check-v1';
 const CHECK_INTERVAL = 6 * 60 * 60 * 1000;
