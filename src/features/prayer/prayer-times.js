@@ -61,8 +61,27 @@ async function getCities(province) {
   return payload.data;
 }
 async function detectLocation() {
-  if (!navigator.geolocation) throw new Error('GPS tidak tersedia.');
-  const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 12000, maximumAge: 3600000 }));
+  let position;
+  const nativeGeolocation = window.Capacitor?.isNativePlatform?.() && window.CapacitorGeolocation;
+  if (nativeGeolocation) {
+    // Android WebView does not automatically grant browser geolocation prompts.
+    // Use the Capacitor native plugin so Android can show its runtime permission dialog.
+    let permissions = await nativeGeolocation.checkPermissions();
+    if (permissions.location !== 'granted' && permissions.coarseLocation !== 'granted') {
+      permissions = await nativeGeolocation.requestPermissions();
+    }
+    if (permissions.location !== 'granted' && permissions.coarseLocation !== 'granted') {
+      throw new Error('Izin lokasi ditolak. Aktifkan izin Lokasi untuk e-Moeslife melalui Pengaturan Android.');
+    }
+    position = await nativeGeolocation.getCurrentPosition({
+      enableHighAccuracy: false,
+      timeout: 15000,
+      maximumAge: 3600000
+    });
+  } else {
+    if (!navigator.geolocation) throw new Error('GPS tidak tersedia.');
+    position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 12000, maximumAge: 3600000 }));
+  }
   const { latitude, longitude } = position.coords;
   const zone = getZone(longitude);
   const reverse = await getJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=id`);
