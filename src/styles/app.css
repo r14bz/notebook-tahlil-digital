@@ -1145,3 +1145,11 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 .home-download-link strong,.home-download-link small{display:block}
 .home-download-link strong{font-size:13px}.home-download-link small{font-size:11px;color:#887c68;margin-top:2px}
 .home-download-arrow{margin-left:auto;font-size:19px;color:#9b7b42}
+
+
+/* Sejajarkan tombol lanjutkan bacaan dan download di beranda. */
+.home-continue-row{display:flex;align-items:stretch;gap:10px;margin:18px 0 8px}
+.home-continue-row .continue-reading{flex:1 1 auto;min-width:0}
+.home-continue-download{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:10px 15px;border:1px solid #bd9854;border-radius:12px;background:#123d2e;color:#fff8e8;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px #123d2e18}
+.home-continue-download span{font-size:18px;line-height:1}
+@media(max-width:420px){.home-continue-row{gap:7px}.home-continue-row .continue-reading{padding:9px 10px;gap:7px}.home-continue-row .continue-reading strong{font-size:11px}.home-continue-row .continue-reading small{font-size:9px}.home-continue-download{gap:5px;padding:9px 11px;font-size:11px}}
