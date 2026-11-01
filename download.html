@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123d2e">
+<meta name="description" content="Unduh e-Moeslife untuk membaca tahlil, dzikir, Surah Yasin, dan Ar-Rahman dengan nyaman di Android.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Unduh e-Moeslife">
+<meta property="og:description" content="Ruang baca Islami digital, dalam genggaman.">
+<title>Unduh e-Moeslife — Ruang Baca Islami Digital</title>
+<link rel="icon" type="image/png" href="/assets/app-icon/icon.png">
+<style>
+:root{color-scheme:light;--green:#123d2e;--green2:#1d5942;--gold:#c5a365;--cream:#faf6ec;--ink:#25352d;--muted:#6d796f}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.6}
+a{color:inherit}.topbar{height:76px;padding:0 max(22px,calc((100% - 1120px)/2));display:flex;align-items:center;justify-content:space-between;background:var(--green);color:#fff;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-mark{width:43px;height:43px;object-fit:contain}.brand-text{width:145px;height:auto;max-height:40px;object-fit:contain;object-position:left center}.back{font-size:13px;text-decoration:none;color:#f2e7ce;border:1px solid #ffffff3d;padding:8px 13px;border-radius:99px}
+.hero{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(120deg,#0d3025 0%,#174b38 58%,#23634a 100%);color:#fff;padding:74px 22px 68px}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#0b2c23f2 0%,#10392bd9 50%,#123d2e75 100%),url('/assets/mosque-banner.png') center 58%/cover no-repeat;opacity:.95}
+.hero:after{content:"";position:absolute;z-index:-1;width:460px;height:460px;border:1px solid #d4b77a33;border-radius:50%;right:-120px;top:-210px;box-shadow:0 0 0 36px #d4b77a0c,0 0 0 72px #d4b77a08}
+.hero-inner{max-width:1120px;margin:auto;position:relative}.eyebrow{color:#e1c58d;font-size:11px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+h1{max-width:680px;margin:15px 0 14px;font-family:Georgia,serif;font-size:clamp(38px,6vw,64px);font-weight:500;line-height:1.08;letter-spacing:-1.5px}
+.hero p{max-width:580px;color:#e4e9df;font-size:17px;margin:0 0 28px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 22px;border-radius:12px;text-decoration:none;font-weight:750;font-size:14px;transition:transform .18s,box-shadow .18s}.btn:hover{transform:translateY(-2px)}.btn-primary{background:#e6c98e;color:#253523;box-shadow:0 8px 24px #071d173d}.btn-secondary{border:1px solid #ffffff66;color:white;background:#ffffff0d}.btn svg{width:19px;height:19px}
+.hero-note{font-size:12px!important;color:#c9d8ce!important;margin:15px 0 0!important}
+.content{max-width:1120px;margin:0 auto;padding:62px 22px 70px}.section-head{text-align:center;max-width:650px;margin:0 auto 34px}.section-head .eyebrow{color:#9b7b42}.section-head h2{font-family:Georgia,serif;color:var(--green);font-size:clamp(29px,4vw,40px);font-weight:500;line-height:1.2;margin:9px 0}.section-head p{color:var(--muted);margin:0}
+.features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.feature{background:#fffdf8;border:1px solid #e8dfcc;border-radius:17px;padding:23px 20px;box-shadow:0 8px 25px #263b2c08}.feature-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#eaf0e8;color:var(--green);font-size:21px;margin-bottom:17px}.feature h3{font-size:15px;color:var(--green);margin:0 0 7px}.feature p{font-size:13px;color:var(--muted);line-height:1.6;margin:0}
+.download-panel{margin-top:54px;background:linear-gradient(120deg,#e9efdf,#f7f1e2);border:1px solid #d9dfcb;border-radius:22px;padding:30px;display:flex;align-items:center;justify-content:space-between;gap:24px}.download-panel h2{font-family:Georgia,serif;color:var(--green);font-size:28px;font-weight:500;margin:0 0 5px}.download-panel p{color:var(--muted);font-size:13px;margin:0}.download-panel .btn{background:var(--green);color:white;white-space:nowrap}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}.step{display:flex;gap:13px;align-items:flex-start}.step-num{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:grid;place-items:center;background:#e8ddc3;color:#66502c;font-size:13px;font-weight:800}.step h3{font-size:14px;color:var(--green);margin:2px 0 4px}.step p{font-size:12px;color:var(--muted);margin:0;line-height:1.6}
+footer{padding:24px 20px;text-align:center;background:#103629;color:#c9d6ca;font-size:12px}footer a{color:#e6c98e;text-decoration:none}
+@media(max-width:800px){.features{grid-template-columns:repeat(2,minmax(0,1fr))}.steps{grid-template-columns:1fr;gap:17px}.hero{padding:62px 22px 58px}.download-panel{align-items:flex-start;flex-direction:column}.download-panel .btn{width:100%}}
+@media(max-width:430px){.topbar{height:66px;padding:0 15px}.brand-mark{width:36px;height:36px}.brand-text{width:120px}.back{font-size:11px;padding:7px 10px}.hero p{font-size:15px}.content{padding:48px 15px 55px}.features{gap:10px}.feature{padding:17px 14px}.feature-icon{width:38px;height:38px;margin-bottom:12px}.feature h3{font-size:14px}.feature p{font-size:12px}.download-panel{padding:22px 18px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="/" aria-label="e-Moeslife — Beranda">
+<img class="brand-mark" src="/assets/logo-mark.webp" alt="Logo e-Moeslife">
+<img class="brand-text" src="/assets/logo-text.webp" alt="e-Moeslife">
+</a>
+<a class="back" href="/">← Kembali ke beranda</a>
+</header>
+<main>
+<section class="hero">
+<div class="hero-inner">
+<span class="eyebrow">Ruang Baca Islami Digital</span>
+<h1>Temani ibadah,<br>di setiap langkah.</h1>
+<p>Rangkaian tahlil, dzikir, dan tilawah Al-Qur’an dalam satu ruang baca yang nyaman. Dirancang sederhana agar lebih dekat dan mudah diakses kapan saja.</p>
+<div class="actions">
+<a class="btn btn-primary" href="https://github.com/r14bz/notebook-tahlil-digital/releases/latest/download/e-moeslife.apk">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+Unduh APK Android
+</a>
+<a class="btn btn-secondary" href="/">Buka versi web</a>
+</div>
+<p class="hero-note">Gratis digunakan · Untuk perangkat Android</p>
+</div>
+</section>
+<section class="content">
+<div class="section-head">
+<span class="eyebrow">Lebih dari sekadar bacaan</span>
+<h2>Satu ruang untuk menemani ibadah harian</h2>
+<p>Semua dirangkum dalam tampilan yang tenang, mudah dibaca, dan nyaman digunakan di layar ponsel.</p>
+</div>
+<div class="features">
+<article class="feature"><div class="feature-icon" aria-hidden="true">☾</div><h3>Jadwal shalat otomatis</h3><p>Waktu shalat menyesuaikan lokasi, lengkap dengan hitung mundur menuju waktu berikutnya.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">۞</div><h3>Rangkaian tahlil</h3><p>Tawasul, kalimat tahlil, dzikir, dan doa penutup tersusun dalam alur bacaan.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">۝</div><h3>Tilawah Al-Qur’an</h3><p>Baca Surah Yasin dan Ar-Rahman dengan tampilan halaman yang nyaman.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">♫</div><h3>Audio & suara</h3><p>Dengarkan lantunan qari atau gunakan fitur pembaca teks pada bacaan yang didukung.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">▤</div><h3>Tampilan seperti kitab</h3><p>Halaman bernuansa kertas dengan navigasi geser yang terasa alami.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">◷</div><h3>Lanjutkan bacaan</h3><p>Posisi membaca tersimpan sehingga kamu bisa kembali ke halaman terakhir.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">⌕</div><h3>Daftar isi & pencarian</h3><p>Temukan bagian bacaan dengan lebih cepat melalui daftar isi dan pencarian.</p></article>
+<article class="feature"><div class="feature-icon" aria-hidden="true">▣</div><h3>Nyaman di ponsel</h3><p>Antarmuka responsif dengan pengaturan ukuran teks dan mode gelap.</p></article>
+</div>
+<section class="download-panel">
+<div><h2>Mulai gunakan e-Moeslife</h2><p>Unduh aplikasi Android dan nikmati ruang baca Islami dalam genggaman.</p></div>
+<a class="btn" href="https://github.com/r14bz/notebook-tahlil-digital/releases/latest/download/e-moeslife.apk">Unduh aplikasi <span aria-hidden="true">↓</span></a>
+</section>
+<div class="steps">
+<div class="step"><span class="step-num">1</span><div><h3>Unduh file APK</h3><p>Tekan tombol unduh untuk mendapatkan file instalasi e-Moeslife.</p></div></div>
+<div class="step"><span class="step-num">2</span><div><h3>Izinkan instalasi</h3><p>Jika diminta, izinkan pemasangan aplikasi dari sumber ini melalui pengaturan Android.</p></div></div>
+<div class="step"><span class="step-num">3</span><div><h3>Buka dan mulai membaca</h3><p>Setelah terpasang, buka e-Moeslife dan pilih bacaan yang ingin kamu mulai.</p></div></div>
+</div>
+</section>
+</main>
+<footer>© e-Moeslife · Ruang Baca Islami Digital · <a href="/">Kembali ke beranda</a></footer>
+</body>
+</html>
