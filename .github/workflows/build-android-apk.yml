@@ -5,6 +5,7 @@ on:
     branches:
       - feature/e-moeslife-rebrand-capacitor
       - feature/prayer-times-dynamic-banner
+      - fix/android-native-geolocation
   workflow_dispatch:
 
 permissions:
