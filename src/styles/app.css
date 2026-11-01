@@ -1119,3 +1119,21 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
   #nextPrayerCountdown { padding:5px 8px; }
   .prayer-location-btn { padding:5px 8px; }
 }
+
+
+/* Give the "Menuju ..." label the same translucent dark-green backing as its countdown. */
+#nextPrayerLabel {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border:1px solid #fff8e84a;
+  border-radius:9px;
+  background:#092c2838;
+  color:#fff9e9;
+  text-shadow:0 1px 5px #071d1b80;
+  backdrop-filter:blur(7px);
+}
+@media(max-width:760px) {
+  #nextPrayerLabel { padding:5px 8px; }
+}
