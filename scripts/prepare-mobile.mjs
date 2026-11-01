@@ -1,5 +1,6 @@
-import { cp, mkdir, rm, access } from 'node:fs/promises';
+import { cp, mkdir, rm, access, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { build } from 'esbuild';
 
 const root = process.cwd();
 const out = path.join(root, 'www');
@@ -18,6 +19,20 @@ for (const item of ['index.html', 'src', 'manifest.webmanifest', 'service-worker
   }
 }
 
+// Bundle the native entry so Capacitor plugins resolve in Android's WebView.
+await build({
+  entryPoints: [path.join(root, 'src/native-entry.js')],
+  bundle: true,
+  platform: 'browser',
+  format: 'esm',
+  target: ['es2022'],
+  outfile: path.join(out, 'app-native.js')
+});
+
+const mobileIndex = path.join(out, 'index.html');
+const html = await readFile(mobileIndex, 'utf8');
+await writeFile(mobileIndex, html.replace('./src/app.js', './app-native.js'));
+
 // Keep public assets and root-level assets usable by the existing absolute /assets/... paths.
 for (const sourceName of ['public/assets', 'assets']) {
   const source = path.join(root, sourceName);
@@ -27,4 +42,4 @@ for (const sourceName of ['public/assets', 'assets']) {
   }
 }
 
-console.log('e-Moeslife web assets prepared in ./www');
+console.log('e-Moeslife native web assets bundled in ./www');
