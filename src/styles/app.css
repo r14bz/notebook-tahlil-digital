@@ -1137,3 +1137,11 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 @media(max-width:760px) {
   #nextPrayerLabel { padding:5px 8px; }
 }
+
+/* Dedicated app download page entry on the home screen */
+.home-download-link{display:flex;align-items:center;gap:13px;margin:24px 0 8px;padding:15px 18px;border:1px solid #d7c9a7;border-radius:15px;background:linear-gradient(110deg,#f8f3e7,#edf1e6);color:#123d2e;text-decoration:none;box-shadow:0 6px 18px #263b2c0b;transition:transform .18s,box-shadow .18s}
+.home-download-link:hover{transform:translateY(-2px);box-shadow:0 10px 24px #263b2c14}
+.home-download-mark{width:40px;height:40px;display:grid;place-items:center;flex:0 0 40px;border-radius:12px;background:#123d2e;color:#f6e7c4;font-size:22px}
+.home-download-link strong,.home-download-link small{display:block}
+.home-download-link strong{font-size:13px}.home-download-link small{font-size:11px;color:#887c68;margin-top:2px}
+.home-download-arrow{margin-left:auto;font-size:19px;color:#9b7b42}
