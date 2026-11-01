@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/e-moeslife-rebrand-capacitor
+      - feature/prayer-times-dynamic-banner
   pull_request:
     branches:
       - feature/e-moeslife-rebrand-capacitor
@@ -42,6 +43,7 @@ jobs:
           test -f www/service-worker.js
           test -f www/src/app.js
           test -f www/src/services/offline/register-service-worker.js
+          test -f www/src/features/prayer/prayer-times.js
           test -f www/src/features/reader/navigation.js
           test -f www/src/features/reader/page-state.js
           test -f www/src/features/reader/sections.js

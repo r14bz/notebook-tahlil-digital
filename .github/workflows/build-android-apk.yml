@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/e-moeslife-rebrand-capacitor
+      - feature/prayer-times-dynamic-banner
   workflow_dispatch:
 
 permissions:
