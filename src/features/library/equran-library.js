@@ -416,7 +416,7 @@ export function mountIslamicLibrary() {
       const file = fileInput.files?.[0];
       if (!file) return;
       try {
-        const parsed = JSON.parse((await file.text()).replace(/^\\uFEFF/, ''));
+        const parsed = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
         const imported = Array.isArray(parsed) ? parsed : parsed.chapters;
         if (!Array.isArray(imported)) throw new Error('Format JSON tidak memiliki daftar chapters.');
         chapters = imported.map((chapter, index) => ({
