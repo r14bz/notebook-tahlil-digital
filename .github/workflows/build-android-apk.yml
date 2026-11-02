@@ -38,15 +38,22 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           path = Path("android/app/build.gradle")
-          content = path.read_text(encoding="utf-8")
-          content, code_count = re.subn(r"(?m)^(\\s*versionCode\\s+)\\d+", r"\\g<1>2", content, count=1)
-          content, name_count = re.subn(r'(?m)^(\\s*versionName\\s+)["\\'][^"\\']+["\\']', r'\\g<1>"2.0.0"', content, count=1)
-          if code_count != 1 or name_count != 1:
+          lines = path.read_text(encoding="utf-8").splitlines()
+          found_code = found_name = False
+          for index, line in enumerate(lines):
+              indent = line[:len(line) - len(line.lstrip())]
+              key = line.strip()
+              if key.startswith("versionCode "):
+                  lines[index] = indent + "versionCode 2"
+                  found_code = True
+              elif key.startswith("versionName "):
+                  lines[index] = indent + 'versionName "2.0.0"'
+                  found_name = True
+          if not found_code or not found_name:
               raise SystemExit("Could not set Android versionCode/versionName")
-          path.write_text(content, encoding="utf-8")
+          path.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
           print("Android version set to versionCode 2 / versionName 2.0.0")
           PY
       - name: Ensure Android location permissions
