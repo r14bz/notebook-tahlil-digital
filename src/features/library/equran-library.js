@@ -33,7 +33,7 @@ export function mountIslamicLibrary() {
   body.equran-reader-active .equran-reader{display:block}
   body.equran-reader-active #homePage,body.equran-reader-active #readerMain,body.equran-reader-active #readerFooter{display:none!important}
   .equran-reader-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-  .equran-back{flex:0 0 auto;border:1px solid #d6c9ad;border-radius:11px;background:#f4eddd;color:#234b37;padding:10px 13px;font:600 12px inherit}
+  .equran-back{flex:0 0 auto;border:1px solid #d6c9ad;border-radius:11px;background:#f4eddd;color:#234b37;padding:10px 13px;font-family:inherit;font-weight:600;font-size:12px}
   .equran-reader-heading{min-width:0}.equran-reader-heading strong{display:block;color:var(--green);font-size:17px}.equran-reader-heading small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
   .equran-paper{min-height:55vh;padding:clamp(18px,4vw,34px);border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;box-shadow:0 10px 30px #46371b0b;color:#263b2e}
   .equran-paper h2{margin:0 0 8px;color:#174532;font:700 24px 'Amiri',serif}
@@ -134,7 +134,7 @@ export function mountIslamicLibrary() {
   }
 
   async function loadSurahs(kind) {
-    showReader(kind === 'tafsir' ? 'Tafsir Al-Qur’an' : 'Al-Qur’an Digital', kind === 'tafsir' ? 'Penjelasan ayat dari EQuran.id' : '114 surah, terjemahan, dan audio murattal');
+    showReader(kind === 'tafsir' ? 'Tafsir Al-Qur’an' : kind === 'audio' ? 'Audio Murattal' : 'Al-Qur’an Digital', kind === 'tafsir' ? 'Penjelasan ayat dari EQuran.id' : '114 surah, terjemahan, dan audio murattal');
     loading();
     try {
       const surahs = await request(API + '/v2/surat');
@@ -149,7 +149,7 @@ export function mountIslamicLibrary() {
         list.replaceChildren();
         surahs.filter(s => String(s.nomor).includes(q) || String(s.namaLatin || '').toLocaleLowerCase('id').includes(q) || String(s.arti || '').toLocaleLowerCase('id').includes(q)).forEach(s => {
           const entry = row(s.nomor + '. ' + s.namaLatin + ' · ' + s.arti, (s.tempatTurun || '') + ' · ' + s.jumlahAyat + ' ayat');
-          entry.append(action(kind === 'tafsir' ? 'Baca tafsir' : 'Buka surah', () => kind === 'tafsir' ? showTafsir(s.nomor) : showSurah(s.nomor, false), 'equran-action primary'));
+          entry.append(action(kind === 'tafsir' ? 'Baca tafsir' : 'Buka surah', () => kind === 'tafsir' ? showTafsir(s.nomor) : showSurah(s.nomor, kind === 'audio'), 'equran-action primary'));
           list.append(entry);
         });
       };
