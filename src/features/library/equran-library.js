@@ -260,13 +260,39 @@ export function mountIslamicLibrary() {
     }
     return [];
   };
-  const unwrap = value => value?.data ?? value?.result ?? value;
-  const firstText = (item, keys, fallback = '') => {
-    for (const key of keys) {
-      const value = item?.[key];
-      if (value !== undefined && value !== null && String(value).trim()) return String(value);
+  const unwrap = value => {
+    let current = value;
+    for (let depth = 0; depth < 5; depth += 1) {
+      if (!current || typeof current !== 'object' || Array.isArray(current)) break;
+      const next = current.data ?? current.result ?? current.response;
+      if (!next || next === current) break;
+      current = next;
     }
-    return fallback;
+    return current;
+  };
+  const firstText = (item, keys, fallback = '') => {
+    const usable = value => {
+      if (typeof value === 'string' || typeof value === 'number') return String(value).trim();
+      if (Array.isArray(value)) return value.map(part => usable(part)).filter(Boolean).join('\\n');
+      return '';
+    };
+    for (const key of keys) {
+      const value = usable(item?.[key]);
+      if (value) return value;
+    }
+    const visit = (value, depth = 0) => {
+      if (!value || typeof value !== 'object' || depth > 4) return '';
+      for (const key of keys) {
+        const found = usable(value[key]);
+        if (found) return found;
+      }
+      for (const child of Object.values(value)) {
+        const found = visit(child, depth + 1);
+        if (found) return found;
+      }
+      return '';
+    };
+    return visit(item) || fallback;
   };
   async function kitabRequest(params) {
     const query = new URLSearchParams(params);
@@ -338,7 +364,7 @@ export function mountIslamicLibrary() {
         const source = payload && typeof payload === 'object' ? payload : {};
         chapters = splitSafinahSections(
           firstText(source, ['teks_indonesia', 'terjemahan', 'indonesia']),
-          firstText(source, ['teks_arab', 'arab', 'naskah_arab', 'teks']),
+          firstText(source, ['teks_arab', 'teksArab', 'arab', 'arabic', 'arabic_text', 'naskah_arab', 'naskah', 'teks']),
           firstText(source, ['teks_latin', 'latin', 'transliterasi'])
         );
         if (!chapters.length) throw new Error('Penanda bagian Safinah An-Najah tidak ditemukan pada teks API.');
@@ -390,7 +416,7 @@ export function mountIslamicLibrary() {
         ? { teks_indonesia: current.content, teks_arab: current.arabic, teks_latin: current.latin }
         : await kitabRequest({ action: 'chapter', slug, nomor: number });
       paper.replaceChildren(el('h2', '', chapterTitle));
-      const arabic = firstText(chapter, ['teks_arab', 'arab', 'teks', 'naskah_arab']);
+      const arabic = firstText(chapter, ['teks_arab', 'teksArab', 'arab', 'arabic', 'arabic_text', 'teks', 'naskah_arab', 'naskah']);
       const indonesia = firstText(chapter, ['teks_indonesia', 'terjemahan', 'indonesia', 'terjemah']);
       const latin = firstText(chapter, ['teks_latin', 'latin', 'transliterasi']);
       if (arabic) paper.append(el('p', 'equran-arabic equran-kitab-arabic', arabic));
@@ -434,7 +460,7 @@ export function mountIslamicLibrary() {
       Object.assign(el('span', 'collection-symbol'), { innerHTML: '<img src="/assets/collection-icon.webp" alt="">' }),
       el('span', 'collection-title', title),
       el('span', 'collection-desc', description),
-      Object.assign(el('span', 'collection-bottom'), { innerHTML: '<span class="collection-meta">Koleksi e-Moeslife</span><span class="round-arrow">↗</span>' })
+      Object.assign(el('span', 'collection-bottom'), { innerHTML: '<span class="collection-meta">Koleksi e-Moeslife</span><span class="round-arrow" aria-hidden="true"></span>' })
     );
     card.addEventListener('click', open);
     grid.append(card);
