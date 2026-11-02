@@ -573,19 +573,17 @@ export function mountIslamicLibrary() {
       let detail = {};
       let chapters = [];
       if (slug === 'safinah') {
-        const manual = readSafinahDocument();
-        if (manual.chapters.length) {
-          chapters = manual.chapters.map((chapter, index) => ({
-            nomor: String(index + 1),
-            judul: chapter.title || 'Bab ' + (index + 1),
-            content: chapter.translation || '',
-            arabic: chapter.arabic || '',
-            local: true
-          }));
-          detail = { deskripsi: 'Naskah disusun secara manual melalui Editor Safinah An-Najah.' };
-        } else {
-          chapters = [];
-          detail = { deskripsi: 'Susun sendiri nama bab, teks Arab, dan terjemahan melalui Editor Safinah.' };
+        detail = await kitabRequest({ action: 'detail', slug, page: '1', limit: '100' });
+        chapters = pickArray(detail);
+        const limit = Number(detail.limit || 100);
+        let page = Number(detail.page || 1);
+        const total = Number(detail.total || chapters.length);
+        while (page * limit < total) {
+          page += 1;
+          const next = await kitabRequest({ action: 'detail', slug, page: String(page), limit: String(limit) });
+          const nextChapters = pickArray(next);
+          if (!nextChapters.length) break;
+          chapters.push(...nextChapters);
         }
       } else {
         detail = await kitabRequest({ action: 'detail', slug, page: '1', limit: '100' });
@@ -612,20 +610,52 @@ export function mountIslamicLibrary() {
       paper.replaceChildren(
         el('h2', '', title),
         el('p', 'equran-paper-intro', slug === 'safinah'
-          ? 'Pilih bagian kitab. Isi dipisahkan berdasarkan penanda judul yang tersedia di naskah API.'
+          ? 'Naskah asli ditampilkan terpisah dari susunan pribadi. Baca isi aslinya terlebih dahulu, lalu gunakan editor untuk menyusun bab versi kamu.'
           : firstText(detail, ['deskripsi', 'keterangan', 'tentang'], 'Pilih bab untuk membaca teks kitab.'))
       );
-      const list = el('div', 'equran-kitab-list');
-      chapterItems.forEach((chapter, index) => {
-        const entry = row(chapter.title, chapter.local ? 'Bagian ' + (index + 1) : '');
-        entry.append(action('Baca bab', () => openKitabChapter(slug, chapter.number, chapter.title, title, chapterItems, index), 'equran-action primary'));
-        list.append(entry);
-      });
-      if (!chapterItems.length) list.append(el('p', 'equran-muted', 'Daftar bab belum dikenali dari respons detail kitab.'));
       if (slug === 'safinah') {
-        list.prepend(action('✎ Kelola / susun bab Safinah', openSafinahEditor, 'equran-action primary'));
+        paper.append(action('✎ Kelola / susun bab Safinah', openSafinahEditor, 'equran-action primary'));
+        const originalHeading = el('h3', '', 'Naskah asli Safinah An-Najah');
+        originalHeading.style.cssText = 'margin:22px 0 8px;color:var(--green);font-size:16px';
+        paper.append(originalHeading);
+        const originalList = el('div', 'equran-kitab-list');
+        chapterItems.forEach((chapter, index) => {
+          const entry = row(chapter.title, 'Naskah asli · Bagian ' + (index + 1));
+          entry.append(action('Baca isi asli', () => openKitabChapter(slug, chapter.number, chapter.title, title, chapterItems, index), 'equran-action primary'));
+          originalList.append(entry);
+        });
+        if (!chapterItems.length) originalList.append(el('p', 'equran-muted', 'Naskah asli belum tersedia dari layanan kitab.'));
+        paper.append(originalList);
+        const manual = readSafinahDocument();
+        if (manual.chapters.length) {
+          const manualHeading = el('h3', '', 'Susunan bab saya');
+          manualHeading.style.cssText = 'margin:24px 0 8px;color:var(--green);font-size:16px';
+          paper.append(manualHeading);
+          const manualList = el('div', 'equran-kitab-list');
+          manual.chapters.forEach((chapter, index) => {
+            const entry = row(chapter.title || 'Bab ' + (index + 1), 'Susunan pribadi · Bagian ' + (index + 1));
+            entry.append(action('Baca susunan saya', () => {
+              const localItems = manual.chapters.map((item, itemIndex) => ({
+                number: String(itemIndex + 1), title: item.title || 'Bab ' + (itemIndex + 1),
+                content: item.translation || '', arabic: item.arabic || '', local: true
+              }));
+              openKitabChapter(slug, localItems[index].number, localItems[index].title, title, localItems, index);
+            }, 'equran-action'));
+            manualList.append(entry);
+          });
+          paper.append(manualList);
+        }
+      } else {
+        const list = el('div', 'equran-kitab-list');
+        chapterItems.forEach((chapter, index) => {
+          const entry = row(chapter.title, '');
+          entry.append(action('Baca bab', () => openKitabChapter(slug, chapter.number, chapter.title, title, chapterItems, index), 'equran-action primary'));
+          list.append(entry);
+        });
+        if (!chapterItems.length) list.append(el('p', 'equran-muted', 'Daftar bab belum dikenali dari respons detail kitab.'));
+        paper.append(list);
       }
-      paper.append(list, action('← Kembali ke daftar kitab', openKitabCatalog, 'equran-back'));
+      paper.append(action('← Kembali ke daftar kitab', openKitabCatalog, 'equran-back'));
     } catch (error) { showError(error); }
   }
   async function openKitabChapter(slug, number, chapterTitle, bookTitle, chapterItems = [], chapterIndex = 0) {
