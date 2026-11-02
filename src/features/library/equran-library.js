@@ -58,6 +58,14 @@ export function mountIslamicLibrary() {
   body.theme-dark .equran-arabic{color:#f1eadb!important}
   body.theme-dark .equran-search{background:#26382d;color:#eee4d0;border-color:#52634f}
   body.theme-dark .equran-muted{color:#c0b69f}
+
+  .equran-kitab-list{display:grid;gap:2px}
+  .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;text-align:justify!important;margin:16px 0 24px!important}
+  .equran-kitab-latin,.equran-kitab-indonesia{font-size:14px!important;line-height:2!important;white-space:pre-wrap}
+  .equran-kitab-latin{color:#82745e!important;font-style:italic}
+  .equran-kitab-indonesia{color:#374b3c!important}
+  body.theme-dark .equran-kitab-indonesia{color:#eee4d0!important}
+  body.theme-dark .equran-kitab-latin{color:#c0b69f!important}
   @media(max-width:480px){.equran-reader{padding:14px 12px 28px}.equran-paper{padding:17px 14px;border-radius:15px}.equran-paper h2{font-size:21px}.equran-arabic{font-size:23px!important}}
   `;
   document.head.append(style);
@@ -236,29 +244,136 @@ export function mountIslamicLibrary() {
     } catch (error) { showError(error); }
   }
 
+  const KITAB_PROXY = '/api/kitab';
+  const pickArray = value => {
+    if (Array.isArray(value)) return value;
+    if (!value || typeof value !== 'object') return [];
+    for (const key of ['kitab', 'daftar_kitab', 'items', 'results', 'bab', 'daftar_bab', 'chapters', 'data']) {
+      if (Array.isArray(value[key])) return value[key];
+    }
+    return [];
+  };
+  const unwrap = value => value?.data ?? value?.result ?? value;
+  const firstText = (item, keys, fallback = '') => {
+    for (const key of keys) {
+      const value = item?.[key];
+      if (value !== undefined && value !== null && String(value).trim()) return String(value);
+    }
+    return fallback;
+  };
+  async function kitabRequest(params) {
+    const query = new URLSearchParams(params);
+    const response = await fetch(KITAB_PROXY + '?' + query.toString(), { headers: { Accept: 'application/json' } });
+    const json = await response.json().catch(() => ({}));
+    if (!response.ok || json.status === 'error' || json.success === false) {
+      throw new Error(json.message || json.detail || 'Layanan kitab belum dapat diakses (' + response.status + ').');
+    }
+    return unwrap(json);
+  }
+  function kitabName(item) {
+    return firstText(item, ['nama', 'nama_kitab', 'judul', 'title', 'name'], 'Kitab tanpa judul');
+  }
+  function kitabSlug(item) {
+    return firstText(item, ['slug', 'kode', 'id_slug']);
+  }
   function openArbain() {
-    showReader('Arba’in Nawawi', '42 hadits pilihan karya Imam Nawawi · Sumber: Risalah Islam');
-    paper.replaceChildren(
-      el('h2', '', 'الأربعون النووية'),
-      el('p', 'equran-paper-intro', 'Kumpulan 42 hadits Arba’in Nawawiyah dalam teks Arab dan terjemahan Indonesia. Konten ditampilkan dari sumber yang dirujuk.')
-    );
-    const sourceFrame = el('iframe', 'equran-hadith-frame');
-    sourceFrame.src = 'https://www.risalahislam.com/2019/01/hadits-arbain-nawawiyah-teks-arab.html?m=1';
-    sourceFrame.title = 'Hadits Arba’in Nawawiyah — Risalah Islam';
-    sourceFrame.loading = 'lazy';
-    sourceFrame.referrerPolicy = 'strict-origin-when-cross-origin';
-    sourceFrame.style.cssText = 'width:100%;height:78vh;min-height:620px;border:1px solid #ded3ba;border-radius:12px;background:#fff;';
-    const sourceLink = el('a', 'equran-source-link', 'Jika artikel tidak tampil, buka sumber Risalah Islam');
-    sourceLink.href = 'https://www.risalahislam.com/2019/01/hadits-arbain-nawawiyah-teks-arab.html?m=1';
-    sourceLink.target = '_blank';
-    sourceLink.rel = 'noopener noreferrer';
-    paper.append(sourceFrame, sourceLink);
+    openKitabCatalog('arbain');
+  }
+  async function openKitabCatalog(searchTerm = '') {
+    showReader('Perpustakaan Kitab', 'Koleksi kitab dari Ahmad Sanusi Open API');
+    loading();
+    try {
+      const payload = await kitabRequest({ action: 'list' });
+      const books = pickArray(payload);
+      if (!books.length) throw new Error('API berhasil merespons, tetapi daftar kitab belum dikenali. Format respons perlu diperiksa.');
+      paper.replaceChildren(
+        el('h2', '', 'مكتبة الكتب'),
+        el('p', 'equran-paper-intro', 'Pilih kitab untuk melihat daftar bab dan membaca teks Arab beserta terjemahan Indonesia.')
+      );
+      const search = searchInput('Cari judul kitab, misalnya Arba’in Nawawi…', 'Cari kitab');
+      const list = el('div', 'equran-kitab-list');
+      const draw = () => {
+        const q = search.value.trim().toLocaleLowerCase('id');
+        list.replaceChildren();
+        const filtered = books.filter(book => [kitabName(book), kitabSlug(book), book.kategori, book.pengarang, book.penulis].filter(Boolean).join(' ').toLocaleLowerCase('id').includes(q));
+        filtered.forEach(book => {
+          const slug = kitabSlug(book);
+          const title = kitabName(book);
+          const entry = row(title, [firstText(book, ['pengarang', 'penulis', 'author']), firstText(book, ['kategori', 'category']), firstText(book, ['jumlah_bab', 'total_bab', 'total'], '')].filter(Boolean).join(' · '));
+          entry.append(action('Buka kitab', () => openKitab(slug, title), 'equran-action primary'));
+          list.append(entry);
+        });
+        if (!filtered.length) list.append(el('p', 'equran-muted', 'Kitab tidak ditemukan. Coba kata kunci lain.'));
+      };
+      search.addEventListener('input', draw);
+      paper.append(search, list);
+      if (searchTerm) search.value = searchTerm === 'arbain' ? 'Arba' : searchTerm;
+      draw();
+      if (searchTerm === 'arbain' && !books.some(book => /arba.?in|arbain|nawawi/i.test(kitabName(book) + ' ' + kitabSlug(book)))) {
+        search.value = '';
+        draw();
+        const note = el('p', 'equran-muted', 'Arba’in Nawawi tidak ditemukan dengan nama yang dikenali. Silakan gunakan pencarian untuk memeriksa variasi nama kitab pada katalog.');
+        paper.insertBefore(note, search);
+      }
+    } catch (error) { showError(error); }
+  }
+  async function openKitab(slug, title) {
+    if (!slug) { showError(new Error('Identitas kitab dari API tidak tersedia.')); return; }
+    showReader(title, 'Daftar bab · Ahmad Sanusi Open API');
+    loading();
+    try {
+      const payload = await kitabRequest({ action: 'detail', slug });
+      const detail = payload && typeof payload === 'object' ? payload : {};
+      const chapters = pickArray(detail);
+      paper.replaceChildren(
+        el('h2', '', title),
+        el('p', 'equran-paper-intro', firstText(detail, ['deskripsi', 'keterangan', 'tentang'], 'Pilih bab untuk membaca teks kitab.'))
+      );
+      const list = el('div', 'equran-kitab-list');
+      chapters.forEach((chapter, index) => {
+        const number = firstText(chapter, ['nomor', 'no', 'urutan', 'bab', 'id'], String(index + 1));
+        const chapterTitle = firstText(chapter, ['judul', 'nama_bab', 'nama', 'title', 'judul_bab'], 'Bab ' + number);
+        const entry = row(chapterTitle, firstText(chapter, ['deskripsi', 'keterangan', 'ringkasan']));
+        entry.append(action('Baca bab', () => openKitabChapter(slug, number, chapterTitle, title), 'equran-action primary'));
+        list.append(entry);
+      });
+      if (!chapters.length) {
+        list.append(el('p', 'equran-muted', 'Daftar bab belum dikenali dari respons detail kitab.'));
+      }
+      paper.append(list, action('← Kembali ke semua kitab', () => openKitabCatalog(), 'equran-back'));
+    } catch (error) { showError(error); }
+  }
+  async function openKitabChapter(slug, number, chapterTitle, bookTitle) {
+    showReader(chapterTitle, bookTitle + ' · Bab ' + number);
+    loading();
+    try {
+      const payload = await kitabRequest({ action: 'chapter', slug, nomor: number });
+      const chapter = payload && typeof payload === 'object' ? payload : {};
+      paper.replaceChildren(el('h2', '', chapterTitle));
+      const arabic = firstText(chapter, ['teks_arab', 'arab', 'teks', 'naskah_arab']);
+      const indonesia = firstText(chapter, ['teks_indonesia', 'terjemahan', 'indonesia', 'terjemah']);
+      const latin = firstText(chapter, ['teks_latin', 'latin', 'transliterasi']);
+      if (arabic) paper.append(el('p', 'equran-arabic equran-kitab-arabic', arabic));
+      if (latin) paper.append(el('p', 'equran-kitab-latin', latin));
+      if (indonesia) paper.append(el('p', 'equran-kitab-indonesia', indonesia));
+      if (!arabic && !indonesia && !latin) {
+        const textValue = firstText(chapter, ['isi', 'konten', 'content', 'body']);
+        if (textValue) paper.append(el('p', 'equran-kitab-indonesia', textValue));
+        else paper.append(el('p', 'equran-muted', 'Isi bab diterima, tetapi nama field teks belum dikenali. Respons API perlu dicocokkan.'));
+      }
+      const source = firstText(chapter, ['sumber', 'referensi', 'reference']);
+      if (source) paper.append(el('p', 'equran-muted', 'Referensi: ' + source));
+      paper.append(
+        action('← Kembali ke daftar bab', () => openKitab(slug, bookTitle), 'equran-back'),
+        action('← Semua kitab', () => openKitabCatalog(), 'equran-back')
+      );
+    } catch (error) { showError(error); }
   }
 
   const cards = [
     ['05 / DOA & ZIKIR', 'Doa & Dzikir', 'Lafaz Arab, Latin, arti, dan kategori', openDoa],
     ['06 / AL-QUR’AN', 'Al-Qur’an & Murattal', 'Baca ayat dan dengarkan satu surah penuh', () => loadSurahs('quran')],
-    ['07 / ARBA’IN', 'Arba’in Nawawi', '42 hadits pilihan karya Imam Nawawi', openArbain],
+    ['07 / KITAB', 'Perpustakaan Kitab', 'Arba’in Nawawi dan koleksi kitab klasik lainnya', openArbain],
     ['08 / TAFSIR', 'Tafsir Al-Qur’an', 'Baca penjelasan ayat dan kandungan surah', () => loadSurahs('tafsir')]
   ];
   cards.forEach(([index, title, description, open]) => {
