@@ -291,16 +291,16 @@ export function mountIslamicLibrary() {
     }, 80);
   }
   function splitSafinahSections(text) {
-    const lines = String(text || '').split(/\\r?\\n/u);
+    const lines = String(text || '').split(/\r?\n/u);
     const sections = [];
     let title = 'Pengantar';
     let buffer = [];
     const push = () => {
-      const content = buffer.join('\\n').trim();
+      const content = buffer.join('\n').trim();
       if (content) sections.push({ nomor: String(sections.length + 1), judul: title, content, local: true });
     };
     for (const line of lines) {
-      const match = line.match(/^\\s*۞\\s*(.+?)\\s*۞?\\s*$/u);
+      const match = line.match(/^\s*۞\s*(.+?)\s*۞?\s*$/u);
       if (match && match[1].trim()) {
         push();
         title = match[1].replace(/۞/gu, '').trim();
