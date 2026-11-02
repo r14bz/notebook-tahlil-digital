@@ -1195,3 +1195,33 @@ body.theme-dark .app-update-later{background:#304337;color:#eee4d0;border-color:
  .collection-card .collection-meta{font-size:9px}
 }
 body.theme-dark .equran-paper{background:#1d3026;color:#eee4d0}
+
+
+/* Compact collection cards while preserving the two-column layout. */
+.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.collection-card{min-height:142px;padding:12px 14px 11px;border-radius:15px}
+.collection-card .collection-symbol{height:36px;margin:7px 0 5px;font-size:29px}
+.collection-card .collection-title{font-size:20px;line-height:1.12}
+.collection-card .collection-desc{font-size:10px;line-height:1.35;margin-top:4px}
+.collection-card .collection-bottom{margin-top:auto;padding-top:8px}
+.collection-card.collection-equran .collection-symbol{width:34px;height:34px;margin:7px 0 5px}
+.equran-display-options{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.equran-toggle{display:inline-flex;align-items:center;gap:5px;color:#52614e;font-size:11px;white-space:nowrap}
+.equran-toggle input{accent-color:#174a36;width:15px;height:15px}
+.equran-display-options .equran-search{width:auto;min-width:150px;flex:1}
+.equran-latin[hidden],.equran-translation[hidden]{display:none!important}
+.equran-hadith-frame{display:block}
+.equran-source-link{display:inline-block;margin-top:12px;color:#245840;font-size:12px;text-decoration:underline}
+body.theme-dark .equran-toggle,body.theme-dark .equran-source-link{color:#e3d7b8}
+@media(max-width:480px){
+ .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .collection-card{min-height:132px;padding:10px 10px 9px;border-radius:13px}
+ .collection-card .card-index{font-size:7px;letter-spacing:.5px}
+ .collection-card .collection-symbol{height:30px;margin:5px 0 4px;font-size:25px}
+ .collection-card .collection-title{font-size:17px}
+ .collection-card .collection-desc{font-size:9px;line-height:1.3}
+ .collection-card .collection-meta{font-size:8px}
+ .collection-card.collection-equran .collection-symbol{width:29px;height:29px;margin:5px 0 4px}
+ .equran-display-options{gap:8px}
+ .equran-toggle{font-size:10px}
+}
