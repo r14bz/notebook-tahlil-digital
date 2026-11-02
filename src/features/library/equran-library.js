@@ -420,25 +420,10 @@ export function mountIslamicLibrary() {
     card.addEventListener('click', open);
     grid.append(card);
   });
-  const kitabSection = el('section', 'kitab-library-section');
-  kitabSection.id = 'kitabLibrarySection';
-  const kitabHeading = el('div', 'home-section-heading');
-  const headingCopy = el('div');
-  headingCopy.append(
-    el('span', 'home-kicker', 'KITAB KLASIK'),
-    el('h3', '', 'Perpustakaan Kitab Kuning'),
-    el('p', '', 'Jelajahi kitab-kitab dari Ahmad Sanusi Open API.')
-  );
-  const kitabSearch = searchInput('Cari nama kitab atau pengarang…', 'Cari kitab kuning');
-  kitabSearch.classList.add('kitab-home-search');
-  kitabHeading.append(headingCopy, kitabSearch);
-  const kitabGrid = el('div', 'kitab-home-grid');
-  kitabGrid.id = 'kitabLibraryGrid';
-  kitabGrid.append(el('p', 'equran-loading', 'Memuat daftar kitab…'));
-  kitabSection.append(kitabHeading, kitabGrid);
-  const homeIndex = home.querySelector('.home-index');
-  if (homeIndex) home.insertBefore(kitabSection, homeIndex);
-  else home.append(kitabSection);
+  const kitabSection = home.querySelector('#kitabLibrarySection');
+  const kitabSearch = home.querySelector('#kitabLibrarySearch');
+  const kitabGrid = home.querySelector('#kitabLibraryGrid');
+  if (!kitabSection || !kitabSearch || !kitabGrid) return;
 
   async function loadKitabHomeCatalog() {
     try {
