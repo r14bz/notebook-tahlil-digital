@@ -44,7 +44,7 @@ export function mountIslamicLibrary() {
   .equran-row:last-child{border-bottom:0}
   .equran-row h3{margin:0 0 6px;color:#174532;font-size:14px}
   .equran-row p{margin:8px 0;color:#5d594e;font-size:12px;line-height:1.8;white-space:pre-wrap}
-  .equran-arabic{font-family:'Amiri',serif!important;font-size:25px!important;line-height:2!important;text-align:right;color:#203e2c!important}
+  .equran-arabic{font-family:'Amiri',serif!important;font-size:25px!important;line-height:2!important;direction:rtl!important;unicode-bidi:plaintext;text-align:right!important;color:#203e2c!important}
   .equran-muted{color:#8b806c;font-size:11px;line-height:1.6}
   .equran-action{border:1px solid #d8c9a8;border-radius:9px;padding:9px 12px;background:#f0eadb;color:#34523f;font-size:11px;white-space:nowrap}
   .equran-action.primary{background:#174a36;color:#fff7e5;border-color:#9a7a40}
@@ -82,7 +82,7 @@ export function mountIslamicLibrary() {
   body.theme-dark .safinah-editor-status{background:#263d2e;color:#dcebd8}
   @media(min-width:700px){.safinah-editor-layout{grid-template-columns:minmax(220px,.8fr) minmax(0,1.5fr)}} 
   .equran-kitab-list{display:grid;gap:2px}
-  .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;text-align:justify!important;margin:16px 0 24px!important}
+  .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;direction:rtl!important;unicode-bidi:plaintext;text-align:right!important;margin:16px 0 24px!important}
   .equran-kitab-latin,.equran-kitab-indonesia{font-size:14px!important;line-height:2!important;white-space:pre-wrap}
   .equran-kitab-latin{color:#82745e!important;font-style:italic}
   .equran-kitab-indonesia{color:#374b3c!important}
