@@ -129,7 +129,7 @@ const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 $('ttsPlayBtn').onclick=()=>readerAudio.speak($('arabicText').textContent);
 $('qariPlayBtn').onclick=()=>readerAudio.playQari(pages[index]);
-$('audioStopBtn').onclick=()=>readerAudio.stop();
+
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
  const open=!document.body.classList.contains('toc-open');
