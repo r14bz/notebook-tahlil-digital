@@ -1161,3 +1161,20 @@ body.theme-dark .app-update-card{background:#1d3026;color:#f2ead8;border-color:#
 body.theme-dark .app-update-card h2{color:#f4e5bd}
 body.theme-dark .app-update-card .app-update-notes{background:#293d31;color:#e1d7c2}
 body.theme-dark .app-update-later{background:#304337;color:#eee4d0;border-color:#60745f}
+
+
+/* Keep the continue-reading and APK-download actions together on the home screen. */
+.home-continue-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.home-continue-row .continue-reading{min-width:0;max-width:none;width:100%;height:100%}
+.home-continue-row .home-download-link{min-width:0;margin:0;padding:12px 14px;height:100%;box-sizing:border-box}
+.home-continue-row .home-download-link strong{font-size:12px}
+.home-continue-row .home-download-link small{font-size:10px;line-height:1.4}
+@media(max-width:480px){
+  .home-continue-row{gap:7px}
+  .home-continue-row .continue-reading{padding:10px 8px;gap:7px}
+  .home-continue-row .continue-icon,.home-continue-row .home-download-mark{width:30px;height:30px;flex-basis:30px;border-radius:9px;font-size:17px}
+  .home-continue-row .continue-reading strong,.home-continue-row .home-download-link strong{font-size:10px}
+  .home-continue-row .continue-reading small,.home-continue-row .home-download-link small{font-size:8px;white-space:normal;max-width:none}
+  .home-continue-row .continue-arrow,.home-continue-row .home-download-arrow{font-size:15px}
+  .home-continue-row .home-download-link{padding:10px 8px;gap:7px}
+}
