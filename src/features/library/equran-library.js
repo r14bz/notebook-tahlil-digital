@@ -472,8 +472,16 @@ export function mountIslamicLibrary() {
       if (selected < 0) return;
       const chapter = chapters[selected];
       paper.replaceChildren(el('h2', '', chapter.title || 'Bab tanpa judul'));
-      if (chapter.arabic) paper.append(el('p', 'equran-arabic equran-kitab-arabic', chapter.arabic));
-      if (chapter.translation) paper.append(el('p', 'equran-kitab-indonesia', chapter.translation));
+      if (chapter.arabic) {
+        const arabicPreview = el('p', 'equran-arabic equran-kitab-arabic', chapter.arabic);
+        arabicPreview.style.whiteSpace = 'pre-wrap';
+        paper.append(arabicPreview);
+      }
+      if (chapter.translation) {
+        const translationPreview = el('p', 'equran-kitab-indonesia', chapter.translation);
+        translationPreview.style.whiteSpace = 'pre-wrap';
+        paper.append(translationPreview);
+      }
       paper.append(action('← Kembali ke editor', openSafinahEditor, 'equran-back'));
       chapterNav.hidden = true;
     }, 'equran-action primary');
