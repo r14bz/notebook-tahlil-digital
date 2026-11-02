@@ -40,6 +40,7 @@ jobs:
           test -f www/index.html
           test -f www/service-worker.js
           test -f www/src/app.js
+          test -f www/src/features/library/equran-library.js
           test -f www/src/features/prayer/prayer-times.js
           test -f www/src/features/reader/navigation.js
           test -f www/src/features/reader/page-state.js
