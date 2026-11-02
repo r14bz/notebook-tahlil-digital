@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-moeslife-shell-v7';
+const CACHE_NAME = 'e-moeslife-shell-v8';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
