@@ -416,7 +416,7 @@ export function mountIslamicLibrary() {
       const file = fileInput.files?.[0];
       if (!file) return;
       try {
-        const parsed = JSON.parse(await file.text());
+        const parsed = JSON.parse((await file.text()).replace(/^\\uFEFF/, ''));
         const imported = Array.isArray(parsed) ? parsed : parsed.chapters;
         if (!Array.isArray(imported)) throw new Error('Format JSON tidak memiliki daftar chapters.');
         chapters = imported.map((chapter, index) => ({
@@ -498,8 +498,11 @@ export function mountIslamicLibrary() {
       const link = el('a');
       link.href = url;
       link.download = 'safinah-an-najah.json';
+      link.hidden = true;
+      document.body.append(link);
       link.click();
-      URL.revokeObjectURL(url);
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       status.textContent = 'File safinah-an-najah.json berhasil disiapkan untuk diunduh.';
     }
     function draw() {
@@ -573,14 +576,8 @@ export function mountIslamicLibrary() {
           }));
           detail = { deskripsi: 'Naskah disusun secara manual melalui Editor Safinah An-Najah.' };
         } else {
-          const payload = await kitabRequest({ action: 'chapter', slug, nomor: '1' });
-          const source = payload && typeof payload === 'object' ? payload : {};
-          chapters = splitSafinahSections(
-            firstText(source, ['teks_indonesia', 'terjemahan', 'indonesia']),
-            firstText(source, ['teks_arab', 'teksArab', 'teks_arabic', 'arab', 'arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'naskah_arab', 'naskah', 'teks']),
-            firstText(source, ['teks_latin', 'latin', 'transliterasi'])
-          );
-          detail = source;
+          chapters = [];
+          detail = { deskripsi: 'Susun sendiri nama bab, teks Arab, dan terjemahan melalui Editor Safinah.' };
         }
       } else {
         detail = await kitabRequest({ action: 'detail', slug, page: '1', limit: '100' });
