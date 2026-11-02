@@ -248,7 +248,7 @@ export function mountIslamicLibrary() {
   const pickArray = value => {
     if (Array.isArray(value)) return value;
     if (!value || typeof value !== 'object') return [];
-    for (const key of ['kitab', 'daftar_kitab', 'items', 'results', 'bab', 'daftar_bab', 'chapters', 'data']) {
+    for (const key of ['kitab', 'kitabs', 'daftar_kitab', 'books', 'items', 'results', 'bab', 'daftar_bab', 'chapters', 'data', 'list']) {
       if (Array.isArray(value[key])) return value[key];
     }
     return [];
@@ -331,7 +331,7 @@ export function mountIslamicLibrary() {
       );
       const list = el('div', 'equran-kitab-list');
       chapters.forEach((chapter, index) => {
-        const number = firstText(chapter, ['nomor', 'no', 'urutan', 'bab', 'id'], String(index + 1));
+        const number = firstText(chapter, ['nomor', 'nomor_bab', 'no', 'urutan', 'bab', 'id'], String(index + 1));
         const chapterTitle = firstText(chapter, ['judul', 'nama_bab', 'nama', 'title', 'judul_bab'], 'Bab ' + number);
         const entry = row(chapterTitle, firstText(chapter, ['deskripsi', 'keterangan', 'ringkasan']));
         entry.append(action('Baca bab', () => openKitabChapter(slug, number, chapterTitle, title), 'equran-action primary'));
