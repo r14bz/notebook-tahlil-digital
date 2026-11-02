@@ -477,8 +477,9 @@ test('reader shell exposes accessible TTS and qari playback controls', () => {
   assert.match(readerPageMarkup, /id="readerAudioPanel"/);
   assert.match(readerPageMarkup, /id="ttsPlayBtn"/);
   assert.match(readerPageMarkup, /id="qariPlayBtn"/);
-  assert.match(readerPageMarkup, /id="audioStopBtn"/);
-  assert.match(readerPageMarkup, /id="qariAudio" hidden controls/);
+  assert.doesNotMatch(readerPageMarkup, /id="audioStopBtn"/);
+  assert.doesNotMatch(readerPageMarkup, /id="qariAudio" hidden controls/);
+  assert.match(readerPageMarkup, /id="qariAudio" hidden preload/);
   assert.match(readerPageMarkup, /href="https:\/\/everyayah.com\//);
   assert.match(readerPageMarkup, /aria-live="polite"/);
 });
