@@ -30,6 +30,7 @@ export default async function handler(req, res) {
       }
       path += '/bab/' + chapterNumber;
     } else if (action === 'search') {
+      path += '/search';
       const keyword = typeof q === 'string' ? q.trim() : '';
       if (keyword.length < 2 || keyword.length > 100) {
         return res.status(400).json({ status: 'error', message: 'Kata pencarian minimal 2 dan maksimal 100 karakter.' });
