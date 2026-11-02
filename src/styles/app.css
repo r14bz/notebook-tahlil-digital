@@ -531,7 +531,7 @@ body.reader-active .arabic { overflow: visible; }
   .hero-copy h2 { font-size:25px; }
   .hero-art { min-height:175px; }
   .art-book { width:65px; height:98px; }
-  .collection-card { grid-template-columns:37px minmax(0,1fr) 25px; column-gap:7px; }
+  .collection-card { grid-template-columns:30px minmax(0,1fr) 25px; column-gap:13px; }
   .collection-symbol,.surah-number { width:35px; height:35px; font-size:21px; }
   .collection-title { font-size:18px; }
 }
