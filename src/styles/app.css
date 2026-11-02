@@ -1225,3 +1225,78 @@ body.theme-dark .equran-toggle,body.theme-dark .equran-source-link{color:#e3d7b8
  .equran-display-options{gap:8px}
  .equran-toggle{font-size:10px}
 }
+
+
+/* Compact 2x2 home collections and a separate yellow-book catalog. */
+@media (min-width: 0px) {
+  .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .collection-card{
+    min-height:68px;height:68px;padding:8px 10px;border-radius:13px;
+    display:grid;grid-template-columns:28px minmax(0,1fr) 22px;
+    grid-template-rows:minmax(0,1fr);column-gap:8px;align-items:center
+  }
+  .collection-card .card-index,.collection-card .collection-desc{display:none}
+  .collection-card .collection-symbol,.collection-card .surah-number{
+    grid-column:1;grid-row:1;width:27px;height:27px;min-height:27px;
+    margin:0;border:0;background:transparent;font-size:20px
+  }
+  .collection-card .collection-symbol img,.collection-card .surah-number img{width:100%;height:100%;object-fit:contain}
+  .collection-card .collection-title{
+    grid-column:2;grid-row:1;align-self:center;margin:0;
+    font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.2;font-weight:700
+  }
+  .collection-card .collection-bottom{
+    grid-column:3;grid-row:1;width:auto;margin:0;padding:0;justify-content:center
+  }
+  .collection-card .collection-meta{display:none}
+  .collection-card .round-arrow{width:22px;height:22px;font-size:13px}
+  .kitab-library-section{margin-top:29px;scroll-margin-top:16px}
+  .kitab-library-heading{align-items:flex-end;margin:0 2px 13px}
+  .kitab-library-heading h3{font-size:24px}
+  .kitab-home-search{
+    width:min(270px,42%);min-width:150px;height:40px;padding:9px 11px;
+    border:1px solid #ded3ba;border-radius:11px;background:#fffdf7;
+    color:#284434;font:inherit;font-size:11px
+  }
+  .kitab-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kitab-home-card{
+    position:relative;min-width:0;min-height:82px;height:82px;padding:10px 11px;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+    gap:3px;text-align:left;border:1px solid #ded3ba;border-radius:13px;
+    background:#fffaf0;color:#203d2d;box-shadow:0 4px 12px #46371b08
+  }
+  .kitab-home-card:active{transform:scale(.985)}
+  .kitab-home-index{position:absolute;right:9px;top:7px;color:#a48a54;font-size:8px;letter-spacing:.7px}
+  .kitab-home-title{max-width:calc(100% - 16px);font-size:12px;line-height:1.2;font-weight:700;color:#173f30}
+  .kitab-home-author{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#817865;font-size:9px}
+  .kitab-home-category{font-size:8px;color:#9a865c;line-height:1.2}
+  .equran-reader{padding-bottom:104px}
+  .equran-chapter-nav[hidden]{display:none!important}
+  .equran-chapter-nav{
+    position:fixed;z-index:9999;left:50%;bottom:max(8px,env(safe-area-inset-bottom));
+    transform:translateX(-50%);width:min(950px,calc(100vw - 20px));
+    display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px;
+    padding:7px;border:1px solid #d8c9a8;border-radius:15px;
+    background:rgba(255,250,240,.96);box-shadow:0 8px 28px #1b2a1e25;
+    backdrop-filter:blur(14px)
+  }
+  .equran-chapter-nav button{
+    min-width:0;min-height:42px;padding:8px 5px;border-radius:10px;
+    white-space:normal;font-size:10px;line-height:1.2
+  }
+  .equran-paper{padding-bottom:92px}
+  body.theme-dark .kitab-home-card{background:#1d3026;border-color:#52634f;color:#eee4d0}
+  body.theme-dark .kitab-home-title{color:#f4e5bd}
+  body.theme-dark .kitab-home-author{color:#c0b69f}
+  body.theme-dark .kitab-home-search{background:#26382d;color:#eee4d0;border-color:#52634f}
+  body.theme-dark .equran-chapter-nav{background:rgba(29,48,38,.97);border-color:#52634f}
+}
+@media(max-width:600px){
+  .home-section-heading.kitab-library-heading{align-items:flex-start;flex-direction:column;gap:10px}
+  .kitab-home-search{width:100%;min-width:0}
+  .kitab-home-grid{gap:7px}
+  .kitab-home-card{min-height:78px;height:78px;padding:9px}
+  .kitab-home-title{font-size:11px}
+  .equran-chapter-nav{width:calc(100vw - 16px);gap:4px;padding:6px}
+  .equran-chapter-nav button{min-height:42px;padding:7px 3px;font-size:9px}
+}
