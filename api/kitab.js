@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     return res.status(503).json({ status: 'error', message: 'Konfigurasi layanan kitab belum tersedia di server.' });
   }
 
-  const { action, slug, nomor, q } = req.query || {};
+  const { action, slug, nomor, q, page, limit } = req.query || {};
   if (!ALLOWED_ACTIONS.has(action)) {
     return res.status(400).json({ status: 'error', message: 'Permintaan katalog kitab tidak valid.' });
   }
@@ -40,6 +40,16 @@ export default async function handler(req, res) {
 
   const url = new URL(BASE_URL + path);
   if (action === 'search') url.searchParams.set('q', q.trim());
+  if (action === 'detail') {
+    const pageNumber = Number(page ?? 1);
+    const pageLimit = Number(limit ?? 100);
+    if (!Number.isInteger(pageNumber) || pageNumber < 1 || pageNumber > 1000 ||
+        !Number.isInteger(pageLimit) || pageLimit < 1 || pageLimit > 100) {
+      return res.status(400).json({ status: 'error', message: 'Parameter halaman kitab tidak valid.' });
+    }
+    url.searchParams.set('page', String(pageNumber));
+    url.searchParams.set('limit', String(pageLimit));
+  }
 
   try {
     const upstream = await fetch(url, {
