@@ -134,13 +134,13 @@ export function mountIslamicLibrary() {
   }
 
   async function loadSurahs(kind) {
-    showReader(kind === 'tafsir' ? 'Tafsir Al-Qur’an' : kind === 'audio' ? 'Audio Murattal' : 'Al-Qur’an Digital', kind === 'tafsir' ? 'Penjelasan ayat dari EQuran.id' : '114 surah, terjemahan, dan audio murattal');
+    showReader(kind === 'tafsir' ? 'Tafsir Al-Qur’an' : 'Al-Qur’an & Murattal', kind === 'tafsir' ? 'Penjelasan ayat dari EQuran.id' : '114 surah, teks Arab, Latin, terjemahan, dan audio');
     loading();
     try {
       const surahs = await request(API + '/v2/surat');
       paper.replaceChildren(
         el('h2', '', kind === 'tafsir' ? 'Pilih Surah untuk Tafsir' : 'Daftar Surah Al-Qur’an'),
-        el('p', 'equran-paper-intro', kind === 'tafsir' ? 'Pilih surah untuk membaca penjelasan tafsir.' : 'Pilih surah untuk membaca ayat, terjemahan, dan mendengarkan murattal.')
+        el('p', 'equran-paper-intro', kind === 'tafsir' ? 'Pilih surah untuk membaca penjelasan tafsir.' : 'Pilih surah untuk membaca ayat dan mendengarkan murattal.')
       );
       const search = searchInput('Cari nama atau nomor surah…', 'Cari surah');
       const list = el('div', '');
@@ -160,7 +160,7 @@ export function mountIslamicLibrary() {
   }
 
   async function showSurah(number, fromAudioCard = false) {
-    showReader(fromAudioCard ? 'Audio Murattal' : 'Al-Qur’an Digital', 'Surah dan ayat dari EQuran.id');
+    showReader('Al-Qur’an & Murattal', 'Surah dan ayat dari EQuran.id');
     loading();
     try {
       const surat = await request(API + '/v2/surat/' + number);
@@ -183,20 +183,39 @@ export function mountIslamicLibrary() {
         const url = surat.audioFull?.[select.value];
         if (url) { audio.src = url; audio.play().catch(() => {}); }
       }, 'equran-action primary');
-      tools.append(select, playFull);
+      const options = el('div', 'equran-display-options');
+      const latinLabel = el('label', 'equran-toggle');
+      const latinToggle = el('input');
+      latinToggle.type = 'checkbox';
+      latinToggle.checked = true;
+      latinLabel.append(latinToggle, el('span', '', 'Latin'));
+      const translationLabel = el('label', 'equran-toggle');
+      const translationToggle = el('input');
+      translationToggle.type = 'checkbox';
+      translationToggle.checked = true;
+      translationLabel.append(translationToggle, el('span', '', 'Terjemahan'));
+      options.append(latinLabel, translationLabel);
+      tools.append(select, playFull, options);
       paper.append(tools, audio);
+      const verses = el('div', 'equran-verses');
       (surat.ayat || []).forEach(ayat => {
         const entry = row('Ayat ' + ayat.nomorAyat, '');
         entry.append(el('p', 'equran-arabic', ayat.teksArab || ''));
-        if (ayat.teksLatin) entry.append(el('p', '', ayat.teksLatin));
-        if (ayat.teksIndonesia) entry.append(el('p', '', ayat.teksIndonesia));
-        entry.append(action('▶ Putar ayat', () => {
-          const url = ayat.audio?.[select.value];
-          if (url) { audio.src = url; audio.play().catch(() => {}); }
-        }, 'equran-action'));
-        paper.append(entry);
+        const latin = el('p', 'equran-latin', ayat.teksLatin || '');
+        const translation = el('p', 'equran-translation', ayat.teksIndonesia || '');
+        latin.hidden = !latinToggle.checked;
+        translation.hidden = !translationToggle.checked;
+        entry.append(latin, translation);
+        verses.append(entry);
       });
-      const returnList = action('← Kembali ke daftar surah', () => loadSurahs(fromAudioCard ? 'audio' : 'quran'), 'equran-back');
+      const updateTextVisibility = () => {
+        verses.querySelectorAll('.equran-latin').forEach(node => node.hidden = !latinToggle.checked);
+        verses.querySelectorAll('.equran-translation').forEach(node => node.hidden = !translationToggle.checked);
+      };
+      latinToggle.addEventListener('change', updateTextVisibility);
+      translationToggle.addEventListener('change', updateTextVisibility);
+      paper.append(verses);
+      const returnList = action('← Kembali ke daftar surah', () => loadSurahs('quran'), 'equran-back');
       paper.append(returnList);
     } catch (error) { showError(error); }
   }
@@ -217,10 +236,29 @@ export function mountIslamicLibrary() {
     } catch (error) { showError(error); }
   }
 
+  function openArbain() {
+    showReader('Arba’in Nawawi', '42 hadits pilihan karya Imam Nawawi · Sumber: Risalah Islam');
+    paper.replaceChildren(
+      el('h2', '', 'الأربعون النووية'),
+      el('p', 'equran-paper-intro', 'Kumpulan 42 hadits Arba’in Nawawiyah dalam teks Arab dan terjemahan Indonesia. Konten ditampilkan dari sumber yang dirujuk.')
+    );
+    const sourceFrame = el('iframe', 'equran-hadith-frame');
+    sourceFrame.src = 'https://www.risalahislam.com/2019/01/hadits-arbain-nawawiyah-teks-arab.html?m=1';
+    sourceFrame.title = 'Hadits Arba’in Nawawiyah — Risalah Islam';
+    sourceFrame.loading = 'lazy';
+    sourceFrame.referrerPolicy = 'strict-origin-when-cross-origin';
+    sourceFrame.style.cssText = 'width:100%;height:78vh;min-height:620px;border:1px solid #ded3ba;border-radius:12px;background:#fff;';
+    const sourceLink = el('a', 'equran-source-link', 'Jika artikel tidak tampil, buka sumber Risalah Islam');
+    sourceLink.href = 'https://www.risalahislam.com/2019/01/hadits-arbain-nawawiyah-teks-arab.html?m=1';
+    sourceLink.target = '_blank';
+    sourceLink.rel = 'noopener noreferrer';
+    paper.append(sourceFrame, sourceLink);
+  }
+
   const cards = [
     ['05 / DOA & ZIKIR', 'Doa & Dzikir', 'Lafaz Arab, Latin, arti, dan kategori', openDoa],
-    ['06 / AL-QUR’AN', 'Al-Qur’an Digital', 'Baca 114 surah beserta terjemahan ayat', () => loadSurahs('quran')],
-    ['07 / MURATTAL', 'Audio Murattal', 'Dengarkan tilawah dari enam pilihan qari', () => loadSurahs('audio')],
+    ['06 / AL-QUR’AN', 'Al-Qur’an & Murattal', 'Baca ayat dan dengarkan satu surah penuh', () => loadSurahs('quran')],
+    ['07 / ARBA’IN', 'Arba’in Nawawi', '42 hadits pilihan karya Imam Nawawi', openArbain],
     ['08 / TAFSIR', 'Tafsir Al-Qur’an', 'Baca penjelasan ayat dan kandungan surah', () => loadSurahs('tafsir')]
   ];
   cards.forEach(([index, title, description, open]) => {
