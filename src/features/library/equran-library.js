@@ -322,7 +322,7 @@ export function mountIslamicLibrary() {
     showReader(title, 'Daftar bab · Ahmad Sanusi Open API');
     loading();
     try {
-      const payload = await kitabRequest({ action: 'detail', slug });
+      const payload = await kitabRequest({ action: 'detail', slug, page: '1', limit: '100' });
       const detail = payload && typeof payload === 'object' ? payload : {};
       const chapters = pickArray(detail);
       paper.replaceChildren(
@@ -330,17 +330,47 @@ export function mountIslamicLibrary() {
         el('p', 'equran-paper-intro', firstText(detail, ['deskripsi', 'keterangan', 'tentang'], 'Pilih bab untuk membaca teks kitab.'))
       );
       const list = el('div', 'equran-kitab-list');
-      chapters.forEach((chapter, index) => {
-        const number = firstText(chapter, ['nomor', 'nomor_bab', 'no', 'urutan', 'bab', 'id'], String(index + 1));
-        const chapterTitle = firstText(chapter, ['judul', 'nama_bab', 'nama', 'title', 'judul_bab'], 'Bab ' + number);
-        const entry = row(chapterTitle, firstText(chapter, ['deskripsi', 'keterangan', 'ringkasan']));
-        entry.append(action('Baca bab', () => openKitabChapter(slug, number, chapterTitle, title), 'equran-action primary'));
-        list.append(entry);
-      });
+      const appendChapters = (items, offset = 0) => {
+        items.forEach((chapter, index) => {
+          const number = firstText(chapter, ['nomor', 'nomor_bab', 'no', 'urutan', 'bab', 'id'], String(offset + index + 1));
+          const chapterTitle = firstText(chapter, ['judul', 'nama_bab', 'nama', 'title', 'judul_bab'], 'Bab ' + number);
+          const entry = row(chapterTitle, firstText(chapter, ['deskripsi', 'keterangan', 'ringkasan']));
+          entry.append(action('Baca bab', () => openKitabChapter(slug, number, chapterTitle, title), 'equran-action primary'));
+          list.append(entry);
+        });
+      };
+      appendChapters(chapters);
       if (!chapters.length) {
         list.append(el('p', 'equran-muted', 'Daftar bab belum dikenali dari respons detail kitab.'));
       }
-      paper.append(list, action('← Kembali ke semua kitab', () => openKitabCatalog(), 'equran-back'));
+      const currentPage = Number(detail.page || 1);
+      const pageLimit = Number(detail.limit || 100);
+      const totalChapters = Number(detail.total || chapters.length);
+      const pagination = el('div', 'equran-kitab-pagination');
+      if (currentPage * pageLimit < totalChapters) {
+        const more = action('Muat bab berikutnya', async () => {
+          more.disabled = true;
+          more.textContent = 'Memuat…';
+          try {
+            const next = await kitabRequest({ action: 'detail', slug, page: String(currentPage + 1), limit: String(pageLimit) });
+            const nextChapters = pickArray(next);
+            appendChapters(nextChapters, chapters.length);
+            if (!nextChapters.length || (Number(next.page || currentPage + 1) * pageLimit >= Number(next.total || totalChapters))) {
+              pagination.remove();
+            } else {
+              more.disabled = false;
+              more.textContent = 'Muat bab berikutnya';
+            }
+          } catch (error) {
+            more.disabled = false;
+            more.textContent = 'Coba muat lagi';
+            const message = el('p', 'equran-error', error.message);
+            pagination.append(message);
+          }
+        }, 'equran-action');
+        pagination.append(more);
+      }
+      paper.append(list, pagination, action('← Kembali ke semua kitab', () => openKitabCatalog(), 'equran-back'));
     } catch (error) { showError(error); }
   }
   async function openKitabChapter(slug, number, chapterTitle, bookTitle) {
