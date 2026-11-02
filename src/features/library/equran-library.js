@@ -290,14 +290,14 @@ export function mountIslamicLibrary() {
       section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 80);
   }
-  function splitSafinahSections(text) {
+  function splitSafinahText(text) {
     const lines = String(text || '').split(/\r?\n/u);
     const sections = [];
     let title = 'Pengantar';
     let buffer = [];
     const push = () => {
       const content = buffer.join('\n').trim();
-      if (content) sections.push({ nomor: String(sections.length + 1), judul: title, content, local: true });
+      if (content) sections.push({ title, content });
     };
     for (const line of lines) {
       const match = line.match(/^\s*۞\s*(.+?)\s*۞?\s*$/u);
@@ -312,6 +312,19 @@ export function mountIslamicLibrary() {
     push();
     return sections;
   }
+  function splitSafinahSections(indonesia, arabic, latin) {
+    const indonesiaSections = splitSafinahText(indonesia);
+    const arabicSections = splitSafinahText(arabic);
+    const latinSections = splitSafinahText(latin);
+    return indonesiaSections.map((section, index) => ({
+      nomor: String(index + 1),
+      judul: section.title,
+      content: section.content,
+      arabic: arabicSections[index]?.content || '',
+      latin: latinSections[index]?.content || '',
+      local: true
+    }));
+  }
 
   async function openKitab(slug, title) {
     if (!slug) { showError(new Error('Identitas kitab dari API tidak tersedia.')); return; }
@@ -323,7 +336,11 @@ export function mountIslamicLibrary() {
       if (slug === 'safinah') {
         const payload = await kitabRequest({ action: 'chapter', slug, nomor: '1' });
         const source = payload && typeof payload === 'object' ? payload : {};
-        chapters = splitSafinahSections(firstText(source, ['teks_indonesia']));
+        chapters = splitSafinahSections(
+          firstText(source, ['teks_indonesia', 'terjemahan', 'indonesia']),
+          firstText(source, ['teks_arab', 'arab', 'naskah_arab', 'teks']),
+          firstText(source, ['teks_latin', 'latin', 'transliterasi'])
+        );
         if (!chapters.length) throw new Error('Penanda bagian Safinah An-Najah tidak ditemukan pada teks API.');
         detail = source;
       } else {
@@ -344,6 +361,8 @@ export function mountIslamicLibrary() {
         number: firstText(chapter, ['nomor', 'nomor_bab', 'no', 'urutan', 'bab', 'id'], String(index + 1)),
         title: firstText(chapter, ['judul', 'nama_bab', 'nama', 'title', 'judul_bab'], 'Bab ' + (index + 1)),
         content: chapter.content || '',
+        arabic: chapter.arabic || '',
+        latin: chapter.latin || '',
         local: Boolean(chapter.local)
       }));
       paper.replaceChildren(
@@ -368,7 +387,7 @@ export function mountIslamicLibrary() {
     try {
       const current = chapterItems[chapterIndex];
       const chapter = current?.local
-        ? { teks_indonesia: current.content }
+        ? { teks_indonesia: current.content, teks_arab: current.arabic, teks_latin: current.latin }
         : await kitabRequest({ action: 'chapter', slug, nomor: number });
       paper.replaceChildren(el('h2', '', chapterTitle));
       const arabic = firstText(chapter, ['teks_arab', 'arab', 'teks', 'naskah_arab']);
