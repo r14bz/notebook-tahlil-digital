@@ -76,3 +76,8 @@ Catatan:
 
 ## Kompatibilitas data
 Key penyimpanan lokal lama yang diawali `etahlil-` sengaja dipertahankan sementara agar preferensi dan data bacaan pengguna dari versi sebelumnya tidak hilang setelah rebranding.
+## Integrasi Ahmad Sanusi Open API
+
+- Tambahkan environment variable `AHMADSANUSI_API_KEY` di Vercel untuk Preview dan Production.
+- API key hanya digunakan oleh fungsi serverless `api/kitab.js`; jangan menaruh key di JavaScript frontend, file konfigurasi publik, atau APK.
+- Katalog dan isi kitab diambil melalui proxy same-origin `/api/kitab` dan dapat di-cache oleh Vercel.
