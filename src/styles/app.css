@@ -282,7 +282,7 @@ body.reader-active #readerFooter { display:block; }
 .collection-card{position:relative;overflow:hidden;min-height:215px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;padding:19px 19px 15px;border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;color:#203d2d;box-shadow:0 5px 16px #46371b08;transition:transform .22s,box-shadow .22s,border-color .22s}
 .collection-card:hover{transform:translateY(-4px);box-shadow:0 15px 28px #46371b12;border-color:#c5ae78}
 .card-index{font-size:9px;letter-spacing:1.3px;color:#93835f;font-weight:700}
-.collection-symbol,.surah-number{height:54px;display:grid;place-items:center;margin:15px 0 10px;color:#d6b56c;font-family:'Amiri',serif;font-size:38px}
+.collection-symbol,.surah-number{height:54px;display:grid;place-items:center;margin:15px 0 17px;color:#d6b56c;font-family:'Amiri',serif;font-size:38px}
 .surah-number{width:52px;height:52px;border:1px solid #d5c18b;border-radius:50%;font-size:23px;background:#f5edda}
 .collection-title{font-family:'Amiri',serif;font-size:25px;font-weight:700;line-height:1.2;color:#173f30}
 .collection-desc{font-size:11px;line-height:1.7;color:#827966;margin-top:7px;max-width:290px}
