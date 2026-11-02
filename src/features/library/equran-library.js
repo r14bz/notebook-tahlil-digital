@@ -317,25 +317,20 @@ export function mountIslamicLibrary() {
     }, 80);
   }
   function splitSafinahText(text) {
-    const lines = String(text || '').split(/\r?\n/u);
+    const source = String(text || '').replace(/\r/g, '').trim();
+    if (!source) return [];
+    const marker = /۞\s*([^۞\n]+?)\s*۞/gu;
+    const matches = [...source.matchAll(marker)];
+    if (!matches.length) return [{ title: 'Pengantar', content: source }];
     const sections = [];
-    let title = 'Pengantar';
-    let buffer = [];
-    const push = () => {
-      const content = buffer.join('\n').trim();
-      if (content) sections.push({ title, content });
-    };
-    for (const line of lines) {
-      const match = line.match(/^\s*۞\s*(.+?)\s*۞?\s*$/u);
-      if (match && match[1].trim()) {
-        push();
-        title = match[1].replace(/۞/gu, '').trim();
-        buffer = [];
-      } else {
-        buffer.push(line);
-      }
-    }
-    push();
+    const prefix = source.slice(0, matches[0].index).trim();
+    if (prefix) sections.push({ title: 'Pengantar', content: prefix });
+    matches.forEach((match, index) => {
+      const contentStart = match.index + match[0].length;
+      const contentEnd = index + 1 < matches.length ? matches[index + 1].index : source.length;
+      const content = source.slice(contentStart, contentEnd).trim();
+      if (content) sections.push({ title: match[1].trim(), content });
+    });
     return sections;
   }
   function splitSafinahSections(indonesia, arabic, latin) {
@@ -364,7 +359,7 @@ export function mountIslamicLibrary() {
         const source = payload && typeof payload === 'object' ? payload : {};
         chapters = splitSafinahSections(
           firstText(source, ['teks_indonesia', 'terjemahan', 'indonesia']),
-          firstText(source, ['teks_arab', 'teksArab', 'arab', 'arabic', 'arabic_text', 'naskah_arab', 'naskah', 'teks']),
+          firstText(source, ['teks_arab', 'teksArab', 'teks_arabic', 'arab', 'arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'naskah_arab', 'naskah', 'teks']),
           firstText(source, ['teks_latin', 'latin', 'transliterasi'])
         );
         if (!chapters.length) throw new Error('Penanda bagian Safinah An-Najah tidak ditemukan pada teks API.');
@@ -416,7 +411,7 @@ export function mountIslamicLibrary() {
         ? { teks_indonesia: current.content, teks_arab: current.arabic, teks_latin: current.latin }
         : await kitabRequest({ action: 'chapter', slug, nomor: number });
       paper.replaceChildren(el('h2', '', chapterTitle));
-      const arabic = firstText(chapter, ['teks_arab', 'teksArab', 'arab', 'arabic', 'arabic_text', 'teks', 'naskah_arab', 'naskah']);
+      const arabic = firstText(chapter, ['teks_arab', 'teksArab', 'teks_arabic', 'arab', 'arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'teks', 'naskah_arab', 'naskah']);
       const indonesia = firstText(chapter, ['teks_indonesia', 'terjemahan', 'indonesia', 'terjemah']);
       const latin = firstText(chapter, ['teks_latin', 'latin', 'transliterasi']);
       if (arabic) paper.append(el('p', 'equran-arabic equran-kitab-arabic', arabic));
