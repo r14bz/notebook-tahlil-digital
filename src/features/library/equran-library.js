@@ -82,7 +82,7 @@ export function mountIslamicLibrary() {
   body.theme-dark .safinah-editor-status{background:#263d2e;color:#dcebd8}
   @media(min-width:700px){.safinah-editor-layout{grid-template-columns:minmax(220px,.8fr) minmax(0,1.5fr)}} 
   .equran-kitab-list{display:grid;gap:2px}
-  .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;direction:rtl!important;unicode-bidi:plaintext;text-align:right!important;margin:16px 0 24px!important}
+  .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;direction:rtl!important;unicode-bidi:plaintext;text-align:right!important;margin:16px 0 24px!important;white-space:pre-wrap!important}
   .equran-kitab-latin,.equran-kitab-indonesia{font-size:14px!important;line-height:2!important;white-space:pre-wrap}
   .equran-kitab-latin{color:#82745e!important;font-style:italic}
   .equran-kitab-indonesia{color:#374b3c!important}
