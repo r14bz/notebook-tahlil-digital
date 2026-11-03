@@ -653,7 +653,10 @@ export function mountIslamicLibrary() {
         paper.append(manualList);
       }
       paper.append(action('← Kembali ke daftar kitab', openKitabCatalog, 'equran-back'));
-    } catch (error) { showError(error); }
+    } catch (error) {
+      showError(error);
+      paper.append(action('✎ Tetap susun kitab ini', () => openKitabEditor(slug, title), 'equran-action primary'));
+    }
   }
   async function openKitabChapter(slug, number, chapterTitle, bookTitle, chapterItems = [], chapterIndex = 0) {
     showReader(chapterTitle, bookTitle + ' · Bab ' + number);
