@@ -509,35 +509,37 @@ export function mountIslamicLibrary() {
     }
     function downloadDocument() {
       try {
-        const payload = saveManualDocument({ chapters }, slug, title);
-        const json = '\\uFEFF' + JSON.stringify(payload, null, 2);
+        // Build the export directly from the in-memory editor state.
+        // Do not write it to localStorage here: large manuscripts can exceed
+        // the browser's storage quota even though they can still be downloaded.
+        const payload = {
+          version: 1,
+          book: title || 'Kitab',
+          updatedAt: new Date().toISOString(),
+          chapters: chapters.map((chapter, index) => ({
+            id: String(chapter.id || slug + '-' + (index + 1)),
+            title: String(chapter.title || '').trim(),
+            arabic: String(chapter.arabic || ''),
+            translation: String(chapter.translation || '')
+          }))
+        };
+        const json = '\uFEFF' + JSON.stringify(payload, null, 2);
         const filename = (slug || 'kitab').replace(/[^a-z0-9_-]/gi, '-') + '.json';
         const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
-
-        // Keep the anchor attached while the mobile browser handles the Blob URL.
-        const link = el('a');
         const objectUrl = URL.createObjectURL(blob);
+        const link = el('a');
         link.href = objectUrl;
         link.download = filename;
-        link.setAttribute('aria-label', 'Unduh ' + filename);
         link.style.position = 'fixed';
         link.style.left = '-10000px';
         link.style.top = '0';
         document.body.append(link);
-
-        if (typeof navigator.msSaveOrOpenBlob === 'function') {
-          navigator.msSaveOrOpenBlob(blob, filename);
+        link.click();
+        status.textContent = 'Permintaan unduh ' + filename + ' telah dikirim. Periksa folder Download.';
+        window.setTimeout(() => {
           link.remove();
           URL.revokeObjectURL(objectUrl);
-          status.textContent = 'File ' + filename + ' siap disimpan.';
-        } else {
-          link.click();
-          status.textContent = 'Permintaan unduh ' + filename + ' telah dikirim. Periksa folder Download.';
-          window.setTimeout(() => {
-            link.remove();
-            URL.revokeObjectURL(objectUrl);
-          }, 30000);
-        }
+        }, 30000);
       } catch (error) {
         status.textContent = 'Gagal menyiapkan JSON: ' + (error?.message || 'Terjadi kesalahan.');
       }
