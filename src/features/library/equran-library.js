@@ -629,6 +629,28 @@ export function mountIslamicLibrary() {
     } catch (error) { showError(error); }
   }
 
+  async function editExistingKitab(slug, title, chapterItems) {
+    const statusTitle = 'Memuat isi kitab untuk editor…';
+    showReader('Editor ' + title, statusTitle);
+    loading();
+    const editable = [];
+    for (let index = 0; index < chapterItems.length; index += 1) {
+      const item = chapterItems[index];
+      let detail = item;
+      if (!item.content && !item.arabic && !item.latin) {
+        try { detail = await kitabRequest({ action: 'chapter', slug, nomor: item.number }); }
+        catch (error) { detail = item; }
+      }
+      editable.push({
+        id: slug + '-' + (index + 1),
+        title: item.title,
+        arabic: firstText(detail, ['teks_arab', 'teksArab', 'teks_arabic', 'arab', 'arabic', 'naskah_arab']),
+        translation: firstText(detail, ['teks_indonesia', 'terjemahan', 'indonesia', 'terjemah', 'content', 'isi', 'konten'])
+      });
+    }
+    openKitabEditor(slug, title, editable);
+  }
+
   async function openKitab(slug, title) {
     if (!slug) { showError(new Error('Identitas kitab dari API tidak tersedia.')); return; }
     if (slug === 'safinah') { await openLocalSafinah(title || 'Safinah An-Najah'); return; }
@@ -661,7 +683,7 @@ export function mountIslamicLibrary() {
       paper.replaceChildren(
         el('h2', '', title),
         el('p', 'equran-paper-intro', firstText(detail, ['deskripsi', 'keterangan', 'tentang'], 'Pilih bab untuk membaca teks kitab.')),
-        action('✎ Edit isi kitab ini', () => openKitabEditor(slug, title, chapterItems), 'equran-action primary')
+        action('✎ Edit isi kitab ini', () => editExistingKitab(slug, title, chapterItems), 'equran-action primary')
       );
       const list = el('div', 'equran-kitab-list');
       chapterItems.forEach((chapter, index) => {
