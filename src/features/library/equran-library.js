@@ -394,10 +394,16 @@ export function mountIslamicLibrary() {
     localStorage.setItem(manualStorageKey(slug), JSON.stringify(normalized));
     return normalized;
   }
-  function openKitabEditor(slug, title) {
-    showReader('Editor ' + title, 'Susun ulang bab, teks Arab, dan terjemahan secara manual');
+  function openKitabEditor(slug, title, initialChapters = []) {
+    showReader('Editor ' + title, 'Edit bab dan tulisan yang sudah ada, lalu simpan perubahan');
     const documentData = readManualDocument(slug, title);
-    let chapters = documentData.chapters.map(chapter => ({ ...chapter }));
+    const sourceChapters = documentData.chapters.length ? documentData.chapters : initialChapters;
+    let chapters = sourceChapters.map((chapter, index) => ({
+      id: String(chapter.id || slug + '-' + (index + 1)),
+      title: String(chapter.title || chapter.judul || 'Bab ' + (index + 1)),
+      arabic: String(chapter.arabic || chapter.teks_arab || ''),
+      translation: String(chapter.translation || chapter.content || chapter.teks_indonesia || chapter.terjemahan || '')
+    }));
     let selected = chapters.length ? 0 : -1;
     const editor = el('div', 'safinah-editor');
     const intro = el('p', 'equran-paper-intro', 'Data tersimpan otomatis di perangkat ini. Unduh JSON secara berkala sebagai cadangan dan untuk mengirim hasil penyusunan kepada pengembang.');
@@ -517,7 +523,7 @@ export function mountIslamicLibrary() {
     }
     function draw() {
       chapterList.replaceChildren();
-      if (!chapters.length) chapterList.append(el('p', 'safinah-empty', 'Belum ada bab. Tekan “Tambah bab” untuk mulai menyusun.'));
+      if (!chapters.length) chapterList.append(el('p', 'safinah-empty', 'Belum ada bab awal yang dimuat. Anda tetap dapat menambahkan bab baru.'));
       chapters.forEach((chapter, index) => {
         const item = el('div', 'safinah-chapter-item' + (index === selected ? ' active' : ''));
         const selectButton = action((index + 1) + '. ' + (chapter.title || 'Bab tanpa nama'), () => {
@@ -567,6 +573,33 @@ export function mountIslamicLibrary() {
     draw();
   }
 
+  async function openLocalAqidatul(title) {
+    showReader(title || 'Aqidatul Awam', 'Naskah lokal · tersedia tanpa koneksi API');
+    loading();
+    try {
+      const response = await fetch('/data/aqidatul-awam.json', { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error('Naskah Aqidatul Awam lokal tidak dapat dimuat (' + response.status + ').');
+      const documentData = await response.json();
+      const chapters = Array.isArray(documentData.chapters) ? documentData.chapters : [];
+      const localItems = chapters.map((item, index) => ({
+        number: String(index + 1), title: item.title || 'Bagian ' + (index + 1),
+        content: item.translation || '', arabic: item.arabic || '', local: true
+      }));
+      paper.replaceChildren(
+        el('h2', '', documentData.book || 'Aqidatul Awam'),
+        el('p', 'equran-paper-intro', 'Susunan naskah lokal Anda. Kitab ini tidak memerlukan API untuk dibaca.'),
+        action('✎ Edit naskah ini', () => openKitabEditor('aqidatul-awam', documentData.book || title, chapters), 'equran-action primary')
+      );
+      const list = el('div', 'equran-kitab-list');
+      localItems.forEach((chapter, index) => {
+        const entry = row(chapter.title, 'Bagian ' + (index + 1));
+        entry.append(action('Baca bagian', () => openKitabChapter('aqidatul-awam', chapter.number, chapter.title, documentData.book || title, localItems, index), 'equran-action primary'));
+        list.append(entry);
+      });
+      paper.append(list, action('← Kembali ke daftar kitab', openKitabCatalog, 'equran-back'));
+    } catch (error) { showError(error); }
+  }
+
   async function openLocalSafinah(title) {
     showReader(title, 'Naskah lokal · tersedia tanpa koneksi API');
     loading();
@@ -599,6 +632,7 @@ export function mountIslamicLibrary() {
   async function openKitab(slug, title) {
     if (!slug) { showError(new Error('Identitas kitab dari API tidak tersedia.')); return; }
     if (slug === 'safinah') { await openLocalSafinah(title || 'Safinah An-Najah'); return; }
+    if (/aqidatul/i.test(slug) || /aqidatul/i.test(title || '')) { await openLocalAqidatul(title || 'Aqidatul Awam'); return; }
     showReader(title, 'Daftar bab · Ahmad Sanusi Open API');
     loading();
     try {
@@ -627,7 +661,7 @@ export function mountIslamicLibrary() {
       paper.replaceChildren(
         el('h2', '', title),
         el('p', 'equran-paper-intro', firstText(detail, ['deskripsi', 'keterangan', 'tentang'], 'Pilih bab untuk membaca teks kitab.')),
-        action('✎ Susun ulang kitab ini', () => openKitabEditor(slug, title), 'equran-action primary')
+        action('✎ Edit isi kitab ini', () => openKitabEditor(slug, title, chapterItems), 'equran-action primary')
       );
       const list = el('div', 'equran-kitab-list');
       chapterItems.forEach((chapter, index) => {
@@ -655,7 +689,7 @@ export function mountIslamicLibrary() {
       paper.append(action('← Kembali ke daftar kitab', openKitabCatalog, 'equran-back'));
     } catch (error) {
       showError(error);
-      paper.append(action('✎ Tetap susun kitab ini', () => openKitabEditor(slug, title), 'equran-action primary'));
+      paper.append(action('✎ Tetap edit kitab ini', () => openKitabEditor(slug, title), 'equran-action primary'));
     }
   }
   async function openKitabChapter(slug, number, chapterTitle, bookTitle, chapterItems = [], chapterIndex = 0) {
