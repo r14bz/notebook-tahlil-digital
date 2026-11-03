@@ -508,18 +508,39 @@ export function mountIslamicLibrary() {
       }
     }
     function downloadDocument() {
-      const payload = saveManualDocument({ chapters }, slug, title);
-      const blob = new Blob(['\uFEFF', JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = el('a');
-      link.href = url;
-      link.download = (slug || 'kitab').replace(/[^a-z0-9_-]/gi, '-') + '.json';
-      link.hidden = true;
-      document.body.append(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = 'File JSON ' + link.download + ' berhasil disiapkan untuk diunduh.';
+      try {
+        const payload = saveManualDocument({ chapters }, slug, title);
+        const json = '\\uFEFF' + JSON.stringify(payload, null, 2);
+        const filename = (slug || 'kitab').replace(/[^a-z0-9_-]/gi, '-') + '.json';
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+
+        // Keep the anchor attached while the mobile browser handles the Blob URL.
+        const link = el('a');
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.download = filename;
+        link.setAttribute('aria-label', 'Unduh ' + filename);
+        link.style.position = 'fixed';
+        link.style.left = '-10000px';
+        link.style.top = '0';
+        document.body.append(link);
+
+        if (typeof navigator.msSaveOrOpenBlob === 'function') {
+          navigator.msSaveOrOpenBlob(blob, filename);
+          link.remove();
+          URL.revokeObjectURL(objectUrl);
+          status.textContent = 'File ' + filename + ' siap disimpan.';
+        } else {
+          link.click();
+          status.textContent = 'Permintaan unduh ' + filename + ' telah dikirim. Periksa folder Download.';
+          window.setTimeout(() => {
+            link.remove();
+            URL.revokeObjectURL(objectUrl);
+          }, 30000);
+        }
+      } catch (error) {
+        status.textContent = 'Gagal menyiapkan JSON: ' + (error?.message || 'Terjadi kesalahan.');
+      }
     }
     function draw() {
       chapterList.replaceChildren();
