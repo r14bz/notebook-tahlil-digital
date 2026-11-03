@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-moeslife-shell-v10';
+const CACHE_NAME = 'e-moeslife-shell-v11';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
@@ -35,7 +35,8 @@ const CORE_ASSETS = [
   '/assets/mosque-banner.png',
   '/assets/app-icon/icon.png',
   '/src/data/dzikir-overrides.json',
-  '/etahlil-pembagian-halaman-dzikir.json'
+  '/etahlil-pembagian-halaman-dzikir.json',
+  '/data/safinah-an-najah.json'
 ];
 
 self.addEventListener('install', event => {
