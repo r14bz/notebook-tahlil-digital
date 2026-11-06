@@ -153,7 +153,15 @@ export function mountLocalKitabLibrary() {
       entry.append(open);
       list.append(entry);
     });
-    paper.append(list, element('p', 'local-kitab-intro', 'Naskah asli tidak diubah saat dibaca.'));
+    const actions = element('div', 'local-kitab-actions');
+    const edit = element('button', 'primary', '✎ Edit naskah');
+    edit.type = 'button';
+    edit.addEventListener('click', () => {
+      const openEditor = window.__EMOESLIFE_OPEN_KITAB_EDITOR__;
+      if (typeof openEditor === 'function') openEditor(activeBook.slug, activeBook.title, activeChapters, () => openBook(activeBook));
+    });
+    actions.append(edit);
+    paper.append(list, actions, element('p', 'local-kitab-intro', 'Naskah asli di GitHub tidak diubah. Perubahan editor tersimpan sebagai salinan lokal; unduh JSON untuk memperbarui file sumber.'));
   }
   function renderChapter(index) {
     activeIndex = index;
@@ -191,6 +199,12 @@ export function mountLocalKitabLibrary() {
       const rawChapters = arrayAt(documentData);
       if (!rawChapters.length) throw new Error('Struktur naskah ' + book.file + ' belum dikenali.');
       activeChapters = rawChapters.map(normalizeChapter);
+      try {
+        const saved = JSON.parse(localStorage.getItem('e-moeslife:kitab-manual:v1:' + book.slug) || 'null');
+        if (saved?.version === 1 && Array.isArray(saved.chapters) && saved.chapters.length) {
+          activeChapters = saved.chapters.map(normalizeChapter);
+        }
+      } catch (error) { console.warn('Salinan lokal kitab tidak dapat dibaca.', error); }
       if (!activeChapters.length) throw new Error('Naskah belum memiliki bagian bacaan.');
       renderChapterList();
     } catch (error) {
