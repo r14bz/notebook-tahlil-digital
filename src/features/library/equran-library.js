@@ -27,6 +27,10 @@ const action = (label, handler, className = 'equran-action') => {
 };
 
 export function mountIslamicLibrary() {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') window.__EMOESLIFE_FLUSH_EDITOR__?.();
+  });
+  window.addEventListener('pagehide', () => window.__EMOESLIFE_FLUSH_EDITOR__?.());
   const style = el('style');
   style.textContent = `
   .equran-reader{display:none;max-width:980px;margin:0 auto;padding:22px 18px 36px;min-height:65vh}
@@ -506,6 +510,7 @@ export function mountIslamicLibrary() {
     }, 'equran-action');
     const previewButton = action('Pratinjau bacaan', () => {
       if (selected < 0) return;
+      flushPersist();
       const chapter = chapters[selected];
       paper.replaceChildren(el('h2', '', chapter.title || 'Bab tanpa judul'));
       if (chapter.arabic) {
@@ -526,7 +531,7 @@ export function mountIslamicLibrary() {
     formPanel.append(fields);
     layout.append(listPanel, formPanel);
     editor.append(intro, toolbar, status, layout);
-    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', onBack, 'equran-back'));
+    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', () => { flushPersist(); onBack(); }, 'equran-back'));
     function persist(message) {
       try {
         saveManualDocument({ chapters }, slug, title);
@@ -609,12 +614,24 @@ export function mountIslamicLibrary() {
       persist('Urutan bab diperbarui.');
       draw();
     }
+    // Simpan ditunda agar tidak men-stringify seluruh kitab di setiap ketikan.
+    let persistTimer = null;
+    const PERSIST_DELAY_MS = 800;
+    function flushPersist() {
+      if (persistTimer === null) return;
+      clearTimeout(persistTimer);
+      persistTimer = null;
+      persist('Perubahan bab disimpan.');
+    }
+    window.__EMOESLIFE_FLUSH_EDITOR__ = flushPersist;
     const updateSelected = () => {
       if (selected < 0 || !chapters[selected]) return;
       chapters[selected].title = titleInput.value;
       chapters[selected].arabic = arabicInput.value;
       chapters[selected].translation = translationInput.value;
-      persist('Perubahan bab disimpan.');
+      status.textContent = 'Menyimpan…';
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(() => { persistTimer = null; persist('Perubahan bab disimpan.'); }, PERSIST_DELAY_MS);
       const active = chapterList.children[selected]?.querySelector('button');
       if (active) active.textContent = (selected + 1) + '. ' + (chapters[selected].title || 'Bab tanpa nama');
     };

@@ -14,6 +14,7 @@ import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from 
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
 import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
+import { shouldUseLocalCopy } from '../src/features/library/local-kitab-library.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -488,4 +489,18 @@ test('prayer timezone follows the province, not just longitude', () => {
   assert.equal(getZoneForProvince('Bali').timezone, 'Asia/Makassar');
   assert.equal(getZoneForProvince('DKI Jakarta').zone, 'WIB');
   assert.equal(getZoneForProvince('Provinsi Tidak Dikenal'), null);
+});
+
+test('local kitab copy is used only when newer than the source manuscript', () => {
+  const chapters = [{ title: 'Bab 1', arabic: '', translation: 'x' }];
+  const saved = at => ({ version: 1, updatedAt: at, chapters });
+  const source = at => ({ updatedAt: at });
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T09:00:00Z')), true);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:05:00Z')), false);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), {}), true);
+  assert.equal(shouldUseLocalCopy(saved('bukan tanggal'), source('2026-11-06T10:00:00Z')), true);
+  assert.equal(shouldUseLocalCopy(null, source('2026-11-06T10:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy({ version: 1, updatedAt: '2026-11-06T10:00:00Z', chapters: [] }, source('2026-11-06T09:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy({ version: 2, updatedAt: '2026-11-06T10:00:00Z', chapters }, source('2026-11-06T09:00:00Z')), false);
 });

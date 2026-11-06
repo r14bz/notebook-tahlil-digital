@@ -1,0 +1,165 @@
+diff --git a/src/features/library/equran-library.js b/src/features/library/equran-library.js
+--- a/src/features/library/equran-library.js	2026-11-06 23:23:43.735754406 +0000
++++ b/src/features/library/equran-library.js	2026-11-06 23:24:05.339918181 +0000
+@@ -27,6 +27,10 @@
+ };
+ 
+ export function mountIslamicLibrary() {
++  document.addEventListener('visibilitychange', () => {
++    if (document.visibilityState === 'hidden') window.__EMOESLIFE_FLUSH_EDITOR__?.();
++  });
++  window.addEventListener('pagehide', () => window.__EMOESLIFE_FLUSH_EDITOR__?.());
+   const style = el('style');
+   style.textContent = `
+   .equran-reader{display:none;max-width:980px;margin:0 auto;padding:22px 18px 36px;min-height:65vh}
+@@ -506,6 +510,7 @@
+     }, 'equran-action');
+     const previewButton = action('Pratinjau bacaan', () => {
+       if (selected < 0) return;
++      flushPersist();
+       const chapter = chapters[selected];
+       paper.replaceChildren(el('h2', '', chapter.title || 'Bab tanpa judul'));
+       if (chapter.arabic) {
+@@ -526,7 +531,7 @@
+     formPanel.append(fields);
+     layout.append(listPanel, formPanel);
+     editor.append(intro, toolbar, status, layout);
+-    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', onBack, 'equran-back'));
++    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', () => { flushPersist(); onBack(); }, 'equran-back'));
+     function persist(message) {
+       try {
+         saveManualDocument({ chapters }, slug, title);
+@@ -609,12 +614,24 @@
+       persist('Urutan bab diperbarui.');
+       draw();
+     }
++    // Simpan ditunda agar tidak men-stringify seluruh kitab di setiap ketikan.
++    let persistTimer = null;
++    const PERSIST_DELAY_MS = 800;
++    function flushPersist() {
++      if (persistTimer === null) return;
++      clearTimeout(persistTimer);
++      persistTimer = null;
++      persist('Perubahan bab disimpan.');
++    }
++    window.__EMOESLIFE_FLUSH_EDITOR__ = flushPersist;
+     const updateSelected = () => {
+       if (selected < 0 || !chapters[selected]) return;
+       chapters[selected].title = titleInput.value;
+       chapters[selected].arabic = arabicInput.value;
+       chapters[selected].translation = translationInput.value;
+-      persist('Perubahan bab disimpan.');
++      status.textContent = 'Menyimpan…';
++      clearTimeout(persistTimer);
++      persistTimer = setTimeout(() => { persistTimer = null; persist('Perubahan bab disimpan.'); }, PERSIST_DELAY_MS);
+       const active = chapterList.children[selected]?.querySelector('button');
+       if (active) active.textContent = (selected + 1) + '. ' + (chapters[selected].title || 'Bab tanpa nama');
+     };
+diff --git a/src/features/library/local-kitab-library.js b/src/features/library/local-kitab-library.js
+--- a/src/features/library/local-kitab-library.js	2026-11-06 23:23:43.736203848 +0000
++++ b/src/features/library/local-kitab-library.js	2026-11-06 23:24:05.340730586 +0000
+@@ -16,6 +16,30 @@
+   { file: 'uyun.json', slug: 'uyun', title: 'Qurrotul Uyun', category: 'Keluarga' },
+   { file: 'alhikam.json', slug: 'alhikam', title: 'Al-Hikam', category: 'Tasawuf' }
+ ];
++const manualKey = slug => 'e-moeslife:kitab-manual:v1:' + String(slug || 'kitab-lain').replace(/[^a-z0-9_-]/gi, '-');
++/**
++ * Salinan lokal hasil editor hanya dipakai bila lebih baru daripada file naskah di data/.
++ * Bila naskah di server sudah diperbarui (updatedAt sama atau lebih baru), salinan lokal yang usang diabaikan.
++ * Jika salah satu tanggal tidak dapat dibaca, salinan lokal tetap dipakai (perilaku lama).
++ */
++export function shouldUseLocalCopy(saved, source) {
++  if (!(saved?.version === 1 && Array.isArray(saved.chapters) && saved.chapters.length)) return false;
++  const savedAt = Date.parse(saved.updatedAt);
++  const sourceAt = Date.parse(source?.updatedAt);
++  if (!Number.isFinite(savedAt) || !Number.isFinite(sourceAt)) return true;
++  return savedAt > sourceAt;
++}
++// Arsipkan, bukan hapus, agar hasil edit tidak hilang. Satu cadangan per kitab.
++function archiveLocalCopy(slug) {
++  const key = manualKey(slug);
++  try {
++    const raw = localStorage.getItem(key);
++    if (raw === null) return true;
++    localStorage.setItem(key + ':backup', raw);
++    localStorage.removeItem(key);
++    return true;
++  } catch { return false; }
++}
+ const ARABIC = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+ const ARABIC_KEYS = ['arabic', 'arab', 'teks_arab', 'teksArab', 'teks_arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'naskah_arab', 'matan', 'text_ar'];
+ const LATIN_KEYS = ['latin', 'teks_latin', 'transliterasi'];
+@@ -146,6 +170,7 @@
+   let activeBook = null;
+   let activeChapters = [];
+   let activeIndex = 0;
++  let activeLocalCopyAt = '';
+   function closeReader() {
+     document.body.classList.remove('local-kitab-active');
+     reader.hidden = true;
+@@ -171,6 +196,18 @@
+       element('h2', '', activeBook.title),
+       element('p', 'local-kitab-intro', activeChapters.length + ' bagian · Naskah tersimpan di folder data aplikasi dan dapat dibaca tanpa API kitab.'),
+     );
++    if (activeLocalCopyAt) {
++      const notice = element('div', 'local-kitab-intro');
++      notice.append(element('p', '', 'Menampilkan salinan lokal hasil edit di perangkat ini (' + activeLocalCopyAt + '). Salinan ini dipakai selama lebih baru daripada naskah di server.'));
++      const useSource = element('button', 'local-kitab-open', 'Pakai naskah asli');
++      useSource.type = 'button';
++      useSource.addEventListener('click', () => {
++        if (!window.confirm('Salinan lokal akan diarsipkan dan naskah asli dipakai. Lanjutkan?')) return;
++        if (archiveLocalCopy(activeBook.slug)) openBook(activeBook);
++      });
++      notice.append(useSource);
++      paper.append(notice);
++    }
+     const list = element('div', '');
+     activeChapters.forEach((chapter, index) => {
+       const entry = element('article', 'local-kitab-entry');
+@@ -235,10 +272,15 @@
+       const rawChapters = arrayAt(documentData);
+       if (!rawChapters.length) throw new Error('Struktur naskah ' + book.file + ' belum dikenali.');
+       activeChapters = rawChapters.map(normalizeChapter);
++      activeLocalCopyAt = '';
+       try {
+-        const saved = JSON.parse(localStorage.getItem('e-moeslife:kitab-manual:v1:' + book.slug) || 'null');
+-        if (saved?.version === 1 && Array.isArray(saved.chapters) && saved.chapters.length) {
++        const saved = JSON.parse(localStorage.getItem(manualKey(book.slug)) || 'null');
++        if (shouldUseLocalCopy(saved, documentData)) {
+           activeChapters = saved.chapters.map(normalizeChapter);
++          activeLocalCopyAt = saved.updatedAt || 'tanggal tidak diketahui';
++        } else if (saved) {
++          // Naskah di server lebih baru daripada edit terakhir: arsipkan salinan usang agar editor memakai naskah baru.
++          archiveLocalCopy(book.slug);
+         }
+       } catch (error) { console.warn('Salinan lokal kitab tidak dapat dibaca.', error); }
+       if (!activeChapters.length) throw new Error('Naskah belum memiliki bagian bacaan.');
+diff --git a/tests/modules.test.js b/tests/modules.test.js
+--- a/tests/modules.test.js	2026-11-06 23:23:43.737778811 +0000
++++ b/tests/modules.test.js	2026-11-06 23:24:05.340935040 +0000
+@@ -14,6 +14,7 @@
+ import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
+ 
+ import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
++import { shouldUseLocalCopy } from '../src/features/library/local-kitab-library.js';
+ import { filterReadingSections } from '../src/features/home/search.js';
+ import { findCollectionStart } from '../src/features/collections/navigation.js';
+ import {
+@@ -489,3 +490,17 @@
+   assert.equal(getZoneForProvince('DKI Jakarta').zone, 'WIB');
+   assert.equal(getZoneForProvince('Provinsi Tidak Dikenal'), null);
+ });
++
++test('local kitab copy is used only when newer than the source manuscript', () => {
++  const chapters = [{ title: 'Bab 1', arabic: '', translation: 'x' }];
++  const saved = at => ({ version: 1, updatedAt: at, chapters });
++  const source = at => ({ updatedAt: at });
++  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T09:00:00Z')), true);
++  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:05:00Z')), false);
++  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:00:00Z')), false);
++  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), {}), true);
++  assert.equal(shouldUseLocalCopy(saved('bukan tanggal'), source('2026-11-06T10:00:00Z')), true);
++  assert.equal(shouldUseLocalCopy(null, source('2026-11-06T10:00:00Z')), false);
++  assert.equal(shouldUseLocalCopy({ version: 1, updatedAt: '2026-11-06T10:00:00Z', chapters: [] }, source('2026-11-06T09:00:00Z')), false);
++  assert.equal(shouldUseLocalCopy({ version: 2, updatedAt: '2026-11-06T10:00:00Z', chapters }, source('2026-11-06T09:00:00Z')), false);
++});

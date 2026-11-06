@@ -16,6 +16,30 @@ const BOOKS = [
   { file: 'uyun.json', slug: 'uyun', title: 'Qurrotul Uyun', category: 'Keluarga' },
   { file: 'alhikam.json', slug: 'alhikam', title: 'Al-Hikam', category: 'Tasawuf' }
 ];
+const manualKey = slug => 'e-moeslife:kitab-manual:v1:' + String(slug || 'kitab-lain').replace(/[^a-z0-9_-]/gi, '-');
+/**
+ * Salinan lokal hasil editor hanya dipakai bila lebih baru daripada file naskah di data/.
+ * Bila naskah di server sudah diperbarui (updatedAt sama atau lebih baru), salinan lokal yang usang diabaikan.
+ * Jika salah satu tanggal tidak dapat dibaca, salinan lokal tetap dipakai (perilaku lama).
+ */
+export function shouldUseLocalCopy(saved, source) {
+  if (!(saved?.version === 1 && Array.isArray(saved.chapters) && saved.chapters.length)) return false;
+  const savedAt = Date.parse(saved.updatedAt);
+  const sourceAt = Date.parse(source?.updatedAt);
+  if (!Number.isFinite(savedAt) || !Number.isFinite(sourceAt)) return true;
+  return savedAt > sourceAt;
+}
+// Arsipkan, bukan hapus, agar hasil edit tidak hilang. Satu cadangan per kitab.
+function archiveLocalCopy(slug) {
+  const key = manualKey(slug);
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return true;
+    localStorage.setItem(key + ':backup', raw);
+    localStorage.removeItem(key);
+    return true;
+  } catch { return false; }
+}
 const ARABIC = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
 const ARABIC_KEYS = ['arabic', 'arab', 'teks_arab', 'teksArab', 'teks_arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'naskah_arab', 'matan', 'text_ar'];
 const LATIN_KEYS = ['latin', 'teks_latin', 'transliterasi'];
@@ -146,6 +170,7 @@ export function mountLocalKitabLibrary() {
   let activeBook = null;
   let activeChapters = [];
   let activeIndex = 0;
+  let activeLocalCopyAt = '';
   function closeReader() {
     document.body.classList.remove('local-kitab-active');
     reader.hidden = true;
@@ -171,6 +196,18 @@ export function mountLocalKitabLibrary() {
       element('h2', '', activeBook.title),
       element('p', 'local-kitab-intro', activeChapters.length + ' bagian · Naskah tersimpan di folder data aplikasi dan dapat dibaca tanpa API kitab.'),
     );
+    if (activeLocalCopyAt) {
+      const notice = element('div', 'local-kitab-intro');
+      notice.append(element('p', '', 'Menampilkan salinan lokal hasil edit di perangkat ini (' + activeLocalCopyAt + '). Salinan ini dipakai selama lebih baru daripada naskah di server.'));
+      const useSource = element('button', 'local-kitab-open', 'Pakai naskah asli');
+      useSource.type = 'button';
+      useSource.addEventListener('click', () => {
+        if (!window.confirm('Salinan lokal akan diarsipkan dan naskah asli dipakai. Lanjutkan?')) return;
+        if (archiveLocalCopy(activeBook.slug)) openBook(activeBook);
+      });
+      notice.append(useSource);
+      paper.append(notice);
+    }
     const list = element('div', '');
     activeChapters.forEach((chapter, index) => {
       const entry = element('article', 'local-kitab-entry');
@@ -235,10 +272,15 @@ export function mountLocalKitabLibrary() {
       const rawChapters = arrayAt(documentData);
       if (!rawChapters.length) throw new Error('Struktur naskah ' + book.file + ' belum dikenali.');
       activeChapters = rawChapters.map(normalizeChapter);
+      activeLocalCopyAt = '';
       try {
-        const saved = JSON.parse(localStorage.getItem('e-moeslife:kitab-manual:v1:' + book.slug) || 'null');
-        if (saved?.version === 1 && Array.isArray(saved.chapters) && saved.chapters.length) {
+        const saved = JSON.parse(localStorage.getItem(manualKey(book.slug)) || 'null');
+        if (shouldUseLocalCopy(saved, documentData)) {
           activeChapters = saved.chapters.map(normalizeChapter);
+          activeLocalCopyAt = saved.updatedAt || 'tanggal tidak diketahui';
+        } else if (saved) {
+          // Naskah di server lebih baru daripada edit terakhir: arsipkan salinan usang agar editor memakai naskah baru.
+          archiveLocalCopy(book.slug);
         }
       } catch (error) { console.warn('Salinan lokal kitab tidak dapat dibaca.', error); }
       if (!activeChapters.length) throw new Error('Naskah belum memiliki bagian bacaan.');
