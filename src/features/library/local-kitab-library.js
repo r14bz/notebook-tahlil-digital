@@ -116,7 +116,7 @@ export function mountLocalKitabLibrary() {
     .local-kitab-floating-nav[hidden]{display:none}
     .local-kitab-floating-nav button{flex:1 1 0;min-width:0;min-height:42px;padding:8px 5px;border:1px solid #d8c9a8;border-radius:11px;background:rgba(255,255,255,.48);color:#234b37;font-family:inherit;font-size:11px;font-weight:700;white-space:normal;line-height:1.2}
     .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.88);color:#fff7e5;border-color:#9a7a40}
-    .local-kitab-floating-nav button:disabled{opacity:.38}
+    .local-kitab-floating-nav button:disabled{opacity:.78;filter:saturate(.65);cursor:not-allowed}
     body.theme-dark .local-kitab-floating-nav{background:rgba(29,48,38,.78);border-color:#60745f}
     body.theme-dark .local-kitab-floating-nav button{background:rgba(48,67,55,.72);color:#eee4d0;border-color:#60745f}
     body.theme-dark .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.92);color:#fff7e5}
