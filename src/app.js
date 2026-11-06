@@ -132,6 +132,8 @@ const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
 $('ttsPlayBtn').onclick=()=>readerAudio.speak($('arabicText').textContent);
 $('qariPlayBtn').onclick=()=>readerAudio.playQari(pages[index]);
+$('qariPauseBtn').onclick=()=>readerAudio.pauseQari();
+$('qariStopBtn').onclick=()=>readerAudio.stopQari();
 
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
