@@ -8,14 +8,14 @@ const output = path.join(root, 'www');
 // This catches missing uploads, malformed JSON, and unexpected top-level structures
 // before a PWA/APK build is considered ready.
 const localLibrary = await readFile(path.join(root, 'src/features/library/local-kitab-library.js'), 'utf8');
-const kitabFiles = [...localLibrary.matchAll(/\\{\\s*file:\\s*'([^']+)'/g)].map(([, file]) => file);
+const kitabFiles = [...localLibrary.matchAll(/\{\s*file:\s*'([^']+)'/g)].map(([, file]) => file);
 if (!kitabFiles.length) throw new Error('No local kitab JSON files are declared in the catalog.');
 
 for (const file of kitabFiles) {
   const sourcePath = path.join(output, 'data', file);
   let documentData;
   try {
-    const source = (await readFile(sourcePath, 'utf8')).replace(/^\\uFEFF/, '');
+    const source = (await readFile(sourcePath, 'utf8')).replace(/^\uFEFF/, '');
     documentData = JSON.parse(source);
   } catch (error) {
     throw new Error('Local kitab JSON is missing or invalid: data/' + file + ' (' + error.message + ')');
