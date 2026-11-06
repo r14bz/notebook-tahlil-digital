@@ -48,6 +48,8 @@ export function createReaderAudioController({
   voiceLabel,
   audioDescription,
   qariButton,
+  qariPauseButton,
+  qariStopButton,
   readPreference,
   writePreference,
   statusElement
@@ -239,8 +241,10 @@ export function createReaderAudioController({
         : 'TTS tersedia untuk teks Arab; rekaman qari tersedia pada Surah Yasin dan Ar-Rahman.';
       if (qariButton) {
         qariButton.disabled = !supported;
-        qariButton.title = supported ? 'Putar rekaman qari untuk ' + QURAN_CHAPTERS[nextSurah].title : 'Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman';
+        qariButton.title = supported ? 'Putar atau lanjutkan murattal ' + QURAN_CHAPTERS[nextSurah].title : 'Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman';
       }
+      if (qariPauseButton) qariPauseButton.disabled = !supported;
+      if (qariStopButton) qariStopButton.disabled = !supported;
     },
     refreshVoices,
     getAvailableVoices: availableArabicVoices
