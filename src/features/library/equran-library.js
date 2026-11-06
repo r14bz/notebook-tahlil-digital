@@ -836,5 +836,15 @@ export function mountIslamicLibrary() {
       kitabGrid.replaceChildren(el('p', 'equran-error', error.message || 'Daftar kitab belum dapat dimuat.'));
     }
   }
+  // Expose the API catalog only as a fallback for books without a curated local JSON.
+  window.__EMOESLIFE_LOAD_API_KITAB__ = async () => {
+    const payload = await kitabRequest({ action: 'list' });
+    return pickArray(payload).map(book => ({
+      slug: kitabSlug(book),
+      title: kitabName(book),
+      category: firstText(book, ['kategori', 'category'], 'Kitab klasik')
+    })).filter(book => book.slug && book.title);
+  };
+  window.__EMOESLIFE_OPEN_API_KITAB__ = openKitab;
   if (!window.__EMOESLIFE_LOCAL_KITAB__) loadKitabHomeCatalog();
 }
