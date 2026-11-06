@@ -7,7 +7,6 @@ import { getReadingGroupBounds, getPageProgress } from './features/reader/page-s
 import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
 import { renderReaderContents } from './features/reader/contents.js';
 import { createReaderController } from './features/reader/controller.js';
-import { createReaderAudioController } from './features/reader/audio.js';
 import { loadOptionalReaderContent } from './features/reader/content-loader.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
@@ -107,14 +106,9 @@ function openCollection(kind){
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
-const readerAudio=createReaderAudioController({
- speechSynthesis:window.speechSynthesis,
- SpeechSynthesisUtterance:window.SpeechSynthesisUtterance,
- audioElement:$('qariAudio'),voiceSelect:$('ttsVoice'),voiceLabel:$('audioVoiceLabel'),audioDescription:$('audioDescription'),qariButton:$('qariPlayBtn'),qariPauseButton:$('qariPauseBtn'),qariStopButton:$('qariStopBtn'),statusElement:$('audioStatus'),readPreference,writePreference
-});
 const readerController=createReaderController({
  getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
- getReadingGroup,getReadingGroupBounds,getPageProgress,onPageChange:page=>readerAudio.update(page)
+ getReadingGroup,getReadingGroupBounds,getPageProgress
 });
 const showPage=(...args)=>readerController.showPage(...args);
 const continueReadingButton = $('continueReadingBtn');
@@ -130,10 +124,6 @@ const next=()=>readerController.next();
 const prev=()=>readerController.prev();
 const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
-$('ttsPlayBtn').onclick=()=>readerAudio.speak($('arabicText').textContent);
-$('qariPlayBtn').onclick=()=>readerAudio.playQari(pages[index]);
-$('qariPauseBtn').onclick=()=>readerAudio.pauseQari();
-$('qariStopBtn').onclick=()=>readerAudio.stopQari();
 
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
