@@ -480,6 +480,31 @@ body.font-large .arabic { font-size: clamp(25px, 6.1vw, 30px) !important; }
  body.font-normal .arabic { font-size: clamp(22px, 2.2vw, 27px) !important; }
  body.font-large .arabic { font-size: clamp(27px, 2.8vw, 34px) !important; }
 }
+
+/* Apply the same saved font-size preference to every dedicated reading view. */
+body.font-small .equran-arabic,
+body.font-small .equran-kitab-arabic,
+body.font-small .local-kitab-arabic { font-size: clamp(19px, 4.8vw, 23px) !important; }
+body.font-normal .equran-arabic,
+body.font-normal .equran-kitab-arabic,
+body.font-normal .local-kitab-arabic { font-size: clamp(24px, 6vw, 28px) !important; }
+body.font-large .equran-arabic,
+body.font-large .equran-kitab-arabic,
+body.font-large .local-kitab-arabic { font-size: clamp(29px, 7vw, 34px) !important; }
+
+body.font-small .equran-kitab-latin,
+body.font-small .equran-kitab-indonesia,
+body.font-small .local-kitab-latin,
+body.font-small .local-kitab-translation { font-size: 12px !important; }
+body.font-normal .equran-kitab-latin,
+body.font-normal .equran-kitab-indonesia,
+body.font-normal .local-kitab-latin,
+body.font-normal .local-kitab-translation { font-size: 14px !important; }
+body.font-large .equran-kitab-latin,
+body.font-large .equran-kitab-indonesia,
+body.font-large .local-kitab-latin,
+body.font-large .local-kitab-translation { font-size: 17px !important; }
+
 body.reader-active .controls { display:flex; justify-content:space-between; }
 body.reader-active .controls .nav-page { flex:1; }
 body.reader-active .paper { overflow: visible; }
