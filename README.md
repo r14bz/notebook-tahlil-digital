@@ -53,7 +53,7 @@ Aplikasi web menggunakan HTML, CSS, dan JavaScript native berbasis ES modules. P
 - Lokasi menggunakan GPS bila diizinkan, dengan fallback Jakarta.
 - Dukungan PWA/service worker dan kemampuan offline untuk aset/konten yang telah tersimpan.
 - Halaman unduhan aplikasi: https://e-moeslife.vercel.app/download.html
-- Dukungan Android melalui Capacitor serta pemeriksaan pembaruan aplikasi.
+- Dukungan Android melalui Capacitor serta fondasi pemeriksaan pembaruan aplikasi. Target roadmap: pembaruan APK v1 ke v2 dan versi berikutnya melalui mekanisme update in-app.
 - Identitas aplikasi Android: `id.emoeslife.app`.
 
 ## 4. Struktur kode penting
@@ -109,9 +109,43 @@ Jaga modularitas. Hindari menumpuk seluruh logika kembali ke `src/app.js`.
 2. Audit struktur JSON per kitab dan perbaiki parser tanpa merusak sumber naskah.
 3. Setelah seluruh kitab lokal lengkap dan disetujui, rencanakan penghapusan API kitab sementara.
 4. Lanjutkan pengujian regresi PWA/offline dan tampilan mobile.
-5. APK/native Android diuji pada tahap roadmap yang disetujui pemilik proyek; jangan memajukan pengujian APK tanpa diminta.
+5. Selesaikan dan uji sistem pembaruan otomatis APK Android, termasuk jalur upgrade dari v1 ke v2 dan versi-versi berikutnya.
+6. APK/native Android diuji pada tahap roadmap yang disetujui pemilik proyek; jangan memajukan pengujian APK tanpa diminta.
 
-## 7. Cara menjalankan dan menguji
+## 7. Roadmap pengembangan
+
+Roadmap berikut adalah urutan target kerja. Status dapat berubah setelah hasil pengujian pemilik proyek dikonfirmasi.
+
+| Tahap | Target | Status |
+|---|---|---|
+| 1. Fondasi dan rebranding | Identitas e-Moeslife, PWA, struktur aplikasi, deployment Vercel, fondasi Android/Capacitor | Selesai |
+| 2. Pembaca digital | Navigasi halaman, daftar isi, pencarian, progres bacaan, tema, ukuran huruf, offline | Implementasi utama selesai; audit lintas-reader berlanjut |
+| 3. Koleksi | Tahlil, Dzikir Ba'da Shalat, Yasin, Ar-Rahman, Al-Qur'an & Murattal, Perpustakaan Kitab Kuning | Sebagian besar selesai; validasi konten berlanjut |
+| 4. Migrasi kitab JSON lokal | Integrasi seluruh manuskrip buatan pemilik, validasi teks Arab/harakat/terjemahan/bab, lalu penghentian API kitab setelah disetujui | Sedang berjalan |
+| 5. Audit dan stabilisasi | Uji ukuran huruf seluruh reader, navigasi, audio, tema, offline, responsivitas, dan regresi | Belum selesai |
+| 6. Sistem update APK | Upgrade v1 → v2 → versi berikutnya; cek versi baru, notifikasi, unduh APK resmi, verifikasi kompatibilitas, dan alur instalasi pembaruan | Target wajib; perlu implementasi/verifikasi menyeluruh |
+| 7. Uji Android final | Build release, uji instalasi baru dan upgrade dari versi lama, data/progres bacaan, offline, izin, dan perangkat nyata | Menunggu tahap sebelumnya |
+| 8. Persiapan rilis | Audit akhir, persetujuan pemilik, merge ke main, deployment production, dan publikasi APK | Belum dimulai |
+
+### Persyaratan khusus: pembaruan otomatis APK v1 ke versi berikutnya
+
+Fitur ini adalah **target utama roadmap Android**. Maksud “otomatis” adalah aplikasi memeriksa pembaruan, memberi tahu pengguna, mengambil APK versi baru dari sumber resmi, lalu memandu pemasangan update. Android pada umumnya tetap menampilkan konfirmasi/prompt pemasangan; jangan menjanjikan instalasi diam-diam tanpa interaksi pengguna.
+
+Checklist implementasi dan pengujian:
+- [ ] Aplikasi v1 yang sudah terpasang dapat mendeteksi bahwa versi lebih baru tersedia.
+- [ ] Sediakan endpoint/manifest versi yang stabil berisi versi terbaru, versionCode, URL APK, catatan rilis, dan checksum (misalnya SHA-256).
+- [ ] Tampilkan notifikasi/prompt yang jelas, termasuk pilihan untuk mengunduh sekarang atau nanti.
+- [ ] Unduh APK dari URL HTTPS resmi; validasi checksum sebelum membuka installer.
+- [ ] Buka Android Package Installer untuk menyelesaikan pembaruan dengan persetujuan pengguna dan tangani izin “install unknown apps” bila diperlukan.
+- [ ] Pastikan applicationId/package name tetap id.emoeslife.app, sertifikat penandatanganan konsisten dengan APK v1, dan versionCode selalu meningkat agar Android menerima update in-place.
+- [ ] Pastikan pembaruan mempertahankan data aplikasi, preferensi, dan progres bacaan; jangan menghapus data atau mengganti identitas aplikasi.
+- [ ] Tangani kondisi gagal: jaringan terputus, unduhan tidak lengkap, checksum salah, ruang penyimpanan tidak cukup, APK tidak kompatibel, atau pengguna membatalkan instalasi.
+- [ ] Uji jalur nyata APK v1 terpasang → update ke v2 → update ke v3/versi berikutnya, bukan hanya instalasi bersih.
+- [ ] Dokumentasikan cara menerbitkan versi baru: menaikkan version/versionCode, membangun APK dengan signing key yang sama, mengunggah APK, memperbarui manifest, dan memverifikasi update dari perangkat.
+
+Catatan platform: Android membatasi pemasangan aplikasi tanpa interaksi pengguna. Implementasi harus mengikuti mekanisme installer Android yang sah dan tidak boleh mengklaim bisa memasang APK sepenuhnya diam-diam.
+
+## 8. Cara menjalankan dan menguji
 
 Persyaratan: Node.js dan npm.
 
@@ -135,7 +169,7 @@ Konfigurasi Vercel web:
 
 Catatan: jangan menyimpulkan test suite lulus hanya karena deployment Vercel berhasil. Jalankan `npm test` dan laporkan hasil aktual.
 
-## 8. Aturan kerja wajib untuk agent berikutnya
+## 9. Aturan kerja wajib untuk agent berikutnya
 
 1. **Kerjakan hanya di branch `feat/e-moeslife-v2`.**
 2. Jangan mengubah `main`, membuat merge, atau mengubah production tanpa persetujuan eksplisit pemilik proyek.
@@ -148,7 +182,7 @@ Catatan: jangan menyimpulkan test suite lulus hanya karena deployment Vercel ber
 9. Jangan memasukkan API key, token, password, signing key, atau keystore ke Git. Environment variable rahasia dikelola melalui Vercel/GitHub Secrets.
 10. Jangan merge ke `main` atau melakukan rilis APK sebelum diminta.
 
-## 9. Informasi teknis dan keamanan
+## 10. Informasi teknis dan keamanan
 
 - Nama paket: `e-moeslife`, versi pada `package.json`: `2.0.0`.
 - Aplikasi mengandalkan penyimpanan lokal untuk preferensi dan progres bacaan. Jaga kompatibilitas key lama.
@@ -156,7 +190,7 @@ Catatan: jangan menyimpulkan test suite lulus hanya karena deployment Vercel ber
 - Jangan mencetak atau meminta pemilik membagikan secret dalam chat, commit, atau log publik.
 - Periksa konfigurasi service worker setelah mengubah path/aset agar cache lama tidak menyajikan file usang.
 
-## 10. Instruksi awal untuk agent penerus
+## 11. Instruksi awal untuk agent penerus
 
 Mulai dengan:
 1. Baca README ini.
