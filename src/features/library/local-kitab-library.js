@@ -93,6 +93,7 @@ export function mountLocalKitabLibrary() {
   const search = document.getElementById('kitabLibrarySearch');
   const grid = document.getElementById('kitabLibraryGrid');
   if (!home || !search || !grid) return;
+  grid.classList.add('collection-grid');
   const style = element('style');
   style.textContent = `
     .local-kitab-reader{display:none;max-width:980px;margin:0 auto;padding:22px 18px 36px;min-height:65vh}
@@ -111,7 +112,15 @@ export function mountLocalKitabLibrary() {
     .local-kitab-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
     .local-kitab-actions button,.local-kitab-open{border:1px solid #d8c9a8;border-radius:9px;padding:9px 12px;background:#f0eadb;color:#34523f;font-size:12px}
     .local-kitab-actions .primary,.local-kitab-open{background:#174a36;color:#fff7e5;border-color:#9a7a40}
-    .local-kitab-card{min-height:130px}
+    .local-kitab-floating-nav{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;display:flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:calc(100vw - 24px);padding:8px;border:1px solid #d8c9a8a8;border-radius:16px;background:rgba(255,250,240,.72);box-shadow:0 8px 28px #17291d26;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .local-kitab-floating-nav[hidden]{display:none}
+    .local-kitab-floating-nav button{min-height:40px;padding:9px 12px;border:1px solid #d8c9a8;border-radius:11px;background:rgba(255,255,255,.48);color:#234b37;font-family:inherit;font-size:11px;font-weight:700;white-space:nowrap}
+    .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.88);color:#fff7e5;border-color:#9a7a40}
+    .local-kitab-floating-nav button:disabled{opacity:.38}
+    body.theme-dark .local-kitab-floating-nav{background:rgba(29,48,38,.78);border-color:#60745f}
+    body.theme-dark .local-kitab-floating-nav button{background:rgba(48,67,55,.72);color:#eee4d0;border-color:#60745f}
+    body.theme-dark .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.92);color:#fff7e5}
+    @media(max-width:420px){.local-kitab-floating-nav{gap:5px;padding:6px}.local-kitab-floating-nav button{padding:8px 9px;font-size:10px}}
     body.theme-dark .local-kitab-paper{background:#1d3026;color:#eee4d0;border-color:#52634f}
     body.theme-dark .local-kitab-paper h2,body.theme-dark .local-kitab-entry h3{color:#f4e5bd}
     body.theme-dark .local-kitab-entry{border-color:#465a49}
@@ -128,7 +137,10 @@ export function mountLocalKitabLibrary() {
   const heading = element('strong', '', 'Perpustakaan Kitab Kuning');
   top.append(back, heading);
   const paper = element('article', 'local-kitab-paper');
-  reader.append(top, paper);
+  const chapterNav = element('nav', 'local-kitab-floating-nav');
+  chapterNav.setAttribute('aria-label', 'Navigasi bab');
+  chapterNav.hidden = true;
+  reader.append(top, paper, chapterNav);
   home.after(reader);
   let activeBook = null;
   let activeChapters = [];
@@ -151,6 +163,8 @@ export function mountLocalKitabLibrary() {
   });
   function renderChapterList() {
     paper.dataset.mode = 'list';
+    chapterNav.hidden = true;
+    chapterNav.replaceChildren();
     paper.replaceChildren(
       element('h2', '', activeBook.title),
       element('p', 'local-kitab-intro', activeChapters.length + ' bagian · Naskah tersimpan di folder data aplikasi dan dapat dibaca tanpa API kitab.'),
@@ -186,6 +200,7 @@ export function mountLocalKitabLibrary() {
     activeIndex = index;
     const chapter = activeChapters[index];
     paper.dataset.mode = 'chapter';
+    chapterNav.hidden = false;
     paper.replaceChildren(element('h2', '', chapter.title));
     if (chapter.arabic) paper.append(element('p', 'local-kitab-arabic', chapter.arabic));
     if (chapter.latin) paper.append(element('p', 'local-kitab-latin', chapter.latin));
@@ -193,20 +208,19 @@ export function mountLocalKitabLibrary() {
     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
     }
-    const actions = element('div', 'local-kitab-actions');
-    const listButton = element('button', '', '← Daftar bab');
+    chapterNav.replaceChildren();
+    const listButton = element('button', '', 'Daftar Bab');
     listButton.type = 'button';
     listButton.addEventListener('click', renderChapterList);
-    const previous = element('button', '', '← Sebelumnya');
+    const previous = element('button', '', '← Bab Sebelumnya');
     previous.type = 'button';
     previous.disabled = index === 0;
     previous.addEventListener('click', () => renderChapter(index - 1));
-    const next = element('button', 'primary', 'Berikutnya →');
+    const next = element('button', 'primary', 'Bab Selanjutnya →');
     next.type = 'button';
     next.disabled = index >= activeChapters.length - 1;
     next.addEventListener('click', () => renderChapter(index + 1));
-    actions.append(listButton, previous, next);
-    paper.append(actions);
+    chapterNav.append(listButton, previous, next);
   }
   async function openBook(book) {
     activeBook = book;
@@ -241,13 +255,25 @@ export function mountLocalKitabLibrary() {
       (book.title + ' ' + book.category + ' ' + book.slug).toLocaleLowerCase('id').includes(query)
     );
     filtered.forEach((book, index) => {
-      const card = element('button', 'kitab-home-card local-kitab-card');
+      const card = element('button', 'collection-card local-kitab-card');
       card.type = 'button';
+      const iconWrap = element('span', 'collection-symbol');
+      const iconImage = element('img');
+      iconImage.src = './assets/collection-icon.webp';
+      iconImage.alt = '';
+      iconImage.setAttribute('aria-hidden', 'true');
+      iconWrap.append(iconImage);
+      const bottom = element('span', 'collection-bottom');
+      bottom.append(
+        element('span', 'collection-meta', (book.category || 'Kitab klasik') + ' · ' + (book.source === 'local' ? 'Naskah lokal' : 'Sumber sementara')),
+        element('span', 'round-arrow')
+      );
       card.append(
-        element('span', 'kitab-home-index', String(index + 1).padStart(2, '0')),
-        element('strong', 'kitab-home-title', book.title),
-        element('small', 'kitab-home-author', book.source === 'local' ? 'Naskah lokal · JSON' : 'Naskah API · sementara'),
-        element('span', 'kitab-home-category', book.category || 'Kitab klasik')
+        element('span', 'card-index', String(index + 1).padStart(2, '0') + ' / KITAB KLASIK'),
+        iconWrap,
+        element('span', 'collection-title', book.title),
+        element('span', 'collection-desc', book.source === 'local' ? 'Baca naskah kitab yang tersimpan di aplikasi.' : 'Baca kitab melalui sumber API sementara.'),
+        bottom
       );
       card.addEventListener('click', () => {
         if (book.source === 'local') openBook(book);
