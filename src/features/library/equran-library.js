@@ -214,12 +214,40 @@ export function mountIslamicLibrary() {
         select.append(option);
       });
       const audio = el('audio', 'equran-player');
-      audio.controls = false;
-      audio.preload = 'none';
+      audio.controls = true;
+      audio.preload = 'metadata';
+      audio.setAttribute('aria-label', 'Pemutar murattal satu surah');
+      const pauseFull = action('Ⅱ Pause', () => audio.pause(), 'equran-action');
+      const stopFull = action('■ Stop', () => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, 'equran-action');
+      pauseFull.disabled = true;
+      stopFull.disabled = true;
+      const syncAudioActions = () => {
+        pauseFull.disabled = audio.paused;
+        stopFull.disabled = !audio.src;
+      };
+      audio.addEventListener('play', syncAudioActions);
+      audio.addEventListener('pause', syncAudioActions);
+      audio.addEventListener('ended', syncAudioActions);
+      audio.addEventListener('error', () => {
+        if (audio.src) setAudioStatus('Rekaman murattal gagal dimuat. Periksa koneksi internet atau pilih qari lain.');
+      });
       const playFull = action('▶ Putar satu surah', () => {
         const url = surat.audioFull?.[select.value];
-        if (url) { audio.src = url; audio.play().catch(() => {}); }
+        if (!url) {
+          setAudioStatus('Rekaman untuk qari ini belum tersedia pada surah yang dipilih.');
+          return;
+        }
+        if (audio.src !== url) audio.src = url;
+        if (audio.ended) audio.currentTime = 0;
+        audio.play().then(syncAudioActions).catch(() => {
+          setAudioStatus('Audio tidak dapat diputar. Periksa koneksi internet lalu coba lagi.');
+        });
       }, 'equran-action primary');
+      const audioStatus = el('p', 'equran-muted', 'Pilih qari, lalu tekan Putar satu surah.'); 
+      function setAudioStatus(message) { audioStatus.textContent = message; }
       const options = el('div', 'equran-display-options');
       const latinLabel = el('label', 'equran-toggle');
       const latinToggle = el('input');
@@ -232,8 +260,8 @@ export function mountIslamicLibrary() {
       translationToggle.checked = true;
       translationLabel.append(translationToggle, el('span', '', 'Terjemahan'));
       options.append(latinLabel, translationLabel);
-      tools.append(select, playFull, options);
-      paper.append(tools, audio);
+      tools.append(select, playFull, pauseFull, stopFull, options);
+      paper.append(tools, audio, audioStatus);
       const verses = el('div', 'equran-verses');
       (surat.ayat || []).forEach(ayat => {
         const entry = row('Ayat ' + ayat.nomorAyat, '');
