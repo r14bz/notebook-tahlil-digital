@@ -168,7 +168,14 @@ export function mountLocalKitabLibrary() {
     edit.type = 'button';
     edit.addEventListener('click', () => {
       const openEditor = window.__EMOESLIFE_OPEN_KITAB_EDITOR__;
-      if (typeof openEditor === 'function') openEditor(activeBook.slug, activeBook.title, activeChapters, () => openBook(activeBook));
+      if (typeof openEditor === 'function') {
+        document.body.classList.remove('local-kitab-active');
+        reader.hidden = true;
+        openEditor(activeBook.slug, activeBook.title, activeChapters, () => {
+          document.body.classList.remove('equran-reader-active');
+          openBook(activeBook);
+        });
+      }
     });
     actions.append(edit);
     paper.append(list, actions, element('p', 'local-kitab-intro', 'Naskah asli di GitHub tidak diubah. Perubahan editor tersimpan sebagai salinan lokal; unduh JSON untuk memperbarui file sumber.'));
