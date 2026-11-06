@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, readdirSync } from 'node:fs';
 
 import { getReadingGroup } from '../src/features/reader/navigation.js';
 import { getSwipeDirection } from '../src/features/reader/gestures.js';
@@ -14,7 +15,7 @@ import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from 
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
 import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
-import { shouldUseLocalCopy } from '../src/features/library/local-kitab-library.js';
+import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch } from '../src/features/library/local-kitab-library.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -503,4 +504,43 @@ test('local kitab copy is used only when newer than the source manuscript', () =
   assert.equal(shouldUseLocalCopy(null, source('2026-11-06T10:00:00Z')), false);
   assert.equal(shouldUseLocalCopy({ version: 1, updatedAt: '2026-11-06T10:00:00Z', chapters: [] }, source('2026-11-06T09:00:00Z')), false);
   assert.equal(shouldUseLocalCopy({ version: 2, updatedAt: '2026-11-06T10:00:00Z', chapters }, source('2026-11-06T09:00:00Z')), false);
+});
+
+test('chunkText splits long manuscripts losslessly at paragraph boundaries', () => {
+  assert.deepEqual(chunkText(''), []);
+  assert.deepEqual(chunkText('pendek'), ['pendek']);
+  const paragraphs = Array.from({ length: 50 }, (_, i) => 'بِسْمِ اللّٰهِ ' + i + ' '.repeat(1) + 'x'.repeat(300));
+  const text = paragraphs.join('\n\n');
+  const chunks = chunkText(text, 1000);
+  assert.ok(chunks.length > 5);
+  assert.equal(chunks.join(''), text);
+  assert.ok(chunks.slice(0, -1).every(chunk => /\n\n$/.test(chunk)), 'potongan berakhir pada batas paragraf');
+  // Satu paragraf raksasa tanpa baris kosong dipecah pada akhir baris, tetap tanpa kehilangan teks.
+  const lines = Array.from({ length: 400 }, (_, i) => 'baris ' + i + ' ' + 'y'.repeat(60)).join('\n');
+  const lineChunks = chunkText(lines, 1000);
+  assert.ok(lineChunks.length > 10);
+  assert.equal(lineChunks.join(''), lines);
+});
+
+test('every bundled manuscript chunks back to the exact original text', () => {
+  for (const file of readdirSync('data').filter(name => name.endsWith('.json'))) {
+    const document = JSON.parse(readFileSync('data/' + file, 'utf8').replace(/^\uFEFF/, ''));
+    for (const chapter of document.chapters) {
+      for (const field of ['arabic', 'translation']) {
+        const value = chapter[field] || '';
+        assert.equal(chunkText(value).join(''), value, file + ' ' + chapter.id + ' ' + field);
+      }
+    }
+  }
+});
+
+test('chapter render queue keeps Arabic, Latin, translation order and batches by size', () => {
+  const queue = buildChapterQueue({ arabic: 'a'.repeat(9000), latin: 'l', translation: 't'.repeat(5000) });
+  const kinds = queue.map(item => item.kind);
+  assert.deepEqual(kinds, [...kinds].sort((x, y) => ['arabic', 'latin', 'translation'].indexOf(x) - ['arabic', 'latin', 'translation'].indexOf(y)));
+  assert.equal(queue.filter(item => item.first).length, 3);
+  assert.equal(queue.filter(item => item.last).length, 3);
+  assert.equal(planBatch([]), 0);
+  assert.equal(planBatch([{ chunk: 'x'.repeat(20000) }, { chunk: 'y' }]), 1);
+  assert.equal(planBatch([{ chunk: 'x'.repeat(4000) }, { chunk: 'y'.repeat(4000) }, { chunk: 'z'.repeat(4000) }]), 2);
 });

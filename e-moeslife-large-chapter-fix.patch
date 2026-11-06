@@ -1,0 +1,221 @@
+diff --git a/src/features/library/local-kitab-library.js b/src/features/library/local-kitab-library.js
+--- a/src/features/library/local-kitab-library.js	2026-11-06 23:27:55.285339586 +0000
++++ b/src/features/library/local-kitab-library.js	2026-11-06 23:28:39.989000122 +0000
+@@ -16,6 +16,58 @@
+   { file: 'uyun.json', slug: 'uyun', title: 'Qurrotul Uyun', category: 'Keluarga' },
+   { file: 'alhikam.json', slug: 'alhikam', title: 'Al-Hikam', category: 'Tasawuf' }
+ ];
++const CHUNK_TARGET_CHARS = 4000;
++const BATCH_BUDGET_CHARS = 8000;
++/**
++ * Pecah teks panjang menjadi potongan pada batas paragraf (baris kosong) tanpa mengubah isi.
++ * Menggabungkan kembali seluruh potongan selalu menghasilkan teks asli persis (harakat, tanda baca, baris baru).
++ * Satu paragraf yang lebih panjang dari target tetap utuh; bila sangat panjang, dipecah pada akhir baris.
++ */
++export function chunkText(text, target = CHUNK_TARGET_CHARS) {
++  const source = String(text || '');
++  if (!source) return [];
++  if (source.length <= target) return [source];
++  const parts = source.split(/(\n{2,})/);
++  const chunks = [];
++  let current = '';
++  for (let i = 0; i < parts.length; i += 2) {
++    const unit = parts[i] + (parts[i + 1] || '');
++    if (current && current.length + unit.length > target) { chunks.push(current); current = ''; }
++    current += unit;
++  }
++  if (current) chunks.push(current);
++  return chunks.flatMap(chunk => {
++    if (chunk.length <= target * 3) return [chunk];
++    const lines = chunk.split(/(?<=\n)/);
++    const pieces = [];
++    let piece = '';
++    for (const line of lines) {
++      if (piece && piece.length + line.length > target) { pieces.push(piece); piece = ''; }
++      piece += line;
++    }
++    if (piece) pieces.push(piece);
++    return pieces;
++  });
++}
++/** Susun antrean render satu bab: Arab, Latin, lalu terjemahan, dengan urutan asli. */
++export function buildChapterQueue(chapter) {
++  const queue = [];
++  [['arabic', chapter.arabic], ['latin', chapter.latin], ['translation', chapter.translation]].forEach(([kind, text]) => {
++    const chunks = chunkText(text);
++    chunks.forEach((chunk, index) => queue.push({ kind, chunk, first: index === 0, last: index === chunks.length - 1 }));
++  });
++  return queue;
++}
++/** Jumlah item antrean yang dirender dalam satu gelombang (minimal satu). */
++export function planBatch(queue, budget = BATCH_BUDGET_CHARS) {
++  let count = 0;
++  let used = 0;
++  while (count < queue.length && (count === 0 || used + queue[count].chunk.length <= budget)) {
++    used += queue[count].chunk.length;
++    count += 1;
++  }
++  return count;
++}
+ const manualKey = slug => 'e-moeslife:kitab-manual:v1:' + String(slug || 'kitab-lain').replace(/[^a-z0-9_-]/gi, '-');
+ /**
+  * Salinan lokal hasil editor hanya dipakai bila lebih baru daripada file naskah di data/.
+@@ -134,6 +186,9 @@
+     .local-kitab-arabic{font-family:'Amiri','Noto Naskh Arabic',serif;font-size:27px;line-height:2.15;direction:rtl;unicode-bidi:plaintext;text-align:right;white-space:pre-wrap;margin:10px 0 20px}
+     .local-kitab-latin,.local-kitab-translation{font-size:14px;line-height:2;white-space:pre-wrap;margin:10px 0}
+     .local-kitab-latin{color:#82745e;font-style:italic}
++    .local-kitab-join-prev{margin-top:0!important}
++    .local-kitab-join-next{margin-bottom:0!important}
++    .local-kitab-sentinel{text-align:center;margin:18px 0 0}
+     .local-kitab-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+     .local-kitab-actions button,.local-kitab-open{border:1px solid #d8c9a8;border-radius:9px;padding:9px 12px;background:#f0eadb;color:#34523f;font-size:12px}
+     .local-kitab-actions .primary,.local-kitab-open{background:#174a36;color:#fff7e5;border-color:#9a7a40}
+@@ -171,12 +226,15 @@
+   let activeChapters = [];
+   let activeIndex = 0;
+   let activeLocalCopyAt = '';
++  let stopLazy = () => {};
+   function closeReader() {
++    stopLazy();
+     document.body.classList.remove('local-kitab-active');
+     reader.hidden = true;
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+   }
+   function openReader(title) {
++    stopLazy();
+     heading.textContent = title;
+     paper.replaceChildren(element('p', 'equran-loading', 'Memuat naskah lokal…'));
+     reader.hidden = false;
+@@ -188,6 +246,7 @@
+     else closeReader();
+   });
+   function renderChapterList() {
++    stopLazy();
+     paper.dataset.mode = 'list';
+     chapterNav.hidden = true;
+     window.scrollTo({ top: 0, behavior: 'auto' });
+@@ -235,6 +294,50 @@
+     actions.append(edit);
+     paper.append(list, actions, element('p', 'local-kitab-intro', 'Naskah asli di GitHub tidak diubah. Perubahan editor tersimpan sebagai salinan lokal; unduh JSON untuk memperbarui file sumber.'));
+   }
++  // Bab besar (ratusan ribu karakter) dirender bertahap saat pembaca menggulir, agar tidak membekukan HP.
++  function renderChapterBody(chapter) {
++    const queue = buildChapterQueue(chapter);
++    const renderItem = (item, container) => {
++      if (item.kind === 'translation') { appendMixedTranslation(container, item.chunk); return; }
++      const node = element('p', item.kind === 'arabic' ? 'local-kitab-arabic' : 'local-kitab-latin', item.chunk);
++      if (!item.first) node.classList.add('local-kitab-join-prev');
++      if (!item.last) node.classList.add('local-kitab-join-next');
++      container.append(node);
++    };
++    queue.splice(0, planBatch(queue)).forEach(item => renderItem(item, paper));
++    if (!queue.length) return;
++    const sentinel = element('p', 'local-kitab-intro local-kitab-sentinel', 'Gulir untuk memuat lanjutan bab…');
++    paper.append(sentinel);
++    let frame = 0;
++    let observer = null;
++    const nearViewport = () => sentinel.getBoundingClientRect().top < window.innerHeight + 1500;
++    const fill = () => {
++      frame = 0;
++      while (queue.length && nearViewport()) {
++        const fragment = document.createDocumentFragment();
++        queue.splice(0, planBatch(queue)).forEach(item => renderItem(item, fragment));
++        paper.insertBefore(fragment, sentinel);
++      }
++      if (!queue.length) stopLazy();
++    };
++    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(fill); };
++    if (typeof IntersectionObserver === 'function') {
++      observer = new IntersectionObserver(entries => { if (entries.some(entry => entry.isIntersecting)) schedule(); }, { rootMargin: '1500px 0px' });
++      observer.observe(sentinel);
++    } else {
++      window.addEventListener('scroll', schedule, { passive: true });
++    }
++    stopLazy = () => {
++      if (frame) window.cancelAnimationFrame(frame);
++      frame = 0;
++      observer?.disconnect();
++      window.removeEventListener('scroll', schedule);
++      sentinel.remove();
++      queue.length = 0;
++      stopLazy = () => {};
++    };
++    schedule();
++  }
+   function renderChapter(index) {
+     activeIndex = index;
+     const chapter = activeChapters[index];
+@@ -242,9 +345,8 @@
+     paper.dataset.mode = 'chapter';
+     chapterNav.hidden = false;
+     paper.replaceChildren(element('h2', '', chapter.title));
+-    if (chapter.arabic) paper.append(element('p', 'local-kitab-arabic', chapter.arabic));
+-    if (chapter.latin) paper.append(element('p', 'local-kitab-latin', chapter.latin));
+-    if (chapter.translation) appendMixedTranslation(paper, chapter.translation);
++    stopLazy();
++    renderChapterBody(chapter);
+     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
+       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
+     }
+diff --git a/tests/modules.test.js b/tests/modules.test.js
+--- a/tests/modules.test.js	2026-11-06 23:27:55.287793973 +0000
++++ b/tests/modules.test.js	2026-11-06 23:28:53.983937969 +0000
+@@ -1,5 +1,6 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
++import { readFileSync, readdirSync } from 'node:fs';
+ 
+ import { getReadingGroup } from '../src/features/reader/navigation.js';
+ import { getSwipeDirection } from '../src/features/reader/gestures.js';
+@@ -14,7 +15,7 @@
+ import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
+ 
+ import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
+-import { shouldUseLocalCopy } from '../src/features/library/local-kitab-library.js';
++import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch } from '../src/features/library/local-kitab-library.js';
+ import { filterReadingSections } from '../src/features/home/search.js';
+ import { findCollectionStart } from '../src/features/collections/navigation.js';
+ import {
+@@ -504,3 +505,42 @@
+   assert.equal(shouldUseLocalCopy({ version: 1, updatedAt: '2026-11-06T10:00:00Z', chapters: [] }, source('2026-11-06T09:00:00Z')), false);
+   assert.equal(shouldUseLocalCopy({ version: 2, updatedAt: '2026-11-06T10:00:00Z', chapters }, source('2026-11-06T09:00:00Z')), false);
+ });
++
++test('chunkText splits long manuscripts losslessly at paragraph boundaries', () => {
++  assert.deepEqual(chunkText(''), []);
++  assert.deepEqual(chunkText('pendek'), ['pendek']);
++  const paragraphs = Array.from({ length: 50 }, (_, i) => 'بِسْمِ اللّٰهِ ' + i + ' '.repeat(1) + 'x'.repeat(300));
++  const text = paragraphs.join('\n\n');
++  const chunks = chunkText(text, 1000);
++  assert.ok(chunks.length > 5);
++  assert.equal(chunks.join(''), text);
++  assert.ok(chunks.slice(0, -1).every(chunk => /\n\n$/.test(chunk)), 'potongan berakhir pada batas paragraf');
++  // Satu paragraf raksasa tanpa baris kosong dipecah pada akhir baris, tetap tanpa kehilangan teks.
++  const lines = Array.from({ length: 400 }, (_, i) => 'baris ' + i + ' ' + 'y'.repeat(60)).join('\n');
++  const lineChunks = chunkText(lines, 1000);
++  assert.ok(lineChunks.length > 10);
++  assert.equal(lineChunks.join(''), lines);
++});
++
++test('every bundled manuscript chunks back to the exact original text', () => {
++  for (const file of readdirSync('data').filter(name => name.endsWith('.json'))) {
++    const document = JSON.parse(readFileSync('data/' + file, 'utf8').replace(/^\uFEFF/, ''));
++    for (const chapter of document.chapters) {
++      for (const field of ['arabic', 'translation']) {
++        const value = chapter[field] || '';
++        assert.equal(chunkText(value).join(''), value, file + ' ' + chapter.id + ' ' + field);
++      }
++    }
++  }
++});
++
++test('chapter render queue keeps Arabic, Latin, translation order and batches by size', () => {
++  const queue = buildChapterQueue({ arabic: 'a'.repeat(9000), latin: 'l', translation: 't'.repeat(5000) });
++  const kinds = queue.map(item => item.kind);
++  assert.deepEqual(kinds, [...kinds].sort((x, y) => ['arabic', 'latin', 'translation'].indexOf(x) - ['arabic', 'latin', 'translation'].indexOf(y)));
++  assert.equal(queue.filter(item => item.first).length, 3);
++  assert.equal(queue.filter(item => item.last).length, 3);
++  assert.equal(planBatch([]), 0);
++  assert.equal(planBatch([{ chunk: 'x'.repeat(20000) }, { chunk: 'y' }]), 1);
++  assert.equal(planBatch([{ chunk: 'x'.repeat(4000) }, { chunk: 'y'.repeat(4000) }, { chunk: 'z'.repeat(4000) }]), 2);
++});
