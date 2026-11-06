@@ -73,7 +73,7 @@ function normalizeChapter(item, index) {
   return { title, arabic, latin, translation };
 }
 function appendMixedTranslation(container, value) {
-  const paragraphs = String(value || '').split(/\\n{2,}/);
+  const paragraphs = String(value || '').split(/\n{2,}/);
   paragraphs.forEach(paragraph => {
     if (!paragraph.trim()) return;
     const arabicOnly = ARABIC.test(paragraph) && !/[A-Za-z]/.test(paragraph);
