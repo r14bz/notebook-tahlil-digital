@@ -113,14 +113,14 @@ export function mountLocalKitabLibrary() {
     .local-kitab-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
     .local-kitab-actions button,.local-kitab-open{border:1px solid #d8c9a8;border-radius:9px;padding:9px 12px;background:#f0eadb;color:#34523f;font-size:12px}
     .local-kitab-actions .primary,.local-kitab-open{background:#174a36;color:#fff7e5;border-color:#9a7a40}
-    .local-kitab-floating-nav{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:1000;display:flex;align-items:center;justify-content:stretch;gap:6px;width:calc(100vw - 20px);max-width:560px;padding:5px;border:1px solid rgba(170,150,112,.22);border-radius:13px;background:rgba(255,250,240,.08);box-shadow:none;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+    .local-kitab-floating-nav{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:1000;display:flex;align-items:center;justify-content:stretch;gap:6px;width:calc(100vw - 20px);max-width:560px;padding:5px;border:1px solid #d6c9ad;border-radius:13px;background:#fffaf0;box-shadow:0 5px 18px rgba(35,45,32,.16)}
     .local-kitab-floating-nav[hidden]{display:none}
-    .local-kitab-floating-nav button{flex:1 1 0;min-width:0;min-height:42px;padding:8px 5px;border:1px solid rgba(170,150,112,.24);border-radius:11px;background:rgba(255,255,255,.10);color:#234b37;font-family:inherit;font-size:11px;font-weight:700;white-space:normal;line-height:1.2}
-    .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.16);color:#174a36;border-color:rgba(154,122,64,.28)}
+    .local-kitab-floating-nav button{flex:1 1 0;min-width:0;min-height:42px;padding:8px 5px;border:1px solid #d8c9a8;border-radius:11px;background:#f0eadb;color:#234b37;font-family:inherit;font-size:11px;font-weight:700;white-space:normal;line-height:1.2}
+    .local-kitab-floating-nav button.primary{background:#174a36;color:#fff7e5;border-color:#9a7a40}
     .local-kitab-floating-nav button:disabled{opacity:.78;filter:saturate(.65);cursor:not-allowed}
-    body.theme-dark .local-kitab-floating-nav{background:rgba(29,48,38,.06);border-color:rgba(96,116,95,.22)}
-    body.theme-dark .local-kitab-floating-nav button{background:rgba(48,67,55,.12);color:#eee4d0;border-color:rgba(96,116,95,.24)}
-    body.theme-dark .local-kitab-floating-nav button.primary{background:rgba(23,74,54,.24);color:#eee4d0}
+    body.theme-dark .local-kitab-floating-nav{background:#1d3026;border-color:#60745f;box-shadow:0 5px 18px rgba(0,0,0,.3)}
+    body.theme-dark .local-kitab-floating-nav button{background:#304337;color:#eee4d0;border-color:#60745f}
+    body.theme-dark .local-kitab-floating-nav button.primary{background:#174a36;color:#fff7e5;border-color:#9a7a40}
     @media(max-width:420px){.local-kitab-floating-nav{gap:4px;padding:6px}.local-kitab-floating-nav button{padding:8px 3px;font-size:9px}}
     body.theme-dark .local-kitab-paper{background:#1d3026;color:#eee4d0;border-color:#52634f}
     body.theme-dark .local-kitab-paper h2,body.theme-dark .local-kitab-entry h3{color:#f4e5bd}
