@@ -17,13 +17,16 @@ import { findCollectionStart } from './features/collections/navigation.js';
 import { initPrayerTimes } from './features/prayer/prayer-times.js';
 import { checkForAppUpdate } from './services/app-update.js';
 import { mountIslamicLibrary } from './features/library/equran-library.js';
+import { mountLocalKitabLibrary } from './features/library/local-kitab-library.js';
 
 mountAppShell();
 initPrayerTimes();
 registerOfflineSupport();
 // Check the latest signed Android release without blocking app startup or offline reading.
 checkForAppUpdate();
+window.__EMOESLIFE_LOCAL_KITAB__ = true;
 mountIslamicLibrary();
+mountLocalKitabLibrary();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false,pendingReaderSection=null,pendingCollection=null,readerContentReady=false;
