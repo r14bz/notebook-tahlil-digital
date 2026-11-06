@@ -102,6 +102,7 @@ export function mountLocalKitabLibrary() {
     .local-kitab-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
     .local-kitab-back{border:1px solid #d6c9ad;border-radius:11px;background:#f4eddd;color:#234b37;padding:10px 13px;font-family:inherit;font-size:12px;font-weight:600}
     .local-kitab-paper{padding:clamp(18px,4vw,34px);border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;color:#263b2e;min-height:55vh}
+    .local-kitab-paper[data-mode="chapter"]{padding-bottom:112px}
     .local-kitab-paper h2{margin:0 0 8px;color:#174532;font:700 24px 'Amiri',serif}
     .local-kitab-intro{color:#827865;font-size:12px;line-height:1.7}
     .local-kitab-entry{padding:18px 0;border-bottom:1px solid #e4dac5}
