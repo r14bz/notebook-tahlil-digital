@@ -975,12 +975,12 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
 #readerAudioPanel audio[hidden]{display:block!important;visibility:hidden!important}
 
 
-/* Audio TTS and qari are temporarily hidden without removing their implementation. */
-#readerAudioPanel[hidden]{display:none!important}
-
-/* Force-hide the complete audio UI on every reader page, regardless of runtime hidden-attribute changes. */
-#readerMain #readerAudioPanel,
-#readerMain .playbar#readerAudioPanel { display:none !important; visibility:hidden !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:hidden !important; }
+/* Restore the reader audio panel and its murattal controls. */
+#readerMain #readerAudioPanel{display:flex!important;visibility:visible!important;height:auto!important;min-height:48px!important;margin:0!important;padding:8px!important;overflow:visible!important}
+#readerMain #readerAudioPanel[hidden]{display:none!important}
+#readerAudioPanel .play-actions{display:flex;gap:5px;flex-wrap:nowrap}
+#readerAudioPanel .play-actions button{white-space:nowrap;min-height:34px;padding:6px 9px;font-size:11px}
+@media(max-width:480px){#readerAudioPanel .play-actions{gap:3px}#readerAudioPanel .play-actions button{padding:5px 6px;font-size:9px}}
 
 /* Dynamic prayer banner */
 .prayer-banner{--sun-x:50%;--sun-y:30%;position:relative;isolation:isolate;min-height:310px;overflow:hidden;border-radius:25px;color:#fff8e8;background:linear-gradient(180deg,#233d62 0%,#d58d6b 58%,#f0c58b 100%);box-shadow:0 18px 42px #123d2e24;transition:background 2.2s ease}
