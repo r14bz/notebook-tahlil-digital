@@ -87,7 +87,7 @@ export function mountLocalKitabLibrary() {
     body.local-kitab-active .local-kitab-reader{display:block}
     body.local-kitab-active #homePage,body.local-kitab-active #readerMain,body.local-kitab-active #readerFooter{display:none!important}
     .local-kitab-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-    .local-kitab-back{border:1px solid #d6c9ad;border-radius:11px;background:#f4eddd;color:#234b37;padding:10px 13px;font:600 12px inherit}
+    .local-kitab-back{border:1px solid #d6c9ad;border-radius:11px;background:#f4eddd;color:#234b37;padding:10px 13px;font-family:inherit;font-size:12px;font-weight:600}
     .local-kitab-paper{padding:clamp(18px,4vw,34px);border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;color:#263b2e;min-height:55vh}
     .local-kitab-paper h2{margin:0 0 8px;color:#174532;font:700 24px 'Amiri',serif}
     .local-kitab-intro{color:#827865;font-size:12px;line-height:1.7}
@@ -153,22 +153,7 @@ export function mountLocalKitabLibrary() {
       entry.append(open);
       list.append(entry);
     });
-    paper.append(list, element('div', 'local-kitab-actions'));
-    const actions = paper.querySelector('.local-kitab-actions');
-    const edit = element('button', '', '✎ Editor naskah');
-    edit.type = 'button';
-    edit.addEventListener('click', () => {
-      // Existing editor is kept available for Safinah and Aqidatul; the new
-      // local reader itself remains read-only to protect curated source files.
-      if (activeBook.slug === 'safinah-an-najah' || activeBook.slug === 'aqidatul-awam') {
-        const oldCard = document.querySelector('[data-local-editor="' + activeBook.slug + '"]');
-        if (oldCard) oldCard.click();
-      } else {
-        window.alert('Editor untuk naskah lokal ini akan disambungkan pada tahap berikutnya. File sumber tetap aman.');
-      }
-    });
-    actions.append(edit);
-    paper.append(element('p', 'local-kitab-intro', 'Naskah asli tidak diubah saat dibaca.'));
+    paper.append(list, element('p', 'local-kitab-intro', 'Naskah asli tidak diubah saat dibaca.'));
   }
   function renderChapter(index) {
     activeIndex = index;
