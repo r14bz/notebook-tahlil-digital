@@ -1,3 +1,5 @@
+let apiBooks = [];
+const normalizeBookName = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('id').replace(/[^a-z0-9]+/g, ' ').trim();
 const BOOKS = [
   { file: 'safinah-an-najah.json', slug: 'safinah-an-najah', title: 'Safinah An-Najah', category: 'Fiqih' },
   { file: 'aqidatul-awam.json', slug: 'aqidatul-awam', title: 'Aqidatul Awam', category: 'Aqidah' },
@@ -231,21 +233,47 @@ export function mountLocalKitabLibrary() {
   function drawCatalog() {
     const query = search.value.trim().toLocaleLowerCase('id');
     grid.replaceChildren();
-    const filtered = BOOKS.filter(book => (book.title + ' ' + book.category + ' ' + book.slug).toLocaleLowerCase('id').includes(query));
+    const entries = [
+      ...BOOKS.map(book => ({ ...book, source: 'local' })),
+      ...apiBooks.map(book => ({ ...book, source: 'api' }))
+    ];
+    const filtered = entries.filter(book =>
+      (book.title + ' ' + book.category + ' ' + book.slug).toLocaleLowerCase('id').includes(query)
+    );
     filtered.forEach((book, index) => {
       const card = element('button', 'kitab-home-card local-kitab-card');
       card.type = 'button';
       card.append(
         element('span', 'kitab-home-index', String(index + 1).padStart(2, '0')),
         element('strong', 'kitab-home-title', book.title),
-        element('small', 'kitab-home-author', 'Naskah lokal · JSON'),
-        element('span', 'kitab-home-category', book.category)
+        element('small', 'kitab-home-author', book.source === 'local' ? 'Naskah lokal · JSON' : 'Naskah API · sementara'),
+        element('span', 'kitab-home-category', book.category || 'Kitab klasik')
       );
-      card.addEventListener('click', () => openBook(book));
+      card.addEventListener('click', () => {
+        if (book.source === 'local') openBook(book);
+        else window.__EMOESLIFE_OPEN_API_KITAB__?.(book.slug, book.title);
+      });
       grid.append(card);
     });
     if (!filtered.length) grid.append(element('p', 'equran-loading', 'Kitab tidak ditemukan.'));
   }
   search.addEventListener('input', drawCatalog);
   drawCatalog();
+
+  // Keep API books available until their curated local JSON files are uploaded.
+  const loadApiCatalog = window.__EMOESLIFE_LOAD_API_KITAB__;
+  if (typeof loadApiCatalog === 'function') {
+    loadApiCatalog().then(remoteBooks => {
+      const localSlugs = new Set(BOOKS.flatMap(book => [book.slug, ...(book.slug === 'safinah-an-najah' ? ['safinah'] : [])]));
+      const localTitles = new Set(BOOKS.map(book => normalizeBookName(book.title)));
+      apiBooks = (Array.isArray(remoteBooks) ? remoteBooks : []).filter(book =>
+        book.slug &&
+        !localSlugs.has(book.slug) &&
+        !localTitles.has(normalizeBookName(book.title))
+      );
+      drawCatalog();
+    }).catch(error => {
+      console.warn('Katalog API kitab sementara tidak dapat dimuat; naskah lokal tetap tersedia.', error);
+    });
+  }
 }
