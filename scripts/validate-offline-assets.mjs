@@ -3,6 +3,28 @@ import path from 'node:path';
 
 const root = process.cwd();
 const output = path.join(root, 'www');
+
+// Validate every curated manuscript referenced by the local kitab catalog.
+// This catches missing uploads, malformed JSON, and unexpected top-level structures
+// before a PWA/APK build is considered ready.
+const localLibrary = await readFile(path.join(root, 'src/features/library/local-kitab-library.js'), 'utf8');
+const kitabFiles = [...localLibrary.matchAll(/\\{\\s*file:\\s*'([^']+)'/g)].map(([, file]) => file);
+if (!kitabFiles.length) throw new Error('No local kitab JSON files are declared in the catalog.');
+
+for (const file of kitabFiles) {
+  const sourcePath = path.join(output, 'data', file);
+  let documentData;
+  try {
+    const source = (await readFile(sourcePath, 'utf8')).replace(/^\\uFEFF/, '');
+    documentData = JSON.parse(source);
+  } catch (error) {
+    throw new Error('Local kitab JSON is missing or invalid: data/' + file + ' (' + error.message + ')');
+  }
+  if (!Array.isArray(documentData.chapters) || documentData.chapters.length === 0) {
+    throw new Error('Local kitab JSON must contain a non-empty chapters array: data/' + file);
+  }
+}
+console.log('Verified ' + kitabFiles.length + ' local kitab JSON manuscripts in ./www/data');
 const worker = await readFile(path.join(root, 'service-worker.js'), 'utf8');
 const match = worker.match(/const CORE_ASSETS = \[([\s\S]*?)\];/);
 
