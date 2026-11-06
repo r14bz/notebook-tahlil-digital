@@ -70,6 +70,16 @@ function normalizeChapter(item, index) {
   }
   return { title, arabic, latin, translation };
 }
+function appendMixedTranslation(container, value) {
+  const paragraphs = String(value || '').split(/\\n{2,}/);
+  paragraphs.forEach(paragraph => {
+    if (!paragraph.trim()) return;
+    const arabicOnly = ARABIC.test(paragraph) && !/[A-Za-z]/.test(paragraph);
+    const node = element('p', arabicOnly ? 'local-kitab-arabic' : 'local-kitab-translation', paragraph);
+    node.dir = arabicOnly ? 'rtl' : 'auto';
+    container.append(node);
+  });
+}
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -170,7 +180,7 @@ export function mountLocalKitabLibrary() {
     paper.replaceChildren(element('h2', '', chapter.title));
     if (chapter.arabic) paper.append(element('p', 'local-kitab-arabic', chapter.arabic));
     if (chapter.latin) paper.append(element('p', 'local-kitab-latin', chapter.latin));
-    if (chapter.translation) paper.append(element('p', 'local-kitab-translation', chapter.translation));
+    if (chapter.translation) appendMixedTranslation(paper, chapter.translation);
     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
     }
