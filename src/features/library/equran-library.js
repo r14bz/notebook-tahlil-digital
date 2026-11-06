@@ -834,5 +834,5 @@ export function mountIslamicLibrary() {
       kitabGrid.replaceChildren(el('p', 'equran-error', error.message || 'Daftar kitab belum dapat dimuat.'));
     }
   }
-  loadKitabHomeCatalog();
+  if (!window.__EMOESLIFE_LOCAL_KITAB__) loadKitabHomeCatalog();
 }
