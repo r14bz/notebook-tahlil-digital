@@ -394,7 +394,7 @@ export function mountIslamicLibrary() {
     localStorage.setItem(manualStorageKey(slug), JSON.stringify(normalized));
     return normalized;
   }
-  function openKitabEditor(slug, title, initialChapters = []) {
+  function openKitabEditor(slug, title, initialChapters = [], onBack = () => openKitab(slug, title)) {
     showReader('Editor ' + title, 'Edit bab dan tulisan yang sudah ada, lalu simpan perubahan');
     const documentData = readManualDocument(slug, title);
     const sourceChapters = documentData.chapters.length ? documentData.chapters : initialChapters;
@@ -498,7 +498,7 @@ export function mountIslamicLibrary() {
     formPanel.append(fields);
     layout.append(listPanel, formPanel);
     editor.append(intro, toolbar, status, layout);
-    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', () => openKitab(slug, title), 'equran-back'));
+    paper.replaceChildren(el('h2', '', 'Penyusunan ' + title), editor, action('← Kembali ke kitab', onBack, 'equran-back'));
     function persist(message) {
       try {
         saveManualDocument({ chapters }, slug, title);
@@ -595,6 +595,8 @@ export function mountIslamicLibrary() {
     translationInput.addEventListener('input', updateSelected);
     draw();
   }
+
+  window.__EMOESLIFE_OPEN_KITAB_EDITOR__ = openKitabEditor;
 
   async function openLocalAqidatul(title) {
     showReader(title || 'Aqidatul Awam', 'Naskah lokal · tersedia tanpa koneksi API');
