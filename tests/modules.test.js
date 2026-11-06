@@ -475,9 +475,11 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
 
 test('reader shell exposes accessible TTS and qari playback controls', () => {
   assert.match(readerPageMarkup, /id="readerAudioPanel"/);
+  assert.doesNotMatch(readerPageMarkup, /id="readerAudioPanel" hidden/);
   assert.match(readerPageMarkup, /id="ttsPlayBtn"/);
   assert.match(readerPageMarkup, /id="qariPlayBtn"/);
-  assert.doesNotMatch(readerPageMarkup, /id="audioStopBtn"/);
+  assert.match(readerPageMarkup, /id="qariPauseBtn"/);
+  assert.match(readerPageMarkup, /id="qariStopBtn"/);
   assert.doesNotMatch(readerPageMarkup, /id="qariAudio" hidden controls/);
   assert.match(readerPageMarkup, /id="qariAudio" hidden preload/);
   assert.match(readerPageMarkup, /href="https:\/\/everyayah.com\//);
