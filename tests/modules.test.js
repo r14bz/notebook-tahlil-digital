@@ -473,14 +473,6 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
   }
 });
 
-test('reader shell exposes accessible TTS and qari playback controls', () => {
-  assert.match(readerPageMarkup, /id="readerAudioPanel"/);
-  assert.doesNotMatch(readerPageMarkup, /id="readerAudioPanel" hidden/);
-  assert.match(readerPageMarkup, /id="ttsPlayBtn"/);
-  assert.match(readerPageMarkup, /id="qariPlayBtn"/);
-  assert.match(readerPageMarkup, /id="qariPauseBtn"/);
-  assert.match(readerPageMarkup, /id="qariStopBtn"/);
-  assert.match(readerPageMarkup, /id="qariAudio"[^>]*controls preload/);
-  assert.match(readerPageMarkup, /href="https:\/\/everyayah.com\//);
-  assert.match(readerPageMarkup, /aria-live="polite"/);
+test('classic reader does not expose audio controls; murattal is isolated in its own collection', () => {
+  assert.doesNotMatch(readerPageMarkup, /readerAudioPanel|ttsPlayBtn|qariPlayBtn|qariPauseBtn|qariStopBtn|qariAudio/);
 });
