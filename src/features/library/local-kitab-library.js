@@ -259,7 +259,7 @@ export function mountLocalKitabLibrary() {
       card.type = 'button';
       const iconWrap = element('span', 'collection-symbol');
       const iconImage = element('img');
-      iconImage.src = './assets/collection-icon.webp';
+      iconImage.src = '/assets/collection-icon.webp';
       iconImage.alt = '';
       iconImage.setAttribute('aria-hidden', 'true');
       iconWrap.append(iconImage);
