@@ -165,6 +165,7 @@ export function mountLocalKitabLibrary() {
   function renderChapterList() {
     paper.dataset.mode = 'list';
     chapterNav.hidden = true;
+    window.scrollTo({ top: 0, behavior: 'auto' });
     chapterNav.replaceChildren();
     paper.replaceChildren(
       element('h2', '', activeBook.title),
@@ -200,6 +201,7 @@ export function mountLocalKitabLibrary() {
   function renderChapter(index) {
     activeIndex = index;
     const chapter = activeChapters[index];
+    window.scrollTo({ top: 0, behavior: 'auto' });
     paper.dataset.mode = 'chapter';
     chapterNav.hidden = false;
     paper.replaceChildren(element('h2', '', chapter.title));

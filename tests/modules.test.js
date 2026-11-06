@@ -13,6 +13,7 @@ import { readerPageMarkup } from '../src/components/shell/reader-page.js';
 import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from '../src/features/reader/audio.js';
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
+import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -65,7 +66,7 @@ test('reader audio controller sequences qari ayat and stops when changing surah'
 
   controller.update({ quranSurah: 36 });
   assert.equal(button.disabled, false);
-  assert.equal(controller.playQari({ quranSurah: 36 }), true);
+  assert.equal(await controller.playQari({ quranSurah: 36 }), true);
   assert.match(audio.src, /036001\.mp3$/);
   await handlers.ended();
   assert.match(audio.src, /036002\.mp3$/);
@@ -475,4 +476,16 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
 
 test('classic reader does not expose audio controls; murattal is isolated in its own collection', () => {
   assert.doesNotMatch(readerPageMarkup, /readerAudioPanel|ttsPlayBtn|qariPlayBtn|qariPauseBtn|qariStopBtn|qariAudio/);
+});
+
+test('prayer timezone follows the province, not just longitude', () => {
+  assert.equal(getZoneForProvince('Kalimantan Selatan').zone, 'WITA');
+  assert.equal(getZoneForProvince('Kalimantan Tengah').zone, 'WIB');
+  assert.equal(getZoneForProvince('Maluku').zone, 'WIT');
+  assert.equal(getZoneForProvince('Maluku Utara').zone, 'WIT');
+  assert.equal(getZoneForProvince('Papua Barat Daya').zone, 'WIT');
+  assert.equal(getZoneForProvince('Sulawesi Utara').zone, 'WITA');
+  assert.equal(getZoneForProvince('Bali').timezone, 'Asia/Makassar');
+  assert.equal(getZoneForProvince('DKI Jakarta').zone, 'WIB');
+  assert.equal(getZoneForProvince('Provinsi Tidak Dikenal'), null);
 });

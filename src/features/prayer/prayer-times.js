@@ -13,6 +13,21 @@ function localParts(date, timezone) {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(date);
   return Object.fromEntries(parts.map(part => [part.type, part.value]));
 }
+const ZONE_WIB = { timezone: 'Asia/Jakarta', zone: 'WIB' };
+const ZONE_WITA = { timezone: 'Asia/Makassar', zone: 'WITA' };
+const ZONE_WIT = { timezone: 'Asia/Jayapura', zone: 'WIT' };
+// Zona waktu ditentukan per provinsi: garis bujur saja keliru untuk Kalimantan Selatan (WITA) dan Maluku (WIT).
+const WIT_PROVINCES = ['maluku', 'malukuutara', 'papua', 'papuabarat', 'papuabaratdaya', 'papuapegunungan', 'papuaselatan', 'papuatengah'];
+const WITA_PROVINCES = ['bali', 'nusatenggarabarat', 'nusatenggaratimur', 'kalimantanselatan', 'kalimantantimur', 'kalimantanutara', 'sulawesiutara', 'sulawesitengah', 'sulawesiselatan', 'sulawesitenggara', 'sulawesibarat', 'gorontalo'];
+const WIB_PROVINCES = ['aceh', 'sumaterautara', 'sumaterabarat', 'riau', 'kepulauanriau', 'jambi', 'sumateraselatan', 'bengkulu', 'bangkabelitung', 'kepulauanbangkabelitung', 'lampung', 'dkijakarta', 'jakarta', 'jawabarat', 'jawatengah', 'jawatimur', 'banten', 'diyogyakarta', 'yogyakarta', 'kalimantanbarat', 'kalimantantengah'];
+export function getZoneForProvince(province) {
+  const key = normalize(province).replace(/^(provinsi|daerahkhususibukota|daerahistimewa)/, '');
+  if (WIT_PROVINCES.includes(key)) return { ...ZONE_WIT };
+  if (WITA_PROVINCES.includes(key)) return { ...ZONE_WITA };
+  if (WIB_PROVINCES.includes(key)) return { ...ZONE_WIB };
+  return null;
+}
+// Cadangan bila provinsi tidak dikenali; perkiraan kasar berdasarkan bujur.
 function getZone(longitude) {
   if (longitude >= 129) return { timezone: 'Asia/Jayapura', zone: 'WIT' };
   if (longitude >= 115) return { timezone: 'Asia/Makassar', zone: 'WITA' };
@@ -83,7 +98,7 @@ async function detectLocation() {
     position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 12000, maximumAge: 3600000 }));
   }
   const { latitude, longitude } = position.coords;
-  const zone = getZone(longitude);
+  const fallbackZone = getZone(longitude);
   const reverse = await getJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}&localityLanguage=id`);
   const admin = reverse.localityInfo?.administrative || [];
   const provinceAliases = {
@@ -106,6 +121,7 @@ async function detectLocation() {
   let city = null;
   for (const candidate of cityCandidates) { city = findRegion(cities, candidate); if (city) break; }
   if (!city) throw new Error('Kota belum cocok dengan data jadwal shalat. Silakan pilih kota secara manual.');
+  const zone = getZoneForProvince(province) || fallbackZone;
   return { provinsi: province, kabkota: city, label: city.replace(/^(Kota|Kab\.|Kabupaten)\s*/i, ''), ...zone };
 }
 
