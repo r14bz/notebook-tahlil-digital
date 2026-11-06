@@ -110,7 +110,7 @@ const renderContents=()=>renderReaderContents({sections,pages,index,sectionStart
 const readerAudio=createReaderAudioController({
  speechSynthesis:window.speechSynthesis,
  SpeechSynthesisUtterance:window.SpeechSynthesisUtterance,
- audioElement:$('qariAudio'),voiceSelect:$('ttsVoice'),voiceLabel:$('audioVoiceLabel'),audioDescription:$('audioDescription'),qariButton:$('qariPlayBtn'),statusElement:$('audioStatus'),readPreference,writePreference
+ audioElement:$('qariAudio'),voiceSelect:$('ttsVoice'),voiceLabel:$('audioVoiceLabel'),audioDescription:$('audioDescription'),qariButton:$('qariPlayBtn'),qariPauseButton:$('qariPauseBtn'),qariStopButton:$('qariStopBtn'),statusElement:$('audioStatus'),readPreference,writePreference
 });
 const readerController=createReaderController({
  getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
