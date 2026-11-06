@@ -15,6 +15,8 @@ Dokumen ini adalah ringkasan teknis dan status proyek untuk agent AI/developer y
 
 **Status saat handoff:** commit `cc3618f` berstatus Vercel **Success**. Ini hanya memastikan deployment selesai; perubahan tampilan terbaru tetap perlu diuji langsung oleh pemilik proyek di preview/perangkat.
 
+**Pembaruan setelah audit kode (7 November 2026):** branch ini memuat perbaikan sesudah `cc3618f` (lihat bagian 12). Jalankan `git log` untuk SHA terbaru. Status Vercel untuk commit tersebut dan hasil uji perangkat belum dicatat di sini; isi setelah diverifikasi pemilik proyek.
+
 ## 2. Gambaran proyek
 
 e-Moeslife adalah aplikasi baca Islami digital dengan tampilan terinspirasi kitab klasik: warna hijau, emas, dan kertas krem. Aplikasi dirancang mobile-first, responsif, local-first, dan mendukung pengalaman membaca tanpa koneksi untuk konten/aset yang sudah tersedia secara lokal.
@@ -38,7 +40,9 @@ Aplikasi web menggunakan HTML, CSS, dan JavaScript native berbasis ES modules. P
 ### Perpustakaan Kitab Kuning
 - Naskah kitab lokal dibaca dari folder `data/`.
 - Pembaca mendukung bagian/bab, teks Arab, Latin, dan terjemahan sesuai struktur JSON yang dikenali.
-- Tersedia editor naskah dan ekspor/unduh JSON untuk membantu pemilik menyusun manuskrip sendiri.
+- Tersedia editor naskah dan ekspor/unduh JSON untuk membantu pemilik menyusun manuskrip sendiri. Penyimpanan editor ditunda sekitar 800 ms setelah berhenti mengetik dan dipaksa saat keluar dari editor atau aplikasi disembunyikan.
+- Salinan lokal hasil editor (localStorage `e-moeslife:kitab-manual:v1:<slug>`) hanya dipakai jika waktu edit terakhirnya lebih baru daripada `updatedAt` pada file di `data/`. Jika naskah di server lebih baru, salinan lokal diarsipkan ke kunci `...:backup` (tidak dihapus) dan naskah server dipakai. Daftar bab menampilkan pemberitahuan dan tombol "Pakai naskah asli" saat salinan lokal sedang aktif.
+- Bab besar dirender bertahap saat pembaca menggulir (potongan sekitar 4.000 karakter pada batas paragraf, gelombang sekitar 8.000 karakter). Penggabungan potongan harus selalu sama persis dengan teks sumber; ini diuji pada seluruh file `data/`. Pencarian "cari di halaman" milik browser hanya menemukan teks yang sudah dimuat.
 - Navigasi bab mengambang: Daftar Bab, Bab Sebelumnya, Bab Selanjutnya.
 - Panel navigasi saat ini menggunakan latar solid agar mudah dibaca; ruang bawah halaman dipertahankan supaya navigasi tidak menutupi teks.
 - Kitab lokal yang sudah terdaftar di katalog antara lain Safinah An-Najah, Aqidatul Awam, Arba'in Nawawi, Bidayatul Hidayah, Bulughul Maram, Futuhul Ghaib, Fathul Izar, Tafsir Jalalain, Shahih Muslim, Muwatta Imam Malik, Fathul Qarib, Ta'lim Al-Muta'allim, Qurrotul Uyun, dan Al-Hikam. **Periksa folder `data/` untuk file aktual dan status kelengkapan masing-masing.**
@@ -103,8 +107,14 @@ Jaga modularitas. Hindari menumpuk seluruh logika kembali ke `src/app.js`.
 - Uji pemutar audio di koleksi Al-Qur'an & Murattal; pastikan tidak muncul pada koleksi klasik.
 - Uji file JSON kitab yang baru diunggah dan pastikan bab, teks Arab, serta terjemahan terbaca benar.
 - Uji preview Vercel sebelum perubahan berikutnya digabung ke branch utama.
+- Uji gulir bab besar (misalnya Shahih Muslim "Haji"/"Iman", Tafsir Jalalain Al-Baqarah): bab terbuka cepat, lanjutan teks muncul sebelum ujung, tidak ada lompatan, dan pindah bab selalu mulai dari atas.
+- Uji editor kitab: setelah menyunting dan kembali, pemberitahuan salinan lokal tampil; tombol "Pakai naskah asli" mengembalikan naskah server.
+- Uji offline: kitab yang pernah dibuka tetap terbaca tanpa internet, dan naskah JSON yang baru diunggah muncul saat online tanpa menaikkan `CACHE_NAME`.
+- Uji jadwal salat dengan lokasi di Kalimantan Selatan (WITA) dan Maluku/Maluku Utara (WIT).
 
 ### Pekerjaan lanjutan
+
+0. Masalah terbuka dari audit kode: lihat bagian 12.
 1. Lanjutkan menerima dan mengintegrasikan JSON kitab yang disusun pemilik proyek.
 2. Audit struktur JSON per kitab dan perbaiki parser tanpa merusak sumber naskah.
 3. Setelah seluruh kitab lokal lengkap dan disetujui, rencanakan penghapusan API kitab sementara.
@@ -189,6 +199,7 @@ Catatan: jangan menyimpulkan test suite lulus hanya karena deployment Vercel ber
 - Ahmad Sanusi API key (jika integrasi sementara masih dipakai) harus berada di environment variable server, bukan frontend atau APK.
 - Jangan mencetak atau meminta pemilik membagikan secret dalam chat, commit, atau log publik.
 - Periksa konfigurasi service worker setelah mengubah path/aset agar cache lama tidak menyajikan file usang.
+- Kebijakan cache service worker: `data/*`, `etahlil-pembagian-halaman-dzikir.json`, dan `src/data/dzikir-overrides.json` memakai network-first (batas tunggu 4 detik, lalu cache). Seluruh aset lain (JS, CSS, gambar) tetap cache-first, sehingga **naikkan `CACHE_NAME` di `service-worker.js` setiap kali file JS/CSS/aset berubah**. Nilai saat ini: `e-moeslife-shell-v14`.
 
 ## 11. Instruksi awal untuk agent penerus
 
@@ -200,3 +211,28 @@ Mulai dengan:
 5. Tanyakan/konfirmasi hanya bila keputusan dapat mengubah naskah, desain yang sudah disetujui, branch utama, atau production.
 
 **Prioritas utama:** jaga naskah kitab yang disusun pemilik proyek, pertahankan semua fitur yang sudah disetujui, dan jangan mengubah production tanpa izin.
+
+## 12. Catatan audit kode (7 November 2026)
+
+Audit dilakukan pada salinan zip branch ini. `npm test` pada salinan kerja audit: **29 lulus, 0 gagal**. Hasil ini belum menggantikan uji di perangkat atau status Vercel.
+
+### Sudah diperbaiki
+
+- Test audio gagal karena `playQari()` bersifat async tetapi tidak di-`await`. Test kini lulus.
+- Zona waktu hasil GPS memakai garis bujur sehingga keliru untuk Kalimantan Selatan (seharusnya WITA) dan Maluku/Maluku Utara (seharusnya WIT). Kini ditentukan per provinsi lewat `getZoneForProvince()`; bujur hanya cadangan.
+- Pindah bab di pembaca kitab lokal tidak menggulir ke atas. Kini selalu mulai dari atas.
+- Service worker menyajikan data kitab dan file layout dari cache tanpa pernah memeriksa pembaruan. Kini network-first untuk file tersebut.
+- Salinan lokal editor menimpa file `data/` selamanya, dan editor menyimpan seluruh kitab di setiap ketikan. Kini naskah server yang lebih baru menang, dan penyimpanan ditunda.
+- Bab sangat besar dirender sebagai satu paragraf (Shahih Muslim "Haji": sekitar 312 ribu karakter Arab dan 403 ribu terjemahan). Kini dirender bertahap.
+
+### Masalah terbuka
+
+- Jika pembaruan jadwal salat gagal saat pergantian hari, jadwal kemarin tetap tampil (`activeDateKey` diperbarui sebelum pembaruan berhasil). Hitung mundur setelah Isya memakai waktu Subuh hari ini, bukan besok (selisih beberapa menit).
+- `CURRENT_VERSION` di `src/services/app-update.js` dan `versionCode 2`/`versionName 2.0.0` di `.github/workflows/build-android-apk.yml` ditulis keras dan harus diubah manual setiap rilis. Pengecekan checksum APK belum ada (target roadmap tahap 6).
+- Tidak ada `package-lock.json`; build memakai `npm install` sehingga versi dependensi tidak terkunci.
+- `src/features/reader/audio.js` tidak diimpor oleh `app.js` (audio pembaca klasik sudah dihilangkan) tetapi masih ada di precache service worker dan test. Hapus hanya setelah pemilik menyetujui.
+- `/api/kitab` memakai path absolut sehingga tidak berfungsi di APK (tanpa server). Aman selama seluruh kitab lokal; hapus bersama API sementara.
+- Struktur data yang perlu keputusan pemilik: Aqidatul Awam hanya 3 bagian (nazham Arab, terjemah, dan syarah sekitar 117 ribu karakter terpisah); Bidayatul Hidayah memiliki 16 dari 18 bab tanpa teks Arab; Qurrotul Uyun memiliki 2 bab tanpa Arab. Pembaca menampilkan seluruh Arab dahulu lalu seluruh terjemahan; belum ada pemasangan per hadis.
+- File JSON dari editor berawalan BOM. Browser menanganinya, tetapi `JSON.parse` di Node gagal kecuali BOM dibuang (skrip validasi sudah membuangnya).
+- Koordinat pengguna dikirim ke layanan pihak ketiga (bigdatacloud.net) untuk geocoding saat deteksi lokasi; pertimbangkan menyebutkannya di kebijakan privasi.
+- Data API jadwal salat disisipkan lewat `innerHTML` pada beberapa tempat; risiko rendah, tetapi sebaiknya diganti `textContent`.
