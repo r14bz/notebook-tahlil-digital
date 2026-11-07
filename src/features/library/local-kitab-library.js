@@ -52,17 +52,24 @@ export function chunkText(text, target = CHUNK_TARGET_CHARS) {
 }
 /** Susun antrean render satu bab: Arab, Latin, lalu terjemahan, dengan urutan asli. */
 export const splitParagraphs = text => String(text || '').split(/\n{2,}/).filter(paragraph => paragraph.trim());
+const leadingNumber = paragraph => { const match = paragraph.match(/^\s*(\d+)[.)]\s/); return match ? Number(match[1]) : null; };
 /**
- * Pasangkan paragraf Arab dan terjemah berdasarkan urutan, hanya bila jumlahnya persis sama (minimal dua).
- * Bila bab memiliki Latin atau jumlah paragraf berbeda, kembalikan null: tampilan tidak dipasangkan agar tidak salah pasang.
- * Isi paragraf tidak diubah sama sekali.
+ * Pasangkan paragraf Arab dan terjemah HANYA bila keselarasannya dapat diverifikasi dari penomoran terjemah
+ * (misalnya nomor ayat pada Tafsir Jalalain). Jumlah paragraf yang sama saja tidak cukup untuk memasangkan.
+ *  - Pola A: setiap terjemah bernomor 1, 2, 3, ... sejajar dengan paragraf Arab ke-1, 2, 3, ...
+ *  - Pola B: paragraf pertama terjemah adalah judul tanpa nomor (misalnya "Shad Ayat 1-88"), sisanya bernomor sesuai urutan.
+ *    Judul itu bukan terjemah paragraf Arab pertama (basmalah), jadi ditandai heading dan tidak dilipat.
+ * Selain itu, atau bila bab memiliki Latin, kembalikan null. Isi paragraf tidak diubah.
  */
 export function pairParagraphs(chapter) {
   if (chapter.latin) return null;
   const arabic = splitParagraphs(chapter.arabic);
   const translation = splitParagraphs(chapter.translation);
   if (arabic.length < 2 || arabic.length !== translation.length) return null;
-  return arabic.map((paragraph, index) => ({ arabic: paragraph, translation: translation[index] }));
+  const direct = translation.every((paragraph, index) => leadingNumber(paragraph) === index + 1);
+  const withHeading = leadingNumber(translation[0]) === null && translation.slice(1).every((paragraph, index) => leadingNumber(paragraph) === index + 1);
+  if (!direct && !withHeading) return null;
+  return arabic.map((paragraph, index) => ({ arabic: paragraph, translation: translation[index], heading: withHeading && index === 0 }));
 }
 const UNPAIRED_VIEWS = ['both', 'arabic', 'translation'];
 /** Tentukan mode tampilan bab dan pilihan yang ditawarkan, berdasarkan preferensi tersimpan. */
@@ -75,7 +82,7 @@ export function resolveView(chapter, prefs = {}) {
 export function buildChapterQueue(chapter, view = 'both') {
   const pairs = view === 'fold' ? pairParagraphs(chapter) : null;
   if (pairs) {
-    return pairs.map((pair, index) => ({ kind: 'pair', arabic: pair.arabic, translation: pair.translation, size: pair.arabic.length + 120, first: index === 0, last: index === pairs.length - 1 }));
+    return pairs.map((pair, index) => ({ kind: 'pair', heading: pair.heading, arabic: pair.arabic, translation: pair.translation, size: pair.arabic.length + 120, first: index === 0, last: index === pairs.length - 1 }));
   }
   const queue = [];
   [['arabic', chapter.arabic], ['latin', chapter.latin], ['translation', chapter.translation]]
@@ -230,6 +237,8 @@ export function mountLocalKitabLibrary() {
     .local-kitab-pair .local-kitab-arabic{margin:6px 0 4px}
     .local-kitab-fold{min-height:40px;padding:6px 12px;border:1px solid #d8c9a8;border-radius:10px;background:#f0eadb;color:#34523f;font-size:12px;font-weight:600;font-family:inherit}
     .local-kitab-fold-body{margin-top:6px;padding:4px 12px;border-right:3px solid #c9a95e;background:rgba(201,169,94,.08)}
+    .local-kitab-fold-title{margin:4px 0 0;text-align:center;font-size:15px;font-weight:700;color:#174532}
+    body.theme-dark .local-kitab-fold-title{color:#f4e5bd}
     body.theme-dark .local-kitab-pair{border-color:#465a49}
     body.theme-dark .local-kitab-viewbar button,body.theme-dark .local-kitab-fold{background:#304337;color:#eee4d0;border-color:#60745f}
     body.theme-dark .local-kitab-viewbar button[aria-pressed="true"]{background:#174a36;color:#fff7e5;border-color:#9a7a40}
@@ -347,6 +356,13 @@ export function mountLocalKitabLibrary() {
     const queue = buildChapterQueue(chapter, view === 'classic' ? 'both' : view);
     foldSetters = [];
     const renderPair = (item, container) => {
+      if (item.heading) {
+        const head = element('div', 'local-kitab-pair local-kitab-pair-head');
+        head.append(element('p', 'local-kitab-fold-title', item.translation));
+        head.append(element('p', 'local-kitab-arabic', item.arabic));
+        container.append(head);
+        return;
+      }
       const card = element('div', 'local-kitab-pair');
       card.append(element('p', 'local-kitab-arabic', item.arabic));
       const toggle = element('button', 'local-kitab-fold', 'Lihat terjemah');
