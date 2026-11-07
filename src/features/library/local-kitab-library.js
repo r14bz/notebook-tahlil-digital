@@ -51,24 +51,56 @@ export function chunkText(text, target = CHUNK_TARGET_CHARS) {
   });
 }
 /** Susun antrean render satu bab: Arab, Latin, lalu terjemahan, dengan urutan asli. */
-export function buildChapterQueue(chapter) {
+export const splitParagraphs = text => String(text || '').split(/\n{2,}/).filter(paragraph => paragraph.trim());
+/**
+ * Pasangkan paragraf Arab dan terjemah berdasarkan urutan, hanya bila jumlahnya persis sama (minimal dua).
+ * Bila bab memiliki Latin atau jumlah paragraf berbeda, kembalikan null: tampilan tidak dipasangkan agar tidak salah pasang.
+ * Isi paragraf tidak diubah sama sekali.
+ */
+export function pairParagraphs(chapter) {
+  if (chapter.latin) return null;
+  const arabic = splitParagraphs(chapter.arabic);
+  const translation = splitParagraphs(chapter.translation);
+  if (arabic.length < 2 || arabic.length !== translation.length) return null;
+  return arabic.map((paragraph, index) => ({ arabic: paragraph, translation: translation[index] }));
+}
+const UNPAIRED_VIEWS = ['both', 'arabic', 'translation'];
+/** Tentukan mode tampilan bab dan pilihan yang ditawarkan, berdasarkan preferensi tersimpan. */
+export function resolveView(chapter, prefs = {}) {
+  if (pairParagraphs(chapter)) return { options: ['fold', 'classic'], view: prefs.paired === 'classic' ? 'classic' : 'fold' };
+  if (chapter.arabic && chapter.translation) return { options: UNPAIRED_VIEWS, view: UNPAIRED_VIEWS.includes(prefs.unpaired) ? prefs.unpaired : 'both' };
+  return { options: [], view: 'both' };
+}
+/** Susun antrean render satu bab. view: 'fold' (berpasangan, terjemah dilipat), 'both', 'arabic', 'translation'. */
+export function buildChapterQueue(chapter, view = 'both') {
+  const pairs = view === 'fold' ? pairParagraphs(chapter) : null;
+  if (pairs) {
+    return pairs.map((pair, index) => ({ kind: 'pair', arabic: pair.arabic, translation: pair.translation, size: pair.arabic.length + 120, first: index === 0, last: index === pairs.length - 1 }));
+  }
   const queue = [];
-  [['arabic', chapter.arabic], ['latin', chapter.latin], ['translation', chapter.translation]].forEach(([kind, text]) => {
-    const chunks = chunkText(text);
-    chunks.forEach((chunk, index) => queue.push({ kind, chunk, first: index === 0, last: index === chunks.length - 1 }));
-  });
+  [['arabic', chapter.arabic], ['latin', chapter.latin], ['translation', chapter.translation]]
+    .filter(([kind]) => view === 'arabic' ? kind !== 'translation' : view === 'translation' ? kind === 'translation' : true)
+    .forEach(([kind, text]) => {
+      const chunks = chunkText(text);
+      chunks.forEach((chunk, index) => queue.push({ kind, chunk, first: index === 0, last: index === chunks.length - 1 }));
+    });
   return queue;
 }
 /** Jumlah item antrean yang dirender dalam satu gelombang (minimal satu). */
 export function planBatch(queue, budget = BATCH_BUDGET_CHARS) {
   let count = 0;
   let used = 0;
-  while (count < queue.length && (count === 0 || used + queue[count].chunk.length <= budget)) {
-    used += queue[count].chunk.length;
+  const sizeOf = item => item.size ?? item.chunk.length;
+  while (count < queue.length && (count === 0 || used + sizeOf(queue[count]) <= budget)) {
+    used += sizeOf(queue[count]);
     count += 1;
   }
   return count;
 }
+const VIEW_PREF_KEY = 'e-moeslife:kitab-view:v1';
+const readViewPrefs = () => { try { return JSON.parse(localStorage.getItem(VIEW_PREF_KEY) || '{}') || {}; } catch { return {}; } };
+const writeViewPref = (name, value) => { try { localStorage.setItem(VIEW_PREF_KEY, JSON.stringify({ ...readViewPrefs(), [name]: value })); } catch { /* penyimpanan tidak tersedia */ } };
+const VIEW_LABELS = { fold: 'Lipat terjemah', classic: 'Seperti semula', both: 'Keduanya', arabic: 'Arab saja', translation: 'Terjemah saja' };
 const manualKey = slug => 'e-moeslife:kitab-manual:v1:' + String(slug || 'kitab-lain').replace(/[^a-z0-9_-]/gi, '-');
 /**
  * Salinan lokal hasil editor hanya dipakai bila lebih baru daripada file naskah di data/.
@@ -190,6 +222,18 @@ export function mountLocalKitabLibrary() {
     .local-kitab-join-prev{margin-top:0!important}
     .local-kitab-join-next{margin-bottom:0!important}
     .local-kitab-sentinel{text-align:center;margin:18px 0 0}
+    .local-kitab-viewbar{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+    .local-kitab-viewbar button{min-height:40px;padding:6px 11px;border:1px solid #d8c9a8;border-radius:10px;background:#f0eadb;color:#34523f;font-size:12px;font-weight:600;font-family:inherit}
+    .local-kitab-viewbar button[aria-pressed="true"]{background:#174a36;color:#fff7e5;border-color:#9a7a40}
+    .local-kitab-viewbar .local-kitab-openall{margin-left:auto}
+    .local-kitab-pair{padding:6px 0 12px;border-bottom:1px solid #e4dac5}
+    .local-kitab-pair .local-kitab-arabic{margin:6px 0 4px}
+    .local-kitab-fold{min-height:40px;padding:6px 12px;border:1px solid #d8c9a8;border-radius:10px;background:#f0eadb;color:#34523f;font-size:12px;font-weight:600;font-family:inherit}
+    .local-kitab-fold-body{margin-top:6px;padding:4px 12px;border-right:3px solid #c9a95e;background:rgba(201,169,94,.08)}
+    body.theme-dark .local-kitab-pair{border-color:#465a49}
+    body.theme-dark .local-kitab-viewbar button,body.theme-dark .local-kitab-fold{background:#304337;color:#eee4d0;border-color:#60745f}
+    body.theme-dark .local-kitab-viewbar button[aria-pressed="true"]{background:#174a36;color:#fff7e5;border-color:#9a7a40}
+    body.theme-dark .local-kitab-fold-body{background:rgba(201,169,94,.12)}
     .local-kitab-actions{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
     .local-kitab-actions button,.local-kitab-open{border:1px solid #d8c9a8;border-radius:9px;padding:9px 12px;background:#f0eadb;color:#34523f;font-size:12px}
     .local-kitab-actions .primary,.local-kitab-open{background:#174a36;color:#fff7e5;border-color:#9a7a40}
@@ -229,6 +273,8 @@ export function mountLocalKitabLibrary() {
   let activeIndex = 0;
   let activeLocalCopyAt = '';
   let stopLazy = () => {};
+  let foldOpenAll = false;
+  let foldSetters = [];
   function closeReader() {
     stopLazy();
     document.body.classList.remove('local-kitab-active');
@@ -297,9 +343,30 @@ export function mountLocalKitabLibrary() {
     paper.append(list, actions, element('p', 'local-kitab-intro', 'Naskah asli di GitHub tidak diubah. Perubahan editor tersimpan sebagai salinan lokal; unduh JSON untuk memperbarui file sumber.'));
   }
   // Bab besar (ratusan ribu karakter) dirender bertahap saat pembaca menggulir, agar tidak membekukan HP.
-  function renderChapterBody(chapter) {
-    const queue = buildChapterQueue(chapter);
+  function renderChapterBody(chapter, view = 'both') {
+    const queue = buildChapterQueue(chapter, view === 'classic' ? 'both' : view);
+    foldSetters = [];
+    const renderPair = (item, container) => {
+      const card = element('div', 'local-kitab-pair');
+      card.append(element('p', 'local-kitab-arabic', item.arabic));
+      const toggle = element('button', 'local-kitab-fold', 'Lihat terjemah');
+      toggle.type = 'button';
+      toggle.setAttribute('aria-expanded', 'false');
+      card.append(toggle);
+      let body = null;
+      const setOpen = open => {
+        if (open && !body) { body = element('div', 'local-kitab-fold-body'); appendMixedTranslation(body, item.translation); card.append(body); }
+        if (body) body.hidden = !open;
+        toggle.textContent = open ? 'Sembunyikan terjemah' : 'Lihat terjemah';
+        toggle.setAttribute('aria-expanded', String(open));
+      };
+      toggle.addEventListener('click', () => setOpen(!body || body.hidden));
+      foldSetters.push(setOpen);
+      if (foldOpenAll) setOpen(true);
+      container.append(card);
+    };
     const renderItem = (item, container) => {
+      if (item.kind === 'pair') { renderPair(item, container); return; }
       if (item.kind === 'translation') { appendMixedTranslation(container, item.chunk); return; }
       const node = element('p', item.kind === 'arabic' ? 'local-kitab-arabic' : 'local-kitab-latin', item.chunk);
       if (!item.first) node.classList.add('local-kitab-join-prev');
@@ -314,13 +381,14 @@ export function mountLocalKitabLibrary() {
     let observer = null;
     const nearViewport = () => sentinel.getBoundingClientRect().top < window.innerHeight + 1500;
     const fill = () => {
+      if (stopLazy !== teardown) return; // callback usang dari bab sebelumnya: abaikan
       frame = 0;
       while (queue.length && nearViewport()) {
         const fragment = document.createDocumentFragment();
         queue.splice(0, planBatch(queue)).forEach(item => renderItem(item, fragment));
         paper.insertBefore(fragment, sentinel);
       }
-      if (!queue.length) stopLazy();
+      if (!queue.length) teardown();
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(fill); };
     if (typeof IntersectionObserver === 'function') {
@@ -329,7 +397,7 @@ export function mountLocalKitabLibrary() {
     } else {
       window.addEventListener('scroll', schedule, { passive: true });
     }
-    stopLazy = () => {
+    function teardown() {
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;
       observer?.disconnect();
@@ -337,7 +405,8 @@ export function mountLocalKitabLibrary() {
       sentinel.remove();
       queue.length = 0;
       stopLazy = () => {};
-    };
+    }
+    stopLazy = teardown;
     schedule();
   }
   function renderChapter(index) {
@@ -348,7 +417,34 @@ export function mountLocalKitabLibrary() {
     chapterNav.hidden = false;
     paper.replaceChildren(element('h2', '', chapter.title));
     stopLazy();
-    renderChapterBody(chapter);
+    foldOpenAll = false;
+    const resolved = resolveView(chapter, readViewPrefs());
+    if (resolved.options.length) {
+      const bar = element('div', 'local-kitab-viewbar');
+      resolved.options.forEach(option => {
+        const choice = element('button', '', VIEW_LABELS[option]);
+        choice.type = 'button';
+        choice.setAttribute('aria-pressed', String(option === resolved.view));
+        choice.addEventListener('click', () => {
+          if (option === resolved.view) return;
+          writeViewPref(resolved.options.includes('fold') ? 'paired' : 'unpaired', option);
+          renderChapter(index);
+        });
+        bar.append(choice);
+      });
+      if (resolved.view === 'fold') {
+        const openAll = element('button', 'local-kitab-openall', 'Buka semua');
+        openAll.type = 'button';
+        openAll.addEventListener('click', () => {
+          foldOpenAll = !foldOpenAll;
+          foldSetters.forEach(setOpen => setOpen(foldOpenAll));
+          openAll.textContent = foldOpenAll ? 'Tutup semua' : 'Buka semua';
+        });
+        bar.append(openAll);
+      }
+      paper.append(bar);
+    }
+    renderChapterBody(chapter, resolved.view);
     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
     }

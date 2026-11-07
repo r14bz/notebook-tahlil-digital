@@ -15,7 +15,7 @@ import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from 
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
 import { getZoneForProvince, shouldRetryRefresh } from '../src/features/prayer/prayer-times.js';
-import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch } from '../src/features/library/local-kitab-library.js';
+import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch, pairParagraphs, resolveView, splitParagraphs } from '../src/features/library/local-kitab-library.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -552,4 +552,60 @@ test('prayer schedule refresh retries after a date change without hammering the 
   assert.equal(shouldRetryRefresh({ ...base, lastAttemptAt: 1_000_000 - 30000 }), true, 'ulang setelah jeda');
   assert.equal(shouldRetryRefresh({ ...base, refreshing: true }), false, 'tidak tumpang tindih');
   assert.equal(shouldRetryRefresh({ ...base, tickDateKey: '2026-11-07' }), false, 'tanggal sama tidak perlu muat ulang');
+});
+
+test('paragraphs pair up only when counts match exactly, without touching the text', () => {
+  const chapter = { arabic: 'a1 \n\na2\n\n\na3', translation: 't1\n\nt2\n\nt3', latin: '' };
+  assert.deepEqual(pairParagraphs(chapter), [
+    { arabic: 'a1 ', translation: 't1' }, { arabic: 'a2', translation: 't2' }, { arabic: 'a3', translation: 't3' }
+  ]);
+  assert.equal(pairParagraphs({ ...chapter, translation: 't1\n\nt2' }), null, 'jumlah berbeda tidak dipasangkan');
+  assert.equal(pairParagraphs({ arabic: 'a', translation: 't', latin: '' }), null, 'satu paragraf tidak perlu dilipat');
+  assert.equal(pairParagraphs({ ...chapter, latin: 'ada latin' }), null, 'bab dengan Latin tidak dipasangkan');
+  assert.equal(pairParagraphs({ arabic: '', translation: 't1\n\nt2', latin: '' }), null);
+});
+
+test('chapter view resolves to fold when pairable and honours saved preferences', () => {
+  const pairable = { arabic: 'a\n\nb', translation: 'x\n\ny', latin: '' };
+  const unpaired = { arabic: 'a\n\nb', translation: 'x', latin: '' };
+  assert.deepEqual(resolveView(pairable, {}), { options: ['fold', 'classic'], view: 'fold' });
+  assert.equal(resolveView(pairable, { paired: 'classic' }).view, 'classic');
+  assert.equal(resolveView(pairable, { paired: 'tidak-dikenal' }).view, 'fold');
+  assert.deepEqual(resolveView(unpaired, {}), { options: ['both', 'arabic', 'translation'], view: 'both' });
+  assert.equal(resolveView(unpaired, { unpaired: 'arabic' }).view, 'arabic');
+  assert.equal(resolveView(unpaired, { unpaired: 'fold' }).view, 'both', 'pilihan lipat tidak berlaku bila tidak berpasangan');
+  assert.deepEqual(resolveView({ arabic: 'a', translation: '', latin: '' }, {}), { options: [], view: 'both' });
+});
+
+test('fold queue yields one item per pair and the other views filter fields', () => {
+  const chapter = { arabic: 'a\n\nb\n\nc', translation: 'x\n\ny\n\nz', latin: '' };
+  const fold = buildChapterQueue(chapter, 'fold');
+  assert.deepEqual(fold.map(item => item.kind), ['pair', 'pair', 'pair']);
+  assert.deepEqual(fold.map(item => item.translation), ['x', 'y', 'z']);
+  assert.equal(fold.filter(item => item.first).length, 1);
+  assert.equal(fold.filter(item => item.last).length, 1);
+  assert.deepEqual(buildChapterQueue(chapter, 'arabic').map(item => item.kind), ['arabic']);
+  assert.deepEqual(buildChapterQueue(chapter, 'translation').map(item => item.kind), ['translation']);
+  assert.deepEqual(buildChapterQueue(chapter, 'both').map(item => item.kind), ['arabic', 'translation']);
+  // Bab yang tidak dapat dipasangkan jatuh kembali ke antrean biasa meski diminta 'fold'.
+  assert.deepEqual(buildChapterQueue({ arabic: 'a\n\nb', translation: 'x', latin: '' }, 'fold').map(item => item.kind), ['arabic', 'translation']);
+  assert.equal(planBatch(fold), 3, 'pasangan kecil dirender sekaligus');
+  assert.equal(planBatch([{ kind: 'pair', size: 9000 }, { kind: 'pair', size: 10 }]), 1, 'ukuran pasangan memakai field size');
+});
+
+test('Jalalain pairs line up: numbered translations match their paragraph position in every pairable chapter', () => {
+  const document = JSON.parse(readFileSync('data/jalalain.json', 'utf8').replace(/^\uFEFF/, ''));
+  let checked = 0;
+  for (const chapter of document.chapters) {
+    const pairs = pairParagraphs({ arabic: chapter.arabic, translation: chapter.translation, latin: '' });
+    if (!pairs) continue;
+    pairs.forEach((pair, index) => {
+      const number = pair.translation.match(/^\s*(\d+)[.)]\s/);
+      if (!number) return;
+      checked += 1;
+      assert.equal(Number(number[1]), index, 'jalalain ' + chapter.id + ' paragraf ' + index);
+    });
+    assert.equal(pairs.map(pair => pair.arabic).join('|'), splitParagraphs(chapter.arabic).join('|'), 'teks Arab tetap utuh');
+  }
+  assert.ok(checked > 1000, 'harus benar-benar menguji banyak pasangan (diuji: ' + checked + ')');
 });
