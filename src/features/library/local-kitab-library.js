@@ -181,9 +181,6 @@ export function mountLocalKitabLibrary() {
     .local-kitab-paper{padding:clamp(18px,4vw,34px);border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;color:#263b2e;min-height:55vh}
     .local-kitab-paper[data-mode="chapter"]{padding-bottom:112px}
     .local-kitab-paper h2{margin:0 0 8px;color:#174532;font:700 24px 'Amiri',serif}
-    .local-kitab-translation-shortcut{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:5;display:block;margin:0 0 14px auto;padding:8px 13px;border:1px solid #c8b27f;border-radius:999px;background:#174a36;color:#fff7e5;font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(35,45,32,.16)}
-    .local-kitab-translation-shortcut[hidden]{display:none!important}
-    body.theme-dark .local-kitab-translation-shortcut{background:#d6bd7c;color:#1d3026;border-color:#d6bd7c}
     .local-kitab-intro{color:#827865;font-size:12px;line-height:1.7}
     .local-kitab-entry{padding:18px 0;border-bottom:1px solid #e4dac5}
     .local-kitab-entry h3{font-size:15px;color:#174532;margin:0 0 12px}
@@ -232,7 +229,6 @@ export function mountLocalKitabLibrary() {
   let activeIndex = 0;
   let activeLocalCopyAt = '';
   let stopLazy = () => {};
-  let jumpToTranslation = () => {};
   function closeReader() {
     stopLazy();
     document.body.classList.remove('local-kitab-active');
@@ -303,25 +299,12 @@ export function mountLocalKitabLibrary() {
   // Bab besar (ratusan ribu karakter) dirender bertahap saat pembaca menggulir, agar tidak membekukan HP.
   function renderChapterBody(chapter) {
     const queue = buildChapterQueue(chapter);
-    let translationAnchor = null;
     const renderItem = (item, container) => {
-      if (item.kind === 'translation') {
-        if (!translationAnchor) {
-          translationAnchor = element('span', 'local-kitab-translation-anchor');
-          translationAnchor.setAttribute('aria-hidden', 'true');
-          container.append(translationAnchor);
-        }
-        appendMixedTranslation(container, item.chunk);
-        return;
-      }
+      if (item.kind === 'translation') { appendMixedTranslation(container, item.chunk); return; }
       const node = element('p', item.kind === 'arabic' ? 'local-kitab-arabic' : 'local-kitab-latin', item.chunk);
       if (!item.first) node.classList.add('local-kitab-join-prev');
       if (!item.last) node.classList.add('local-kitab-join-next');
       container.append(node);
-    };
-    jumpToTranslation = () => {
-      while (queue.length && !translationAnchor) renderItem(queue.shift(), paper);
-      if (translationAnchor) translationAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
     queue.splice(0, planBatch(queue)).forEach(item => renderItem(item, paper));
     if (!queue.length) return;
@@ -364,24 +347,7 @@ export function mountLocalKitabLibrary() {
     paper.dataset.mode = 'chapter';
     chapterNav.hidden = false;
     paper.replaceChildren(element('h2', '', chapter.title));
-    jumpToTranslation = () => {};
     stopLazy();
-    const shortcut = element('button', 'local-kitab-translation-shortcut', 'Terjemahan ↓');
-    shortcut.type = 'button';
-    shortcut.hidden = !(chapter.arabic && chapter.translation);
-    let showingTranslation = false;
-    shortcut.addEventListener('click', () => {
-      if (!showingTranslation) {
-        jumpToTranslation();
-        shortcut.textContent = 'Kembali ke Arab ↑';
-      } else {
-        const arabicStart = paper.querySelector('.local-kitab-arabic');
-        (arabicStart || paper.querySelector('h2'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        shortcut.textContent = 'Terjemahan ↓';
-      }
-      showingTranslation = !showingTranslation;
-    });
-    paper.append(shortcut);
     renderChapterBody(chapter);
     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
