@@ -15,7 +15,7 @@ Dokumen ini adalah ringkasan teknis dan status proyek untuk agent AI/developer y
 
 **Status saat handoff:** commit `cc3618f` berstatus Vercel **Success**. Ini hanya memastikan deployment selesai; perubahan tampilan terbaru tetap perlu diuji langsung oleh pemilik proyek di preview/perangkat.
 
-**Pembaruan setelah audit kode (7 November 2026):** branch ini memuat perbaikan sesudah `cc3618f` (lihat bagian 12). Jalankan `git log` untuk SHA terbaru. Status Vercel untuk commit tersebut dan hasil uji perangkat belum dicatat di sini; isi setelah diverifikasi pemilik proyek.
+**Pembaruan setelah audit kode (7 November 2026):** branch ini memuat perbaikan sesudah `cc3618f` (lihat bagian 12). Commit kode terakhir sebelum pembaruan README ini: `bfbc700` (tampilan kitab), disusul `1a275b0` (`CACHE_NAME` menjadi `v16`). `npm test` di repo lokal pemilik pada `bfbc700`: **35 lulus, 0 gagal**. Status Vercel untuk commit tersebut dan hasil uji di perangkat belum dicatat di sini; isi setelah diverifikasi pemilik proyek.
 
 ## 2. Gambaran proyek
 
@@ -43,6 +43,11 @@ Aplikasi web menggunakan HTML, CSS, dan JavaScript native berbasis ES modules. P
 - Tersedia editor naskah dan ekspor/unduh JSON untuk membantu pemilik menyusun manuskrip sendiri. Penyimpanan editor ditunda sekitar 800 ms setelah berhenti mengetik dan dipaksa saat keluar dari editor atau aplikasi disembunyikan.
 - Salinan lokal hasil editor (localStorage `e-moeslife:kitab-manual:v1:<slug>`) hanya dipakai jika waktu edit terakhirnya lebih baru daripada `updatedAt` pada file di `data/`. Jika naskah di server lebih baru, salinan lokal diarsipkan ke kunci `...:backup` (tidak dihapus) dan naskah server dipakai. Daftar bab menampilkan pemberitahuan dan tombol "Pakai naskah asli" saat salinan lokal sedang aktif.
 - Bab besar dirender bertahap saat pembaca menggulir (potongan sekitar 4.000 karakter pada batas paragraf, gelombang sekitar 8.000 karakter). Penggabungan potongan harus selalu sama persis dengan teks sumber; ini diuji pada seluruh file `data/`. Pencarian "cari di halaman" milik browser hanya menemukan teks yang sudah dimuat.
+- **Mode tampilan bab** (dipilih dan diingat per jenis bab di localStorage `e-moeslife:kitab-view:v1`; teks naskah tidak pernah diubah):
+  - *Lipat terjemah* (bawaan untuk bab yang memenuhi syarat): teks Arab tampil per paragraf dengan tombol "Lihat terjemah"; terjemah baru dibuat saat diketuk; ada tombol "Buka semua"; pilihan "Seperti semula" mengembalikan tampilan lama. Judul bab (misalnya "Shad Ayat 1-88") tampil sebagai judul di atas basmalah dan **tidak** dipasangkan dengan basmalah.
+  - **Syarat pemasangan:** paragraf Arab dan terjemah dipasangkan hanya bila jumlahnya sama, minimal dua, tidak ada field Latin, **dan** keselarasan dapat diverifikasi dari penomoran terjemah (pola `1., 2., 3.` sejajar dengan urutan paragraf, atau satu judul tanpa nomor di paragraf pertama). Jumlah paragraf yang sama saja **tidak cukup**: percobaan pertama yang hanya mencocokkan jumlah memasangkan basmalah dengan judul surah. Saat ini yang memenuhi syarat adalah 77 bab Tafsir Jalalain; kitab lain tidak dipasangkan.
+  - Bab yang tidak dapat dipasangkan menawarkan *Keduanya* (bawaan), *Arab saja*, dan *Terjemah saja*.
+  - Jangan melonggarkan syarat pemasangan atau memasangkan berdasarkan urutan saja. Pemasangan kitab hadis (Shahih Muslim, Bulughul Maram, dan lainnya) membutuhkan data pasangan eksplisit yang diperiksa pemilik (rencana: field opsional `items`), bukan tebakan otomatis.
 - Navigasi bab mengambang: Daftar Bab, Bab Sebelumnya, Bab Selanjutnya.
 - Panel navigasi saat ini menggunakan latar solid agar mudah dibaca; ruang bawah halaman dipertahankan supaya navigasi tidak menutupi teks.
 - Kitab lokal yang sudah terdaftar di katalog antara lain Safinah An-Najah, Aqidatul Awam, Arba'in Nawawi, Bidayatul Hidayah, Bulughul Maram, Futuhul Ghaib, Fathul Izar, Tafsir Jalalain, Shahih Muslim, Muwatta Imam Malik, Fathul Qarib, Ta'lim Al-Muta'allim, Qurrotul Uyun, dan Al-Hikam. **Periksa folder `data/` untuk file aktual dan status kelengkapan masing-masing.**
@@ -111,6 +116,9 @@ Jaga modularitas. Hindari menumpuk seluruh logika kembali ke `src/app.js`.
 - Uji editor kitab: setelah menyunting dan kembali, pemberitahuan salinan lokal tampil; tombol "Pakai naskah asli" mengembalikan naskah server.
 - Uji offline: kitab yang pernah dibuka tetap terbaca tanpa internet, dan naskah JSON yang baru diunggah muncul saat online tanpa menaikkan `CACHE_NAME`.
 - Uji jadwal salat dengan lokasi di Kalimantan Selatan (WITA) dan Maluku/Maluku Utara (WIT).
+- Uji mode lipat terjemah pada Tafsir Jalalain bab Shad: judul di atas basmalah, kartu ayat 1 membuka terjemah "1. (Shaad)…", "Buka semua" dan "Seperti semula" berfungsi, tampilan mode gelap dan ukuran huruf small/normal/large terbaca.
+- Uji pilihan *Arab saja* / *Terjemah saja* / *Keduanya* pada bab panjang Shahih Muslim dan Bulughul Maram.
+- Uji hitung mundur dan jam salat saat jaringan dimatikan melewati pergantian hari (harus tampil "Memperbarui jadwal…" atau "Jadwal belum dapat dimuat", bukan jadwal kemarin).
 
 ### Pekerjaan lanjutan
 
@@ -199,7 +207,7 @@ Catatan: jangan menyimpulkan test suite lulus hanya karena deployment Vercel ber
 - Ahmad Sanusi API key (jika integrasi sementara masih dipakai) harus berada di environment variable server, bukan frontend atau APK.
 - Jangan mencetak atau meminta pemilik membagikan secret dalam chat, commit, atau log publik.
 - Periksa konfigurasi service worker setelah mengubah path/aset agar cache lama tidak menyajikan file usang.
-- Kebijakan cache service worker: `data/*`, `etahlil-pembagian-halaman-dzikir.json`, dan `src/data/dzikir-overrides.json` memakai network-first (batas tunggu 4 detik, lalu cache). Seluruh aset lain (JS, CSS, gambar) tetap cache-first, sehingga **naikkan `CACHE_NAME` di `service-worker.js` setiap kali file JS/CSS/aset berubah**. Nilai saat ini: `e-moeslife-shell-v14`.
+- Kebijakan cache service worker: `data/*`, `etahlil-pembagian-halaman-dzikir.json`, dan `src/data/dzikir-overrides.json` memakai network-first (batas tunggu 4 detik, lalu cache). Seluruh aset lain (JS, CSS, gambar) tetap cache-first, sehingga **naikkan `CACHE_NAME` di `service-worker.js` setiap kali file JS/CSS/aset berubah**. Nilai saat ini: `e-moeslife-shell-v16`.
 
 ## 11. Instruksi awal untuk agent penerus
 
@@ -214,7 +222,7 @@ Mulai dengan:
 
 ## 12. Catatan audit kode (7 November 2026)
 
-Audit dilakukan pada salinan zip branch ini. `npm test` pada salinan kerja audit: **29 lulus, 0 gagal**. Hasil ini belum menggantikan uji di perangkat atau status Vercel.
+Audit dilakukan pada salinan zip branch ini. `npm test` pada commit `bfbc700` di repo lokal pemilik: **35 lulus, 0 gagal**. Hasil ini belum menggantikan uji di perangkat atau status Vercel.
 
 ### Sudah diperbaiki
 
@@ -223,17 +231,25 @@ Audit dilakukan pada salinan zip branch ini. `npm test` pada salinan kerja audit
 - Pindah bab di pembaca kitab lokal tidak menggulir ke atas. Kini selalu mulai dari atas.
 - Service worker menyajikan data kitab dan file layout dari cache tanpa pernah memeriksa pembaruan. Kini network-first untuk file tersebut.
 - Salinan lokal editor menimpa file `data/` selamanya, dan editor menyimpan seluruh kitab di setiap ketikan. Kini naskah server yang lebih baru menang, dan penyimpanan ditunda.
-- Bab sangat besar dirender sebagai satu paragraf (Shahih Muslim "Haji": sekitar 312 ribu karakter Arab dan 403 ribu terjemahan). Kini dirender bertahap.
+- Bab sangat besar dirender sebagai satu paragraf (Shahih Muslim "Haji": sekitar 312 ribu karakter Arab dan 403 ribu terjemahan). Kini dirender bertahap; callback pemuatan usang dari bab sebelumnya diabaikan.
+- Jadwal salat basi: tanggal aktif sebelumnya ditandai sebelum jadwal berhasil dimuat. Kini ditandai setelah berhasil; jam tetap berjalan, tampil "Memperbarui jadwal…", dan percobaan ulang dibatasi sekali per 30 detik (`shouldRetryRefresh()`).
+- Versi aplikasi ditulis di tiga tempat. Test `tests/version-sync.test.js` kini gagal bila `package.json`, `src/services/app-update.js`, dan workflow APK tidak sama.
+- Tampilan Arab dan terjemah sulit dicocokkan pada bab panjang. Ditambahkan mode lipat terjemah dan pilihan Arab saja/Terjemah saja (lihat bagian 3). Pemasangan hanya bila terverifikasi lewat penomoran; kekeliruan awal (basmalah berpasangan dengan judul surah) sudah diperbaiki dan dijaga tes pada seluruh bab Jalalain.
 
 ### Masalah terbuka
 
-- Jika pembaruan jadwal salat gagal saat pergantian hari, jadwal kemarin tetap tampil (`activeDateKey` diperbarui sebelum pembaruan berhasil). Hitung mundur setelah Isya memakai waktu Subuh hari ini, bukan besok (selisih beberapa menit).
-- `CURRENT_VERSION` di `src/services/app-update.js` dan `versionCode 2`/`versionName 2.0.0` di `.github/workflows/build-android-apk.yml` ditulis keras dan harus diubah manual setiap rilis. Pengecekan checksum APK belum ada (target roadmap tahap 6).
-- Tidak ada `package-lock.json`; build memakai `npm install` sehingga versi dependensi tidak terkunci.
-- `src/features/reader/audio.js` tidak diimpor oleh `app.js` (audio pembaca klasik sudah dihilangkan) tetapi masih ada di precache service worker dan test. Hapus hanya setelah pemilik menyetujui.
+- Hitung mundur setelah Isya memakai waktu Subuh hari ini sebagai perkiraan, bukan Subuh besok (selisih sekitar satu menit).
+- Rilis APK tetap membutuhkan kenaikan versi manual di `package.json`, `src/services/app-update.js`, dan `.github/workflows/build-android-apk.yml` (`versionCode` harus naik setiap rilis); test sinkron versi hanya mengingatkan bila ada yang terlewat. Pengecekan checksum APK belum ada (target roadmap tahap 6).
+- `package-lock.json` sudah ada, tetapi workflow masih memakai `npm install`; pertimbangkan `npm ci` agar versi dependensi terkunci.
+- `src/features/reader/audio.js` tidak diimpor oleh `app.js` (audio pembaca klasik sudah dihilangkan) tetapi masih ada di precache service worker, test, dan langkah verifikasi CI. Jangan dihapus sebelum pemilik menyetujui dan CI diperbarui.
 - `/api/kitab` memakai path absolut sehingga tidak berfungsi di APK (tanpa server). Aman selama seluruh kitab lokal; hapus bersama API sementara.
-- Struktur data yang perlu keputusan pemilik: Aqidatul Awam hanya 3 bagian (nazham Arab, terjemah, dan syarah sekitar 117 ribu karakter terpisah); Bidayatul Hidayah memiliki 16 dari 18 bab tanpa teks Arab; Qurrotul Uyun memiliki 2 bab tanpa Arab. Pembaca menampilkan seluruh Arab dahulu lalu seluruh terjemahan; belum ada pemasangan per hadis.
-- File JSON dari editor berawalan BOM. Browser menanganinya, tetapi `JSON.parse` di Node gagal kecuali BOM dibuang (skrip validasi sudah membuangnya).
+- **Keputusan pemilik tentang naskah (bukan bug, jangan "diperbaiki" tanpa persetujuan):**
+  - Aqidatul Awam sengaja dibagi tiga bagian terpisah (nazham Arab, terjemah nazham, syarah).
+  - Bidayatul Hidayah: hanya bab 1 dan 14 yang memiliki teks Arab; naskah Arab lengkap belum ditemukan pemilik.
+  - Qurrotul Uyun: bab 29 dan 30 belum memiliki teks Arab karena naskah aslinya belum ditemukan.
+  - Jangan mengisi atau menghasilkan teks Arab tanpa sumber yang diverifikasi pemilik. Saat naskah tersedia, isi field `arabic` pada bab terkait lewat editor; pembaca menampilkannya otomatis.
+- Kitab hadis (Shahih Muslim, Bulughul Maram, Al-Hikam, Arba'in, dan lainnya) belum memiliki pemasangan Arab–terjemah karena jumlah paragrafnya berbeda dan tidak bernomor. Rencana: uji kecil pada satu bab pendek untuk menyusun *saran* pasangan (jangkar: nama perawi, angka, istilah) yang diperiksa pemilik sebelum disimpan sebagai data eksplisit.
+- File JSON dari editor berawalan BOM. Browser menanganinya, tetapi `JSON.parse` di Node gagal kecuali BOM dibuang (skrip validasi dan tes sudah membuangnya).
 - Koordinat pengguna dikirim ke layanan pihak ketiga (bigdatacloud.net) untuk geocoding saat deteksi lokasi; pertimbangkan menyebutkannya di kebijakan privasi.
 - Data API jadwal salat disisipkan lewat `innerHTML` pada beberapa tempat; risiko rendah, tetapi sebaiknya diganti `textContent`.
 
@@ -256,4 +272,4 @@ Redaksi disclaimer yang disetujui pemilik proyek:
 - Tautan **“klik di sini”** membuka WhatsApp Developer pada nomor **089676707976** (format tautan internasional +6289676707976).
 - Disclaimer dimaksudkan tampil konsisten di seluruh halaman, termasuk halaman pembaca kitab lokal maupun API.
 - Perubahan disclaimer dipertahankan pada branch pengembangan dan tidak menjadi alasan untuk mengubah branch main atau production tanpa persetujuan pemilik.
-- **Shortcut lompat ke terjemahan belum diimplementasikan.** Percobaan sebelumnya mengubah struktur elemen pembacaan dan tata letak naskah; perubahan shortcut tersebut sudah dibatalkan. Jangan menganggap fitur shortcut tersedia atau memasangnya kembali dengan cara yang mengubah struktur/urutan/tata letak isi bacaan. Jika dikerjakan lagi kelak, pertahankan markup dan alur render naskah yang ada, lalu minta pemilik memvalidasi tampilan sebelum melanjutkan.
+- **Shortcut lompat ke terjemahan belum diimplementasikan.** Percobaan sebelumnya mengubah struktur elemen pembacaan dan tata letak naskah; perubahan shortcut tersebut sudah dibatalkan. Jangan menganggap fitur shortcut tersedia atau memasangnya kembali dengan cara yang mengubah struktur/urutan/tata letak isi bacaan. Jika dikerjakan lagi kelak, pertahankan markup dan alur render naskah yang ada, lalu minta pemilik memvalidasi tampilan sebelum melanjutkan. Catatan: mode *lipat terjemah* dan pilihan *Arab saja/Terjemah saja* (bagian 3) adalah fitur terpisah yang dipilih pemilik pada 7 November 2026; teks naskah tidak diubah dan "Seperti semula" selalu tersedia, tetapi validasi tampilannya di perangkat masih menunggu pemilik.
