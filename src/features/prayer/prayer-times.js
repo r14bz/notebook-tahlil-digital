@@ -215,6 +215,15 @@ function updateSky(scene, now, schedule) {
   banner.querySelector('.prayer-moon').style.opacity = scene === 'night' ? '1' : '0';
   banner.querySelector('.prayer-stars').style.opacity = scene === 'night' ? '1' : (scene === 'dawn' ? '.18' : '0');
 }
+const REFRESH_RETRY_MS = 30000;
+/**
+ * Putuskan apakah jadwal perlu dimuat ulang saat tanggal lokal berganti.
+ * Dibatasi satu percobaan per REFRESH_RETRY_MS agar jaringan yang gagal tidak dibanjiri permintaan tiap detik.
+ */
+export function shouldRetryRefresh({ tickDateKey, activeDateKey, refreshing, lastAttemptAt, now, retryMs = REFRESH_RETRY_MS }) {
+  if (tickDateKey === activeDateKey || refreshing) return false;
+  return !Number.isFinite(lastAttemptAt) || now - lastAttemptAt >= retryMs;
+}
 function renderClockOnly(location) {
   const now = new Date();
   const parts = localParts(now, location.timezone);
@@ -231,9 +240,7 @@ function updateClockAndCountdown(location, schedule) {
   const current = Number(parts.hour) * 60 + Number(parts.minute);
   const timeline = PRAYERS.map(item => ({ ...item, minutes: timeMinutes(schedule[item.key]) }));
   const next = timeline.find(item => item.minutes > current) || timeline[0];
-  let target = new Date(now);
-  if (next.minutes <= current) target.setDate(target.getDate() + 1);
-  const [hour, minute] = String(schedule[next.key] || '00:00').split(':').map(Number);
+  // Setelah Isya, hitungan ke Subuh memakai jam Subuh hari ini sebagai perkiraan (selisih harian hanya sekitar 1 menit).
   const delta = (next.minutes + (next.minutes <= current ? 1440 : 0) - current) * 60000 - Number(parts.second) * 1000;
   $('nextPrayerLabel').textContent = `Menuju ${next.label}`;
   $('nextPrayerCountdown').textContent = formatCountdown(delta);
@@ -251,20 +258,34 @@ export function initPrayerTimes() {
     if (saved?.provinsi && saved?.kabkota) state.location = { ...DEFAULT_LOCATION, ...saved };
   } catch {}
   let activeDateKey = '';
+  let refreshing = false;
+  let lastAttemptAt = Number.NaN;
   const refresh = async () => {
     const now = new Date();
+    lastAttemptAt = Date.now();
     const parts = localParts(now, state.location.timezone);
-    activeDateKey = `${parts.year}-${parts.month}-${parts.day}`;
+    const requestedDateKey = `${parts.year}-${parts.month}-${parts.day}`;
     const month = Number(parts.month), year = Number(parts.year), day = Number(parts.day);
     const data = await loadMonthlySchedule(state.location, year, month);
     const schedule = data.jadwal.find(item => Number(item.tanggal) === day);
     if (!schedule) throw new Error('Jadwal hari ini belum tersedia.');
+    activeDateKey = requestedDateKey; // hanya diperbarui setelah jadwal hari itu benar-benar termuat
     state.schedule = { ...schedule, timezone: state.location.timezone };
     renderTimes(schedule);
     const tick = () => {
       const tickParts = localParts(new Date(), state.location.timezone);
       const tickDateKey = `${tickParts.year}-${tickParts.month}-${tickParts.day}`;
-      if (tickDateKey !== activeDateKey) { refresh().catch(() => {}); return; }
+      if (tickDateKey !== activeDateKey) {
+        // Tanggal berganti: jam tetap berjalan, jadwal lama tidak ditampilkan sebagai jadwal hari ini.
+        renderClockOnly(state.location);
+        $('nextPrayerLabel').textContent = 'Memperbarui jadwal…';
+        $('nextPrayerCountdown').textContent = '--:--:--';
+        if (shouldRetryRefresh({ tickDateKey, activeDateKey, refreshing, lastAttemptAt, now: Date.now() })) {
+          refreshing = true;
+          refresh().catch(() => { $('nextPrayerLabel').textContent = 'Jadwal belum dapat dimuat'; }).finally(() => { refreshing = false; });
+        }
+        return;
+      }
       const scene = updateClockAndCountdown(state.location, state.schedule) || 'day';
       updateSky(scene, new Date(), state.schedule);
     };

@@ -14,7 +14,7 @@ import { readerPageMarkup } from '../src/components/shell/reader-page.js';
 import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from '../src/features/reader/audio.js';
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
-import { getZoneForProvince } from '../src/features/prayer/prayer-times.js';
+import { getZoneForProvince, shouldRetryRefresh } from '../src/features/prayer/prayer-times.js';
 import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch } from '../src/features/library/local-kitab-library.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
@@ -543,4 +543,13 @@ test('chapter render queue keeps Arabic, Latin, translation order and batches by
   assert.equal(planBatch([]), 0);
   assert.equal(planBatch([{ chunk: 'x'.repeat(20000) }, { chunk: 'y' }]), 1);
   assert.equal(planBatch([{ chunk: 'x'.repeat(4000) }, { chunk: 'y'.repeat(4000) }, { chunk: 'z'.repeat(4000) }]), 2);
+});
+
+test('prayer schedule refresh retries after a date change without hammering the network', () => {
+  const base = { tickDateKey: '2026-11-08', activeDateKey: '2026-11-07', refreshing: false, lastAttemptAt: Number.NaN, now: 1_000_000 };
+  assert.equal(shouldRetryRefresh({ ...base }), true, 'percobaan pertama langsung berjalan');
+  assert.equal(shouldRetryRefresh({ ...base, lastAttemptAt: 1_000_000 - 1000 }), false, 'jangan ulang tiap detik');
+  assert.equal(shouldRetryRefresh({ ...base, lastAttemptAt: 1_000_000 - 30000 }), true, 'ulang setelah jeda');
+  assert.equal(shouldRetryRefresh({ ...base, refreshing: true }), false, 'tidak tumpang tindih');
+  assert.equal(shouldRetryRefresh({ ...base, tickDateKey: '2026-11-07' }), false, 'tanggal sama tidak perlu muat ulang');
 });
