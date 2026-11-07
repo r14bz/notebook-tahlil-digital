@@ -87,6 +87,8 @@ export function mountIslamicLibrary() {
   body.theme-dark .safinah-editor-status{background:#263d2e;color:#dcebd8}
   @media(min-width:700px){.safinah-editor-layout{grid-template-columns:minmax(220px,.8fr) minmax(0,1.5fr)}} 
   .equran-kitab-list{display:grid;gap:2px}
+  .equran-translation-shortcut{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:5;display:block;margin:0 0 14px auto;padding:8px 13px;border:1px solid #c8b27f;border-radius:999px;background:#174a36;color:#fff7e5;font-size:12px;font-weight:700;box-shadow:0 3px 12px rgba(35,45,32,.16)}
+  body.theme-dark .equran-translation-shortcut{background:#d6bd7c;color:#1d3026;border-color:#d6bd7c}
   .equran-kitab-arabic{font-size:28px!important;line-height:2.15!important;direction:rtl!important;unicode-bidi:plaintext;text-align:right!important;margin:16px 0 24px!important;white-space:pre-wrap!important}
   .equran-kitab-latin,.equran-kitab-indonesia{font-size:14px!important;line-height:2!important;white-space:pre-wrap}
   .equran-kitab-latin{color:#82745e!important;font-style:italic}
@@ -798,9 +800,22 @@ export function mountIslamicLibrary() {
       const arabic = firstText(chapter, ['teks_arab', 'teksArab', 'teks_arabic', 'arab', 'arabic', 'arabic_text', 'arabicText', 'arab_text', 'isi_arab', 'teks', 'naskah_arab', 'naskah']);
       const indonesia = firstText(chapter, ['teks_indonesia', 'terjemahan', 'indonesia', 'terjemah']);
       const latin = firstText(chapter, ['teks_latin', 'latin', 'transliterasi']);
-      if (arabic) paper.append(el('p', 'equran-arabic equran-kitab-arabic', arabic));
+      const arabicNode = arabic ? el('p', 'equran-arabic equran-kitab-arabic', arabic) : null;
+      const translationNode = indonesia ? el('p', 'equran-kitab-indonesia', indonesia) : null;
+      if (arabicNode && translationNode) {
+        let showingTranslation = false;
+        const shortcut = action('Terjemahan ↓', () => {
+          const target = showingTranslation ? arabicNode : translationNode;
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          showingTranslation = !showingTranslation;
+          shortcut.textContent = showingTranslation ? 'Kembali ke Arab ↑' : 'Terjemahan ↓';
+        }, 'equran-translation-shortcut');
+        shortcut.setAttribute('aria-label', 'Lompat ke terjemahan atau kembali ke teks Arab');
+        paper.append(shortcut);
+      }
+      if (arabicNode) paper.append(arabicNode);
       if (latin) paper.append(el('p', 'equran-kitab-latin', latin));
-      if (indonesia) paper.append(el('p', 'equran-kitab-indonesia', indonesia));
+      if (translationNode) paper.append(translationNode);
       if (!arabic && !indonesia && !latin) {
         const textValue = firstText(chapter, ['isi', 'konten', 'content', 'body']);
         if (textValue) paper.append(el('p', 'equran-kitab-indonesia', textValue));
