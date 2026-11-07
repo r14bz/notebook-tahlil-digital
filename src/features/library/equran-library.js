@@ -1,3 +1,4 @@
+import { disclaimerMarkup } from '../../components/shell/footer.js';
 const API = 'https://equran.id/api';
 const QARIS = [
   ['01', 'Abdullah Al-Juhany'], ['02', 'Abdul Muhsin Al-Qasim'],
@@ -114,6 +115,7 @@ export function mountIslamicLibrary() {
   chapterNav.setAttribute('aria-label', 'Navigasi bab kitab');
   chapterNav.hidden = true;
   reader.append(top, paper, chapterNav);
+  reader.insertAdjacentHTML('beforeend', disclaimerMarkup);
   home.after(reader);
 
   function closeReader() {
