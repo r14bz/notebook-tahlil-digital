@@ -236,3 +236,24 @@ Audit dilakukan pada salinan zip branch ini. `npm test` pada salinan kerja audit
 - File JSON dari editor berawalan BOM. Browser menanganinya, tetapi `JSON.parse` di Node gagal kecuali BOM dibuang (skrip validasi sudah membuangnya).
 - Koordinat pengguna dikirim ke layanan pihak ketiga (bigdatacloud.net) untuk geocoding saat deteksi lokasi; pertimbangkan menyebutkannya di kebijakan privasi.
 - Data API jadwal salat disisipkan lewat `innerHTML` pada beberapa tempat; risiko rendah, tetapi sebaiknya diganti `textContent`.
+
+
+## 13. Disclaimer dan kontak Developer (7 November 2026)
+
+Disclaimer telah ditambahkan pada bagian bawah seluruh halaman aplikasi e-Moeslife, termasuk halaman koleksi dan pembaca kitab. Teks ditampilkan dengan gaya miring (*italic*), pemisah tipis, dan warna teks lembut agar tidak mengganggu kegiatan membaca.
+
+Redaksi disclaimer yang disetujui pemilik proyek:
+
+> **DISCLAIMER:**
+>
+> Mohon maaf apabila masih terdapat banyak kesalahan atau kekeliruan pada penulisan ayat, lafadz, maupun terjemahan yang ada pada aplikasi e-Moeslife.  
+> Oleh karena itu, pengguna diharapkan tetap melakukan verifikasi dengan merujuk kepada kitab aslinya atau sumber rujukan yang terpercaya.
+>
+> Apabila menemukan kesalahan pada ayat, lafadz, maupun kalimat terjemahan, atau memiliki kritik, saran, dan masukan untuk pengembangan aplikasi e-Moeslife, silakan [klik di sini](https://wa.me/6289676707976) untuk menghubungi Developer agar dapat ditinjau dan ditindaklanjuti.
+>
+> Terima kasih dan Semoga Bermanfaat.
+
+- Tautan **“klik di sini”** membuka WhatsApp Developer pada nomor **089676707976** (format tautan internasional +6289676707976).
+- Disclaimer dimaksudkan tampil konsisten di seluruh halaman, termasuk halaman pembaca kitab lokal maupun API.
+- Perubahan disclaimer dipertahankan pada branch pengembangan dan tidak menjadi alasan untuk mengubah branch main atau production tanpa persetujuan pemilik.
+- **Shortcut lompat ke terjemahan belum diimplementasikan.** Percobaan sebelumnya mengubah struktur elemen pembacaan dan tata letak naskah; perubahan shortcut tersebut sudah dibatalkan. Jangan menganggap fitur shortcut tersedia atau memasangnya kembali dengan cara yang mengubah struktur/urutan/tata letak isi bacaan. Jika dikerjakan lagi kelak, pertahankan markup dan alur render naskah yang ada, lalu minta pemilik memvalidasi tampilan sebelum melanjutkan.
