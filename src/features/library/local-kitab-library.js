@@ -1,3 +1,4 @@
+import { disclaimerMarkup } from '../../components/shell/footer.js';
 let apiBooks = [];
 const normalizeBookName = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('id').replace(/[^a-z0-9]+/g, ' ').trim();
 const BOOKS = [
@@ -221,6 +222,7 @@ export function mountLocalKitabLibrary() {
   chapterNav.setAttribute('aria-label', 'Navigasi bab');
   chapterNav.hidden = true;
   reader.append(top, paper, chapterNav);
+  reader.insertAdjacentHTML('beforeend', disclaimerMarkup);
   home.after(reader);
   let activeBook = null;
   let activeChapters = [];
