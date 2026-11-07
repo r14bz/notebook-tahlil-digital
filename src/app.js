@@ -7,7 +7,6 @@ import { getReadingGroupBounds, getPageProgress } from './features/reader/page-s
 import { prepareReadingSections, completeSectionStarts } from './features/reader/sections.js';
 import { renderReaderContents } from './features/reader/contents.js';
 import { createReaderController } from './features/reader/controller.js';
-import { createReaderAudioController } from './features/reader/audio.js';
 import { loadOptionalReaderContent } from './features/reader/content-loader.js';
 import { getSwipeDirection } from './features/reader/gestures.js';
 import { applyReaderTheme, applyReaderFontSize } from './features/reader/appearance.js';
@@ -15,10 +14,18 @@ import { splitSectionForScreen } from './features/reader/pagination.js';
 import { renderReadingList } from './features/home/reading-list.js';
 import { findCollectionStart } from './features/collections/navigation.js';
 import { initPrayerTimes } from './features/prayer/prayer-times.js';
+import { checkForAppUpdate } from './services/app-update.js';
+import { mountIslamicLibrary } from './features/library/equran-library.js';
+import { mountLocalKitabLibrary } from './features/library/local-kitab-library.js';
 
 mountAppShell();
 initPrayerTimes();
 registerOfflineSupport();
+// Check the latest signed Android release without blocking app startup or offline reading.
+checkForAppUpdate();
+window.__EMOESLIFE_LOCAL_KITAB__ = true;
+mountIslamicLibrary();
+mountLocalKitabLibrary();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false,pendingReaderSection=null,pendingCollection=null,readerContentReady=false;
@@ -99,14 +106,9 @@ function openCollection(kind){
 document.querySelectorAll('[data-home-target]').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('is-activating'))return;b.classList.add('is-activating');window.setTimeout(()=>openCollection(b.dataset.homeTarget),150);window.setTimeout(()=>b.classList.remove('is-activating'),420)}));
 $('homeSearch').addEventListener('input',renderHome);
 const renderContents=()=>renderReaderContents({sections,pages,index,sectionStarts,$,showPage});
-const readerAudio=createReaderAudioController({
- speechSynthesis:window.speechSynthesis,
- SpeechSynthesisUtterance:window.SpeechSynthesisUtterance,
- audioElement:$('qariAudio'),voiceSelect:$('ttsVoice'),voiceLabel:$('audioVoiceLabel'),audioDescription:$('audioDescription'),qariButton:$('qariPlayBtn'),statusElement:$('audioStatus'),readPreference,writePreference
-});
 const readerController=createReaderController({
  getPages:()=>pages,getIndex:()=>index,setIndex:value=>{index=value;},$,writePreference,renderContents,
- getReadingGroup,getReadingGroupBounds,getPageProgress,onPageChange:page=>readerAudio.update(page)
+ getReadingGroup,getReadingGroupBounds,getPageProgress
 });
 const showPage=(...args)=>readerController.showPage(...args);
 const continueReadingButton = $('continueReadingBtn');
@@ -122,9 +124,7 @@ const next=()=>readerController.next();
 const prev=()=>readerController.prev();
 const isPageTurning=()=>readerController.isTurning();
 $('nextBtn').onclick=next;$('prevBtn').onclick=prev;
-$('ttsPlayBtn').onclick=()=>readerAudio.speak($('arabicText').textContent);
-$('qariPlayBtn').onclick=()=>readerAudio.playQari(pages[index]);
-$('audioStopBtn').onclick=()=>readerAudio.stop();
+
 $('homeBtn').onclick=()=>{readerViewRequested=false;document.body.classList.remove('reader-active','toc-open');$('contentsBtn').setAttribute('aria-expanded','false');window.scrollTo({top:0,behavior:'smooth'});renderHome()};
 $('contentsBtn').onclick=()=>{
  const open=!document.body.classList.contains('toc-open');

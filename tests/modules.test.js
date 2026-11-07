@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, readdirSync } from 'node:fs';
 
 import { getReadingGroup } from '../src/features/reader/navigation.js';
 import { getSwipeDirection } from '../src/features/reader/gestures.js';
@@ -13,6 +14,8 @@ import { readerPageMarkup } from '../src/components/shell/reader-page.js';
 import { buildQariAyahUrls, splitSpeechText, createReaderAudioController } from '../src/features/reader/audio.js';
 import { applyDzikirOverrides, isValidManualDzikirLayout, loadOptionalReaderContent } from '../src/features/reader/content-loader.js';
 
+import { getZoneForProvince, shouldRetryRefresh } from '../src/features/prayer/prayer-times.js';
+import { shouldUseLocalCopy, chunkText, buildChapterQueue, planBatch, pairParagraphs, resolveView, splitParagraphs } from '../src/features/library/local-kitab-library.js';
 import { filterReadingSections } from '../src/features/home/search.js';
 import { findCollectionStart } from '../src/features/collections/navigation.js';
 import {
@@ -65,7 +68,7 @@ test('reader audio controller sequences qari ayat and stops when changing surah'
 
   controller.update({ quranSurah: 36 });
   assert.equal(button.disabled, false);
-  assert.equal(controller.playQari({ quranSurah: 36 }), true);
+  assert.equal(await controller.playQari({ quranSurah: 36 }), true);
   assert.match(audio.src, /036001\.mp3$/);
   await handlers.ended();
   assert.match(audio.src, /036002\.mp3$/);
@@ -473,12 +476,146 @@ test('Arabic TTS selects an installed Arabic voice and reads queued text chunks'
   }
 });
 
-test('reader shell exposes accessible TTS and qari playback controls', () => {
-  assert.match(readerPageMarkup, /id="readerAudioPanel"/);
-  assert.match(readerPageMarkup, /id="ttsPlayBtn"/);
-  assert.match(readerPageMarkup, /id="qariPlayBtn"/);
-  assert.match(readerPageMarkup, /id="audioStopBtn"/);
-  assert.match(readerPageMarkup, /id="qariAudio" hidden controls/);
-  assert.match(readerPageMarkup, /href="https:\/\/everyayah.com\//);
-  assert.match(readerPageMarkup, /aria-live="polite"/);
+test('classic reader does not expose audio controls; murattal is isolated in its own collection', () => {
+  assert.doesNotMatch(readerPageMarkup, /readerAudioPanel|ttsPlayBtn|qariPlayBtn|qariPauseBtn|qariStopBtn|qariAudio/);
+});
+
+test('prayer timezone follows the province, not just longitude', () => {
+  assert.equal(getZoneForProvince('Kalimantan Selatan').zone, 'WITA');
+  assert.equal(getZoneForProvince('Kalimantan Tengah').zone, 'WIB');
+  assert.equal(getZoneForProvince('Maluku').zone, 'WIT');
+  assert.equal(getZoneForProvince('Maluku Utara').zone, 'WIT');
+  assert.equal(getZoneForProvince('Papua Barat Daya').zone, 'WIT');
+  assert.equal(getZoneForProvince('Sulawesi Utara').zone, 'WITA');
+  assert.equal(getZoneForProvince('Bali').timezone, 'Asia/Makassar');
+  assert.equal(getZoneForProvince('DKI Jakarta').zone, 'WIB');
+  assert.equal(getZoneForProvince('Provinsi Tidak Dikenal'), null);
+});
+
+test('local kitab copy is used only when newer than the source manuscript', () => {
+  const chapters = [{ title: 'Bab 1', arabic: '', translation: 'x' }];
+  const saved = at => ({ version: 1, updatedAt: at, chapters });
+  const source = at => ({ updatedAt: at });
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T09:00:00Z')), true);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:05:00Z')), false);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), source('2026-11-06T10:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy(saved('2026-11-06T10:00:00Z'), {}), true);
+  assert.equal(shouldUseLocalCopy(saved('bukan tanggal'), source('2026-11-06T10:00:00Z')), true);
+  assert.equal(shouldUseLocalCopy(null, source('2026-11-06T10:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy({ version: 1, updatedAt: '2026-11-06T10:00:00Z', chapters: [] }, source('2026-11-06T09:00:00Z')), false);
+  assert.equal(shouldUseLocalCopy({ version: 2, updatedAt: '2026-11-06T10:00:00Z', chapters }, source('2026-11-06T09:00:00Z')), false);
+});
+
+test('chunkText splits long manuscripts losslessly at paragraph boundaries', () => {
+  assert.deepEqual(chunkText(''), []);
+  assert.deepEqual(chunkText('pendek'), ['pendek']);
+  const paragraphs = Array.from({ length: 50 }, (_, i) => 'بِسْمِ اللّٰهِ ' + i + ' '.repeat(1) + 'x'.repeat(300));
+  const text = paragraphs.join('\n\n');
+  const chunks = chunkText(text, 1000);
+  assert.ok(chunks.length > 5);
+  assert.equal(chunks.join(''), text);
+  assert.ok(chunks.slice(0, -1).every(chunk => /\n\n$/.test(chunk)), 'potongan berakhir pada batas paragraf');
+  // Satu paragraf raksasa tanpa baris kosong dipecah pada akhir baris, tetap tanpa kehilangan teks.
+  const lines = Array.from({ length: 400 }, (_, i) => 'baris ' + i + ' ' + 'y'.repeat(60)).join('\n');
+  const lineChunks = chunkText(lines, 1000);
+  assert.ok(lineChunks.length > 10);
+  assert.equal(lineChunks.join(''), lines);
+});
+
+test('every bundled manuscript chunks back to the exact original text', () => {
+  for (const file of readdirSync('data').filter(name => name.endsWith('.json'))) {
+    const document = JSON.parse(readFileSync('data/' + file, 'utf8').replace(/^\uFEFF/, ''));
+    for (const chapter of document.chapters) {
+      for (const field of ['arabic', 'translation']) {
+        const value = chapter[field] || '';
+        assert.equal(chunkText(value).join(''), value, file + ' ' + chapter.id + ' ' + field);
+      }
+    }
+  }
+});
+
+test('chapter render queue keeps Arabic, Latin, translation order and batches by size', () => {
+  const queue = buildChapterQueue({ arabic: 'a'.repeat(9000), latin: 'l', translation: 't'.repeat(5000) });
+  const kinds = queue.map(item => item.kind);
+  assert.deepEqual(kinds, [...kinds].sort((x, y) => ['arabic', 'latin', 'translation'].indexOf(x) - ['arabic', 'latin', 'translation'].indexOf(y)));
+  assert.equal(queue.filter(item => item.first).length, 3);
+  assert.equal(queue.filter(item => item.last).length, 3);
+  assert.equal(planBatch([]), 0);
+  assert.equal(planBatch([{ chunk: 'x'.repeat(20000) }, { chunk: 'y' }]), 1);
+  assert.equal(planBatch([{ chunk: 'x'.repeat(4000) }, { chunk: 'y'.repeat(4000) }, { chunk: 'z'.repeat(4000) }]), 2);
+});
+
+test('prayer schedule refresh retries after a date change without hammering the network', () => {
+  const base = { tickDateKey: '2026-11-08', activeDateKey: '2026-11-07', refreshing: false, lastAttemptAt: Number.NaN, now: 1_000_000 };
+  assert.equal(shouldRetryRefresh({ ...base }), true, 'percobaan pertama langsung berjalan');
+  assert.equal(shouldRetryRefresh({ ...base, lastAttemptAt: 1_000_000 - 1000 }), false, 'jangan ulang tiap detik');
+  assert.equal(shouldRetryRefresh({ ...base, lastAttemptAt: 1_000_000 - 30000 }), true, 'ulang setelah jeda');
+  assert.equal(shouldRetryRefresh({ ...base, refreshing: true }), false, 'tidak tumpang tindih');
+  assert.equal(shouldRetryRefresh({ ...base, tickDateKey: '2026-11-07' }), false, 'tanggal sama tidak perlu muat ulang');
+});
+
+test('paragraphs pair up only when numbering verifies the alignment, without touching the text', () => {
+  const numbered = { arabic: 'a1 \n\na2\n\n\na3', translation: '1. t1\n\n2. t2\n\n3. t3', latin: '' };
+  assert.deepEqual(pairParagraphs(numbered), [
+    { arabic: 'a1 ', translation: '1. t1', heading: false },
+    { arabic: 'a2', translation: '2. t2', heading: false },
+    { arabic: 'a3', translation: '3. t3', heading: false }
+  ]);
+  const headed = { arabic: 'basmalah\n\na1\n\na2', translation: 'Shad Ayat 1-2\n\n1. t1\n\n2. t2', latin: '' };
+  assert.deepEqual(pairParagraphs(headed).map(pair => pair.heading), [true, false, false], 'judul tanpa nomor bukan terjemah basmalah');
+  assert.equal(pairParagraphs({ arabic: 'a1\n\na2\n\na3', translation: 't1\n\nt2\n\nt3', latin: '' }), null, 'jumlah sama tanpa penomoran tidak diverifikasi');
+  assert.equal(pairParagraphs({ ...numbered, translation: '1. t1\n\n3. t3\n\n2. t2' }), null, 'nomor tidak berurutan');
+  assert.equal(pairParagraphs({ ...numbered, translation: '1. t1\n\n2. t2' }), null, 'jumlah berbeda');
+  assert.equal(pairParagraphs({ arabic: 'a', translation: '1. t', latin: '' }), null, 'satu paragraf tidak perlu dilipat');
+  assert.equal(pairParagraphs({ ...numbered, latin: 'ada latin' }), null, 'bab dengan Latin tidak dipasangkan');
+});
+
+test('chapter view resolves to fold when verified-pairable and honours saved preferences', () => {
+  const pairable = { arabic: 'a\n\nb', translation: '1. x\n\n2. y', latin: '' };
+  const unverified = { arabic: 'a\n\nb', translation: 'x\n\ny', latin: '' };
+  assert.deepEqual(resolveView(pairable, {}), { options: ['fold', 'classic'], view: 'fold' });
+  assert.equal(resolveView(pairable, { paired: 'classic' }).view, 'classic');
+  assert.equal(resolveView(pairable, { paired: 'tidak-dikenal' }).view, 'fold');
+  assert.deepEqual(resolveView(unverified, {}), { options: ['both', 'arabic', 'translation'], view: 'both' }, 'tanpa penomoran tidak dilipat');
+  assert.equal(resolveView(unverified, { unpaired: 'arabic' }).view, 'arabic');
+  assert.equal(resolveView(unverified, { unpaired: 'fold' }).view, 'both', 'pilihan lipat tidak berlaku bila tidak berpasangan');
+  assert.deepEqual(resolveView({ arabic: 'a', translation: '', latin: '' }, {}), { options: [], view: 'both' });
+});
+
+test('fold queue yields one item per pair and the other views filter fields', () => {
+  const chapter = { arabic: 'a\n\nb\n\nc', translation: '1. x\n\n2. y\n\n3. z', latin: '' };
+  const fold = buildChapterQueue(chapter, 'fold');
+  assert.deepEqual(fold.map(item => item.kind), ['pair', 'pair', 'pair']);
+  assert.deepEqual(fold.map(item => item.translation), ['1. x', '2. y', '3. z']);
+  assert.equal(fold.filter(item => item.first).length, 1);
+  assert.equal(fold.filter(item => item.last).length, 1);
+  assert.deepEqual(buildChapterQueue(chapter, 'arabic').map(item => item.kind), ['arabic']);
+  assert.deepEqual(buildChapterQueue(chapter, 'translation').map(item => item.kind), ['translation']);
+  assert.deepEqual(buildChapterQueue(chapter, 'both').map(item => item.kind), ['arabic', 'translation']);
+  // Bab yang tidak dapat diverifikasi jatuh kembali ke antrean biasa meski diminta 'fold'.
+  assert.deepEqual(buildChapterQueue({ arabic: 'a\n\nb', translation: 'x\n\ny', latin: '' }, 'fold').map(item => item.kind), ['arabic', 'translation']);
+  assert.equal(planBatch(fold), 3, 'pasangan kecil dirender sekaligus');
+  assert.equal(planBatch([{ kind: 'pair', size: 9000 }, { kind: 'pair', size: 10 }]), 1, 'ukuran pasangan memakai field size');
+});
+
+test('Jalalain: only verified chapters pair, the heading is not paired with the basmalah, and braces agree with parentheses', () => {
+  const document = JSON.parse(readFileSync('data/jalalain.json', 'utf8').replace(/^\uFEFF/, ''));
+  let chapters = 0, compared = 0, agreeing = 0;
+  for (const chapter of document.chapters) {
+    const pairs = pairParagraphs({ arabic: chapter.arabic, translation: chapter.translation, latin: '' });
+    if (!pairs) continue;
+    chapters += 1;
+    assert.equal(pairs[0].heading, true, 'jalalain ' + chapter.id + ': paragraf pertama adalah judul');
+    assert.match(pairs[0].translation, /Ayat\s+\d/, 'judul memuat "Ayat"');
+    assert.match(pairs[0].arabic, /^\s*بِسْمِ/, 'paragraf Arab pertama adalah basmalah');
+    assert.equal(pairs.slice(1).some(pair => pair.heading), false);
+    assert.equal(pairs.map(pair => pair.arabic).join('|'), splitParagraphs(chapter.arabic).join('|'), 'teks Arab tetap utuh');
+    for (const pair of pairs.slice(1)) {
+      const braces = (pair.arabic.match(/\{[^}]*\}/g) || []).length;
+      const parentheses = (pair.translation.match(/\([^)]*\)/g) || []).length;
+      if (braces || parentheses) { compared += 1; if (braces === parentheses) agreeing += 1; }
+    }
+  }
+  assert.ok(chapters >= 70, 'sebagian besar bab Jalalain terverifikasi (' + chapters + ')');
+  assert.ok(agreeing / compared > 0.95, 'blok {..} Arab dan (..) terjemah harus selaras (' + agreeing + '/' + compared + ')');
 });

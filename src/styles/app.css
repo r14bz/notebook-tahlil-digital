@@ -178,7 +178,6 @@ header,main,footer,.sidebar,.reader,.toolbar,.toolbar-group,.book,.paper,.playba
  .play-actions button{min-width:0;min-height:32px;padding:5px 6px;font-size:9px;white-space:nowrap}
  .play-actions #repeatBtn{display:none}
  .audio-status{display:none}
- #qariAudio{display:none!important}
  footer{display:none}
 }
 @media(max-width:380px){
@@ -282,7 +281,7 @@ body.reader-active #readerFooter { display:block; }
 .collection-card{position:relative;overflow:hidden;min-height:215px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;padding:19px 19px 15px;border:1px solid #ded3ba;border-radius:20px;background:#fffaf0;color:#203d2d;box-shadow:0 5px 16px #46371b08;transition:transform .22s,box-shadow .22s,border-color .22s}
 .collection-card:hover{transform:translateY(-4px);box-shadow:0 15px 28px #46371b12;border-color:#c5ae78}
 .card-index{font-size:9px;letter-spacing:1.3px;color:#93835f;font-weight:700}
-.collection-symbol,.surah-number{height:54px;display:grid;place-items:center;margin:15px 0 10px;color:#d6b56c;font-family:'Amiri',serif;font-size:38px}
+.collection-symbol,.surah-number{height:54px;display:grid;place-items:center;margin:15px 0 17px;color:#d6b56c;font-family:'Amiri',serif;font-size:38px}
 .surah-number{width:52px;height:52px;border:1px solid #d5c18b;border-radius:50%;font-size:23px;background:#f5edda}
 .collection-title{font-family:'Amiri',serif;font-size:25px;font-weight:700;line-height:1.2;color:#173f30}
 .collection-desc{font-size:11px;line-height:1.7;color:#827966;margin-top:7px;max-width:290px}
@@ -481,6 +480,31 @@ body.font-large .arabic { font-size: clamp(25px, 6.1vw, 30px) !important; }
  body.font-normal .arabic { font-size: clamp(22px, 2.2vw, 27px) !important; }
  body.font-large .arabic { font-size: clamp(27px, 2.8vw, 34px) !important; }
 }
+
+/* Apply the same saved font-size preference to every dedicated reading view. */
+body.font-small .equran-arabic,
+body.font-small .equran-kitab-arabic,
+body.font-small .local-kitab-arabic { font-size: clamp(19px, 4.8vw, 23px) !important; }
+body.font-normal .equran-arabic,
+body.font-normal .equran-kitab-arabic,
+body.font-normal .local-kitab-arabic { font-size: clamp(24px, 6vw, 28px) !important; }
+body.font-large .equran-arabic,
+body.font-large .equran-kitab-arabic,
+body.font-large .local-kitab-arabic { font-size: clamp(29px, 7vw, 34px) !important; }
+
+body.font-small .equran-kitab-latin,
+body.font-small .equran-kitab-indonesia,
+body.font-small .local-kitab-latin,
+body.font-small .local-kitab-translation { font-size: 12px !important; }
+body.font-normal .equran-kitab-latin,
+body.font-normal .equran-kitab-indonesia,
+body.font-normal .local-kitab-latin,
+body.font-normal .local-kitab-translation { font-size: 14px !important; }
+body.font-large .equran-kitab-latin,
+body.font-large .equran-kitab-indonesia,
+body.font-large .local-kitab-latin,
+body.font-large .local-kitab-translation { font-size: 17px !important; }
+
 body.reader-active .controls { display:flex; justify-content:space-between; }
 body.reader-active .controls .nav-page { flex:1; }
 body.reader-active .paper { overflow: visible; }
@@ -531,7 +555,7 @@ body.reader-active .arabic { overflow: visible; }
   .hero-copy h2 { font-size:25px; }
   .hero-art { min-height:175px; }
   .art-book { width:65px; height:98px; }
-  .collection-card { grid-template-columns:37px minmax(0,1fr) 25px; column-gap:7px; }
+  .collection-card { grid-template-columns:30px minmax(0,1fr) 25px; column-gap:13px; }
   .collection-symbol,.surah-number { width:35px; height:35px; font-size:21px; }
   .collection-title { font-size:18px; }
 }
@@ -964,23 +988,24 @@ body.theme-dark #readerAudioPanel .audio-source{color:#d8c18a}
 /* Keep the new audio panel independent from legacy controls-row audio styles. */
 #readerAudioPanel{display:flex;flex-wrap:wrap!important;min-height:0}
 #readerAudioPanel .audio-status{display:block!important}
-#readerAudioPanel audio:not([hidden]){display:block!important}
+#readerAudioPanel audio:not([hidden]){display:block!important;width:100%;min-height:40px}
 @media(max-width:768px){
  #readerAudioPanel{flex-wrap:wrap!important;min-height:0}
  #readerAudioPanel audio:not([hidden]){display:block!important;width:100%;min-height:34px}
  #readerAudioPanel .audio-status{display:block!important}
 }
 
-/* Reserve the audio-control slot while unavailable so mobile pagination does not jump. */
-#readerAudioPanel audio[hidden]{display:block!important;visibility:hidden!important}
+/* Hide only when the current surah has no supported recitation; otherwise show native playback controls. */
+#readerAudioPanel audio[hidden]{display:none!important}
 
 
-/* Audio TTS and qari are temporarily hidden without removing their implementation. */
-#readerAudioPanel[hidden]{display:none!important}
-
-/* Force-hide the complete audio UI on every reader page, regardless of runtime hidden-attribute changes. */
-#readerMain #readerAudioPanel,
-#readerMain .playbar#readerAudioPanel { display:none !important; visibility:hidden !important; height:0 !important; min-height:0 !important; margin:0 !important; padding:0 !important; overflow:hidden !important; }
+/* Restore the reader audio panel and its murattal controls. */
+#readerMain #readerAudioPanel{display:flex!important;visibility:visible!important;height:auto!important;min-height:48px!important;margin:0!important;padding:8px!important;overflow:visible!important}
+#readerMain #readerAudioPanel[hidden]{display:none!important}
+#readerAudioPanel .play-actions{display:flex;gap:5px;flex-wrap:nowrap}
+#readerAudioPanel .audio-native-player{display:block!important;width:100%;height:42px;min-height:42px;flex:1 1 100%;accent-color:var(--green)}
+#readerAudioPanel .play-actions button{white-space:nowrap;min-height:34px;padding:6px 9px;font-size:11px}
+@media(max-width:480px){#readerAudioPanel .play-actions{gap:3px}#readerAudioPanel .play-actions button{padding:5px 6px;font-size:9px}}
 
 /* Dynamic prayer banner */
 .prayer-banner{--sun-x:50%;--sun-y:30%;position:relative;isolation:isolate;min-height:310px;overflow:hidden;border-radius:25px;color:#fff8e8;background:linear-gradient(180deg,#233d62 0%,#d58d6b 58%,#f0c58b 100%);box-shadow:0 18px 42px #123d2e24;transition:background 2.2s ease}
@@ -1145,3 +1170,182 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 .home-download-link strong,.home-download-link small{display:block}
 .home-download-link strong{font-size:13px}.home-download-link small{font-size:11px;color:#887c68;margin-top:2px}
 .home-download-arrow{margin-left:auto;font-size:19px;color:#9b7b42}
+
+
+/* Native Android app update prompt */
+.app-update-overlay{position:fixed;z-index:10000;inset:0;display:grid;place-items:center;padding:22px;background:#071d1bc9;backdrop-filter:blur(5px)}
+.app-update-card{width:min(100%,390px);padding:24px 21px 19px;border:1px solid #d5c49b;border-radius:20px;background:#fbf7ec;color:#203b2d;box-shadow:0 18px 55px #0005}
+.app-update-card h2{margin:0 0 10px;font-family:inherit;font-size:21px;color:#123d2e}
+.app-update-card p{margin:0 0 12px;font-size:13px;line-height:1.6}
+.app-update-card .app-update-notes{max-height:120px;overflow:auto;padding:10px 12px;border-radius:10px;background:#f0eadb;color:#665c49;font-size:12px;white-space:pre-wrap}
+.app-update-actions{display:flex;gap:9px;margin-top:18px}
+.app-update-actions button{min-height:43px;border-radius:11px;padding:10px 13px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.app-update-later{flex:1;border:1px solid #cfc4aa;background:#eee8da;color:#52604f}
+.app-update-download{flex:1.5;border:1px solid #9a7a40;background:#174a36;color:#fff7e5}
+body.theme-dark .app-update-card{background:#1d3026;color:#f2ead8;border-color:#6e795b}
+body.theme-dark .app-update-card h2{color:#f4e5bd}
+body.theme-dark .app-update-card .app-update-notes{background:#293d31;color:#e1d7c2}
+body.theme-dark .app-update-later{background:#304337;color:#eee4d0;border-color:#60745f}
+
+
+/* Keep the continue-reading and APK-download actions together on the home screen. */
+.home-continue-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.home-continue-row .continue-reading{min-width:0;max-width:none;width:100%;height:100%}
+.home-continue-row .home-download-link{min-width:0;margin:0;padding:12px 14px;height:100%;box-sizing:border-box}
+.home-continue-row .home-download-link strong{font-size:12px}
+.home-continue-row .home-download-link small{font-size:10px;line-height:1.4}
+@media(max-width:480px){
+  .home-continue-row{gap:7px}
+  .home-continue-row .continue-reading{padding:10px 8px;gap:7px}
+  .home-continue-row .continue-icon,.home-continue-row .home-download-mark{width:30px;height:30px;flex-basis:30px;border-radius:9px;font-size:17px}
+  .home-continue-row .continue-reading strong,.home-continue-row .home-download-link strong{font-size:10px}
+  .home-continue-row .continue-reading small,.home-continue-row .home-download-link small{font-size:8px;white-space:normal;max-width:none}
+  .home-continue-row .continue-arrow,.home-continue-row .home-download-arrow{font-size:15px}
+  .home-continue-row .home-download-link{padding:10px 8px;gap:7px}
+}
+
+
+/* Eight main collections: consistent two-column grid on desktop and mobile. */
+.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.collection-card.collection-equran{min-width:0}
+.collection-card.collection-equran .collection-symbol{width:43px;height:43px;margin:15px 0 10px}
+.collection-card.collection-equran .collection-symbol img{display:block;width:100%;height:100%;object-fit:contain}
+@media(max-width:480px){
+ .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .collection-card{min-height:190px;padding:13px 12px 12px;border-radius:15px}
+ .collection-card .card-index{font-size:8px;letter-spacing:.7px}
+ .collection-card .collection-title{font-size:19px}
+ .collection-card .collection-desc{font-size:10px;line-height:1.45}
+ .collection-card .collection-bottom{gap:5px}
+ .collection-card .collection-meta{font-size:9px}
+}
+body.theme-dark .equran-paper{background:#1d3026;color:#eee4d0}
+
+
+/* Compact collection cards while preserving the two-column layout. */
+.collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.collection-card{min-height:142px;padding:12px 14px 11px;border-radius:15px}
+.collection-card .collection-symbol{height:36px;margin:7px 0 5px;font-size:29px}
+.collection-card .collection-title{font-size:20px;line-height:1.12}
+.collection-card .collection-desc{font-size:10px;line-height:1.35;margin-top:4px}
+.collection-card .collection-bottom{margin-top:auto;padding-top:8px}
+.collection-card.collection-equran .collection-symbol{width:34px;height:34px;margin:7px 0 5px}
+.equran-display-options{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.equran-toggle{display:inline-flex;align-items:center;gap:5px;color:#52614e;font-size:11px;white-space:nowrap}
+.equran-toggle input{accent-color:#174a36;width:15px;height:15px}
+.equran-display-options .equran-search{width:auto;min-width:150px;flex:1}
+.equran-latin[hidden],.equran-translation[hidden]{display:none!important}
+.equran-hadith-frame{display:block}
+.equran-source-link{display:inline-block;margin-top:12px;color:#245840;font-size:12px;text-decoration:underline}
+body.theme-dark .equran-toggle,body.theme-dark .equran-source-link{color:#e3d7b8}
+@media(max-width:480px){
+ .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .collection-card{min-height:132px;padding:10px 10px 9px;border-radius:13px}
+ .collection-card .card-index{font-size:7px;letter-spacing:.5px}
+ .collection-card .collection-symbol{height:30px;margin:5px 0 4px;font-size:25px}
+ .collection-card .collection-title{font-size:17px}
+ .collection-card .collection-desc{font-size:9px;line-height:1.3}
+ .collection-card .collection-meta{font-size:8px}
+ .collection-card.collection-equran .collection-symbol{width:29px;height:29px;margin:5px 0 4px}
+ .equran-display-options{gap:8px}
+ .equran-toggle{font-size:10px}
+}
+
+
+/* Compact 2x2 home collections and a separate yellow-book catalog. */
+@media (min-width: 0px) {
+  .collection-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .collection-card{
+    min-height:62px;height:62px;padding:7px 9px;border-radius:12px;
+    display:grid;grid-template-columns:31px minmax(0,1fr) 22px;
+    grid-template-rows:minmax(0,1fr);column-gap:13px;align-items:center
+  }
+  .collection-card .card-index,.collection-card .collection-desc{display:none}
+  .collection-card .collection-symbol,.collection-card .surah-number{
+    grid-column:1;grid-row:1;width:27px;height:27px;min-height:27px;
+    margin:0;border:0;background:transparent;font-size:20px
+  }
+  .collection-card .collection-symbol img,.collection-card .surah-number img{width:100%;height:100%;object-fit:contain}
+  .collection-card .collection-title{
+    grid-column:2;grid-row:1;align-self:center;margin:0;
+    font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.2;font-weight:700
+  }
+  .collection-card .collection-bottom{
+    grid-column:3;grid-row:1;width:auto;margin:0;padding:0;justify-content:center
+  }
+  .collection-card .collection-meta{display:none}
+  .collection-card .round-arrow{width:22px;height:22px;font-size:13px}
+  .kitab-library-section{margin-top:29px;scroll-margin-top:16px}
+  .kitab-library-heading{align-items:flex-end;margin:0 2px 13px}
+  .kitab-library-heading h3{font-size:24px}
+  .kitab-home-search{
+    width:min(270px,42%);min-width:150px;height:40px;padding:9px 11px;
+    border:1px solid #ded3ba;border-radius:11px;background:#fffdf7;
+    color:#284434;font:inherit;font-size:11px
+  }
+  .kitab-home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kitab-home-card{
+    position:relative;min-width:0;min-height:66px;height:66px;padding:8px 10px;
+    display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+    gap:3px;text-align:left;border:1px solid #ded3ba;border-radius:13px;
+    background:#fffaf0;color:#203d2d;box-shadow:0 4px 12px #46371b08
+  }
+  .kitab-home-card:active{transform:scale(.985)}
+  .kitab-home-index{position:absolute;right:9px;top:7px;color:#a48a54;font-size:8px;letter-spacing:.7px}
+  .kitab-home-title{max-width:calc(100% - 16px);font-size:12px;line-height:1.2;font-weight:700;color:#173f30}
+  .kitab-home-author{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#817865;font-size:9px}
+  .kitab-home-category{font-size:8px;color:#9a865c;line-height:1.2}
+  .equran-reader{padding-bottom:104px}
+  .equran-chapter-nav[hidden]{display:none!important}
+  .equran-chapter-nav{
+    position:fixed;z-index:9999;left:50%;bottom:max(8px,env(safe-area-inset-bottom));
+    transform:translateX(-50%);width:min(950px,calc(100vw - 20px));
+    display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:6px;
+    padding:7px;border:1px solid #d8c9a8;border-radius:15px;
+    background:rgba(255,250,240,.96);box-shadow:0 8px 28px #1b2a1e25;
+    backdrop-filter:blur(14px)
+  }
+  .equran-chapter-nav button{
+    min-width:0;min-height:42px;padding:8px 5px;border-radius:10px;
+    white-space:normal;font-size:10px;line-height:1.2
+  }
+  .equran-paper{padding-bottom:92px}
+  body.theme-dark .kitab-home-card{background:#1d3026;border-color:#52634f;color:#eee4d0}
+  body.theme-dark .kitab-home-title{color:#f4e5bd}
+  body.theme-dark .kitab-home-author{color:#c0b69f}
+  body.theme-dark .kitab-home-search{background:#26382d;color:#eee4d0;border-color:#52634f}
+  body.theme-dark .equran-chapter-nav{background:rgba(29,48,38,.97);border-color:#52634f}
+}
+@media(max-width:600px){
+  .home-section-heading.kitab-library-heading{align-items:flex-start;flex-direction:column;gap:10px}
+  .kitab-home-search{width:100%;min-width:0}
+  .kitab-home-grid{gap:7px}
+  .kitab-home-card{min-height:66px;height:66px;padding:8px}
+  .kitab-home-title{font-size:10px}
+  .equran-chapter-nav{width:calc(100vw - 16px);gap:4px;padding:6px}
+  .equran-chapter-nav button{min-height:42px;padding:7px 3px;font-size:9px}
+}
+
+
+/* Disclaimer global: satu redaksi yang konsisten pada beranda dan seluruh pembaca. */
+.app-disclaimer{
+  display:block!important;
+  width:min(980px,calc(100% - 32px));
+  margin:22px auto 0;
+  padding:16px 18px max(22px,env(safe-area-inset-bottom));
+  border-top:1px solid #d8c9a8;
+  color:#817865;
+  font-size:11px;
+  font-style:italic;
+  line-height:1.75;
+  text-align:center;
+}
+.app-disclaimer strong{display:block;margin-bottom:7px;color:#8c7957;font-size:10px;letter-spacing:.8px;font-style:italic}
+.app-disclaimer p{margin:5px 0}
+.app-disclaimer a{color:#286246;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+body.theme-dark .app-disclaimer{color:#c0b69f;border-color:#52634f}
+body.theme-dark .app-disclaimer strong{color:#d6c9a8}
+body.theme-dark .app-disclaimer a{color:#a8d5b5}
+@media(max-width:760px){
+  .app-disclaimer{width:calc(100% - 24px);margin-top:16px;padding:13px 5px max(22px,env(safe-area-inset-bottom));font-size:10px;line-height:1.7}
+}

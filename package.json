@@ -1,7 +1,7 @@
 {
   "name": "e-moeslife",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "e-Moeslife — ruang baca Islami digital",
   "type": "module",
   "scripts": {

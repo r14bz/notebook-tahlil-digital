@@ -1,7 +1,10 @@
-const CACHE_NAME = 'e-moeslife-shell-v5';
+const CACHE_NAME = 'e-moeslife-shell-v16';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
+  '/src/services/app-update.js',
+  '/src/features/library/equran-library.js',
+  '/src/features/library/local-kitab-library.js',
   '/src/features/prayer/prayer-times.js',
   '/src/components/app-shell.js',
   '/src/components/shell/header.js',
@@ -33,8 +36,34 @@ const CORE_ASSETS = [
   '/assets/mosque-banner.png',
   '/assets/app-icon/icon.png',
   '/src/data/dzikir-overrides.json',
-  '/etahlil-pembagian-halaman-dzikir.json'
+  '/etahlil-pembagian-halaman-dzikir.json',
+  '/data/safinah-an-najah.json', '/data/aqidatul-awam.json'
 ];
+
+// Naskah dan file layout sering diperbarui pemilik proyek: selalu coba jaringan lebih dulu,
+// lalu pakai salinan cache bila offline atau jaringan terlalu lambat.
+const NETWORK_FIRST_TIMEOUT_MS = 4000;
+const NETWORK_FIRST_PATHS = ['/etahlil-pembagian-halaman-dzikir.json', '/src/data/dzikir-overrides.json'];
+const isNetworkFirst = url => url.pathname.startsWith('/data/') || NETWORK_FIRST_PATHS.includes(url.pathname);
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  const network = fetch(request, { cache: 'no-cache' }).then(response => {
+    if (response.ok) cache.put(request, response.clone()).catch(() => {});
+    return response;
+  });
+  if (!cached) return network;
+  try {
+    return await Promise.race([
+      network,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), NETWORK_FIRST_TIMEOUT_MS))
+    ]);
+  } catch {
+    network.catch(() => {});
+    return cached;
+  }
+}
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting()));
@@ -64,6 +93,10 @@ self.addEventListener('fetch', event => {
         return (await caches.match('/index.html')) || Response.error();
       }
     })());
+    return;
+  }
+  if (isNetworkFirst(new URL(request.url))) {
+    event.respondWith(networkFirst(request));
     return;
   }
   event.respondWith(caches.match(request).then(cached => {
