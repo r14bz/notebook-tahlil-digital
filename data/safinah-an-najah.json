@@ -1,448 +1,448 @@
-{
+﻿{
   "version": 1,
   "book": "Safinah An-Najah",
-  "updatedAt": "2026-11-03T19:17:18.532Z",
+  "updatedAt": "2026-11-07T07:09:24.597Z",
   "chapters": [
     {
-      "id": "safinah-001",
+      "id": "safinah-an-najah-1",
       "title": "Muqoddimah",
       "arabic": "بسم الله الرحمن الرحيم، الحمد لله رب العالمين ، وبه نستعين على أمور الدنيا والدين ،وصلى الله وسلم على سيدنا محمد خاتم النبيين ،واله وصحبه أجمعين ، ولاحول ولا قوة إلا بالله العلي العظيم.",
       "translation": "Dengan nama Allah Yang Maha Pengasih Maha Penyayang . Segala puji bagi Allah Tuhan seluruh alam . Dan dengannya kami mohon pertolongan atas segala urusan dunia dan agama . Dan Allah bersholawat atas junjungan kita Muhammad penutup para Nabi dan atas keluarganya dan sahabatnya semua . Dan tiada daya dan upaya kecuali dengan pertolongan Allah Yang Maha Tinggi Maha Agung ."
     },
     {
-      "id": "safinah-002",
+      "id": "safinah-an-najah-2",
       "title": "Rukun Islam",
       "arabic": "(فصل) أركان الإسلام خمسة : شهادة أن لاإله إلاالله وأن محمد رسول الله وإقام الصلاة ، وإيتاء الزكاة , و صوم رمضان ، وحج البيت من استطاع إليه سبيلا .",
       "translation": "[Fasal] Rukun Islam ada 5 : (1) Bersaksi bahwa tiada tuhan \nselain Allah dan bersaksi bahwa Nabi Muhammad utusan Allah, \n(2) Mendirikan (mengerjakan) shalat, (3) Membayar zakat (4) \nBerpuasa ramadhan (5) Berhaji ke bait (Allah) bagi yang mampu untuk (biaya) perjalanan."
     },
     {
-      "id": "safinah-003",
+      "id": "safinah-an-najah-3",
       "title": "Rukun Iman",
       "arabic": "(فصل ) أركان الإيمان ستة: أن تؤمن بالله ، وملائكته، وكتبه ، وباليوم الآخر ، وبالقدر خيره وشره من الله تعالى .",
       "translation": "[Fasal] Rukun Iman ada 6 : (1) Beriman kepada Allah, (2) \nberiman Malaikat Allah (3) beriman kepada kitab Allah (4) \nberiman kepada Rasul Allah (5) beriman kepada hari akhir \n(kiamat) (6) beriman kepada takdir yang baik dan takdir yang \nburuk dari Allah."
     },
     {
-      "id": "safinah-004",
+      "id": "safinah-an-najah-4",
       "title": "Makna Kalimat Tauhid",
       "arabic": "(فصل ) ومعنى لاإله إلاالله : لامعبود بحق في الوجود إلا الله .",
       "translation": "[Fasal] Pengertian “إالالله الإله “adalah bahwa tiada yang patut \ndisembah secara haq didalam keberadaannya kecuali hanya Allah."
     },
     {
-      "id": "safinah-005",
+      "id": "safinah-an-najah-5",
       "title": "Tanda Baligh",
       "arabic": "(فصل ) علامات البلوغ ثلاث : تمام خمس عشرة سنه في الذكروالأنثى ، والاحتلام في الذكر والأنثى لتسع سنين ، و الحيض في الأنثى لتسع سنين . ",
       "translation": "[Fasal] Tanda-tanda baligh ada 3 : (1) usia sudah mencapai 15 \ntahun baik laki-laki maupun perempuan (2) bermimpi keluar \nsperma (mimpi basah) baik laki-laki maupun perempuan (3) Haid \nbagi perempua karena (berumur) 9 tahun."
     },
     {
-      "id": "safinah-006",
+      "id": "safinah-an-najah-6",
       "title": "Bab Thaharah — Syarat Istinja (Bersuci dengan Batu)",
-      "arabic": " بثلاثة أحجار ، وأن ينقي المحل ، وأن لا يجف النجس ، ولا ينتقل ، ولا يطرأ عليه آخر ، ولا يجاوز صفحته وحشفته ، ولا يصيبه ماء ، وأن تكون الأحجار طاهرة.",
+      "arabic": "(فصل) شروط إجزاء الحَجَرْ ثمانية: أن يكون بثلاثة أحجار ، وأن ينقي المحل ، وأن لا يجف النجس ، ولا ينتقل ، ولا يطرأ عليه آخر ، ولا يجاوز صفحته وحشفته ، ولا يصيبه ماء ، وأن تكون الأحجار طاهرة.",
       "translation": "[Fasal] Syarat sah beristinja’ dengan batu ada 8 : \n1. Hendaknya dengan 3 batu \n2. (Ketiga batu) bisa membersihkan tempat (najis) 3. Najis belum kering \n4. Najis belum berpindah ke tempat lain \n5. Tidak bercampur dengan najis lain \n6. Tidak melampaui Hasyafah (bila kencing) \n7. Tidak terkena air \n8. Harus dengan batu yang suci"
     },
     {
-      "id": "safinah-007",
+      "id": "safinah-an-najah-7",
       "title": "Bab Thaharah — Rukun Wudhu",
       "arabic": "(فصل ) فروض الوضوء ستة: األول:النية ، الثاني : غسل الوجه ، الثالث: غسل اليدين مع\nالمرفقين ، الرابع : مسح شيء من الرأس ، الخامس : غسل الرجلين مع الكعبين ، السادس : الترتيب",
       "translation": "[Fasal] Fardhu wudlu’ ada 6 : \n1) Niat \n2) Membasuh wajah \n3) Membasuh kedua tangan besert kedua siku \n4) Membasuh sebagian dari kepala (kulit/rambut) \n5) Membasuh kedua kaki beserta kedua mata kaki \n6) Tertib"
     },
     {
-      "id": "safinah-008",
+      "id": "safinah-an-najah-8",
       "title": "Bab Thaharah — Arti Niat dan Tertib",
       "arabic": "(صل ) النية : قصد الشيء مقترنا بفعله ، ومحلھا القلب والتلفظ بھا سنة . ووقتھا عند غسل.\n أول جزء من الوجه ، والترتيب أن ال يقدم عضو على عضو.",
       "translation": "[Fasal] Niat adalah menyengaja sesuatu bersamaan dengan pekerjaannya, adapun tempatnya niat didalam hati sedangkan \nmengucapkan dengan lisan itu sunnah. Waktu niat ketika membasuh muka (bila mengerjakan wudlu’). \nTertib adalah tidak mendahulukan (membasuh/mengerjakan) anggota wudlu’ atas anggota wudlu (yang seharusnya diakhirkan)"
     },
     {
-      "id": "safinah-009",
+      "id": "safinah-an-najah-9",
       "title": "Bab Thaharah — Hukum Air",
       "arabic": "(فصل) الماء قليل وكثير : القليل مادون القلتين ، والكثير قلتان فأكثر.\nالقليل يتنجس بوقوع\n النجاسة فيه وإن لم يتغير . والماء الكثير ال يتنجس إال إذا تغير\nطعمه أو لونه أو ريحه.",
       "translation": "[Fasal] Air terbagi menjadi 2, air sedikit dan air banyak ; \n1) Air sedikit adalah air yang kurang dari kulah \n2) Air banyak adalah air yang mencapai 2 kulah atau lebih. \nAir sedikit jika terkena najid maka dihukum air mutanajis \nwalaupun tidak berubah. Sedangkan air banyak, jika kejatuhan najis tidak dihukumi air mutanajis kecuali bila berubah rasa, \nwarna dan baunya."
     },
     {
-      "id": "safinah-010",
+      "id": "safinah-an-najah-10",
       "title": "Bab Thaharah — Yang Mewajibkan Mandi",
       "arabic": "(فصل) موجبات الغسل ستة: إيالج الحشفة في الفرج ، وخروج المنى والحيض والنفاس\n والوالدة والموت",
       "translation": "[Fasal] Kewajiban mandi ada 6 : \n1) Memasukkan hasyafah kedalam farji’ \n2) Keluar sperma \n3) Haid \n4) Nifas \n5) Melahirkan \n6) Mati"
     },
     {
-      "id": "safinah-011",
+      "id": "safinah-an-najah-11",
       "title": "Bab Thaharah — Rukun Mandi",
       "arabic": " (فصل) فروض الغسل اثنان : النية ، وتعميم البدن بالماء.",
       "translation": "[Fasal] Fardhu / rukun mandi ada 2 : \n1) Niat \n2) Meratakan air keseluruh badan"
     },
     {
-      "id": "safinah-012",
+      "id": "safinah-an-najah-12",
       "title": "Bab Thaharah — Syarat Wudhu",
       "arabic": "(فصل) شروط الوضوء عشرة : اإلسالم ، والتمييز ، والنقاء ، عن الحيض ، والنفاس ، \nوعما يمنع وصول الماء إلى البشرة ، وأن ال يكون على العضو ما يغير الماء الطھور ،\nودخول الوقت ، والمواالة لدائم الحدث.",
       "translation": "[Fasal] Syarat wudlu ada 10 : \n1) Islam \n2) Tamyis \n3) Bersih dari haid \n4) Bersih dari nifas \n5) Bebas dari sesuatu yang bisa menghalangi sampainya air ke kulit \n6) Tidak boleh ada satupun pada anggota wudlu’ yang bisa merubah air \n7) Mengetahui fardhu wudlu \n8) Tidak boleh beri’tiqad (menganggap) satu perbuatan fardhu \ndiantara fardhu fardhu wudlu dianggap sunnah \n9) Harus dengan air yang membersihkan\n10) Harus setelah memasuki waktu shalat bagi orang yang “dai’mul hadats” (selalu berhadats)"
     },
     {
-      "id": "safinah-013",
+      "id": "safinah-an-najah-13",
       "title": "Bab Thaharah — Pembatal Wudhu",
-      "arabic": "فصل ) نوا قض الوضوء أربعة أشياء : (األول) الخارج من أحد السبيلين من قبل أو دبر ريح\nأو غيره إال المنى ، (الثاني ) زوال العقل بنوم أو غيره إال نوم قاعد ، ممكن مقعده من\nاألرض ، (الثالث) التقاء بشرتي رجل وامرأة كبيرين من غير حائل ، (الرابع ) مس قبل\n اآلدمي أو حلقة دبره ببطن الراحة أو بطون األصابع",
+      "arabic": "( فصل ) نوا قض الوضوء أربعة أشياء : (األول) الخارج من أحد السبيلين من قبل أو دبر ريح\nأو غيره إال المنى ، (الثاني ) زوال العقل بنوم أو غيره إال نوم قاعد ، ممكن مقعده من\nاألرض ، (الثالث) التقاء بشرتي رجل وامرأة كبيرين من غير حائل ، (الرابع ) مس قبل\n اآلدمي أو حلقة دبره ببطن الراحة أو بطون األصابع",
       "translation": "[Fasal] Pembatal wudlu ada 4 : \n1. Sesuatu yang keluar dari qubul (kelamin depat) dan dubur (kelamin belakang) baik berupa angin atau (berupa) benda lain selain mani (sperma) \n2. Hilangnya akal sebab tidur atau lainnya, kecuali tidurnya orang yang duduk yang menetapkan pantatnya pada tanah (tempat duduk) \n3. Bersentuhan antara kulit laki-laki dan wanita yang sudah sama-sama dewasa, dari selain orang yang halal (keduanya tidak ada urusan mahram dan ketika bersentuhan tidak ada penghalang) \n4. Memegang (menyentuh) qubul anak adam dan lingkaran duburnya dengan telapak tangan atau jari-jari bagian dalam \n(tapak tangan/jari-jari)"
     },
     {
-      "id": "safinah-060",
+      "id": "safinah-an-najah-14",
       "title": "Bab Thaharah — Hukum Isti'anah Berwudhu",
-      "arabic": "فصل) الإستعانات أربع خصال : مباحة وخالف الأولى ومكروھه وواجبة فالمباحة ھي \nتقريب الماء ، وخالف الأولى ھي صب الماء على نحو المتوضئ ،والمكروھه ھي لمن يغسل\n .أعضاءه ، والواجبة ھي للمريض عند العجز",
+      "arabic": "(فصل) الإستعانات أربع خصال : مباحة وخالف الأولى ومكروھه وواجبة فالمباحة ھي \nتقريب الماء ، وخالف الأولى ھي صب الماء على نحو المتوضئ ،والمكروھه ھي لمن يغسل\n .أعضاءه ، والواجبة ھي للمريض عند العجز",
       "translation": "(Fasal) Hukum minta tolong dalam bersuci ada 4 : \n- Boleh, meminta tolong mendekatkan diri (ketika wudlu / mandi) \n- Menyimpang dari keutamaan (khilaf aula), minta tolong menuangkan air kepada orang yang berwudlu’ \n- Makruh , menuangkan air kepada orang yang mandi \n- Wajib, bagi orang yang sakit jika tidak mampu"
     },
     {
-      "id": "safinah-014",
+      "id": "safinah-an-najah-15",
       "title": "Bab Thaharah — Diharamkan Bagi yang Berhadats",
       "arabic": "(فصل) من انتقض وضوؤه حرم عليه أربعه أشياء : الصالة والطواف ومس المصحف وحمله.",
       "translation": "Fasal : Larangan bagi orang yang wudlunya batal, ada 4 : \n1. Shalat \n2. Thawaf \n3. Menyentuh Mushhaf \n4. Membawa Mushhaf "
     },
     {
-      "id": "safinah-015",
+      "id": "safinah-an-najah-16",
       "title": "Bab Thaharah — Diharamkan Bagi Orang Junub",
       "arabic": "ويحرم على الجنب ستة أشياء: الصالة والطواف ومس المصحف وحمله واللبث في المسجد وقراءة القرآن.",
       "translation": "Haram bagi orang Junub, 6 perkara ; \n1. Shalat \n2. Thawaf \n3. Menyentuh Qur’an \n4. Membawa Qur’an \n5. Diam didalam masjid \n6. Membaca Qur’an \n"
     },
     {
-      "id": "safinah-016",
+      "id": "safinah-an-najah-17",
       "title": "Bab Thaharah — Diharamkan Bagi Wanita Haid",
       "arabic": "ويحرم بالحيض عشرة أشياء : الصالة والطواف ومس المصحف وحمله واللبث في المسجد\nوقراءة القرآن والصوم والطالق والمرور في المسجد إن خافت تلويثه واالستمتاع بما بين\nالسرة والركبة",
       "translation": "Haram bagi orang (wanita) Haid, 10 perkara : \n1. Shalat \n2. Thawaf \n3. Menyentuh al-Qur’an \n4. Membawa al-Qur’an \n5. Diam didalam masjid \n6. Membaca al-Qur’an \n7. Puasa \n8. Thallaq \n9. Lewat di Masjid, sebab dikhawatirkan mengotorinya \n10. Bersenang-senang (jima’/lainnya) antara pusar dan lutut"
     },
     {
-      "id": "safinah-017",
+      "id": "safinah-an-najah-18",
       "title": "Bab Thaharah — Sebab Tayammum",
       "arabic": "( فصل) أسباب التيمم ثالثة: فقد الماء ، والمرض ، واالحتياج إليه لعطش حيوان محترم \nغير المحترم ستة : تارك الصالة والزاني المحصن والمرتد والكافر الحربي والكلب العقور\n والخنزير",
       "translation": "Fasal : Sebab-sebab (melakukan) Tayammum, 3 : \n1. Tidak ada air \n2. Sakit \n3. Air dibutuhkan untuk memberi minum binatang yang dimulyakan (dihormati syara’ yang sedang kehausan) \nAdapun binatang yang tidak dianggap mulya menurut syara’ ada 6 macam : \n1. Orang yang meninggalkan shalat \n2. Orang yang berzina mukhsan \n3. Oang Murtad\n4. Kafir harbi \n5. Anjing yang galak \n6. Babi"
     },
     {
-      "id": "safinah-018",
+      "id": "safinah-an-najah-19",
       "title": "Bab Thaharah — Syarat Tayammum",
       "arabic": "( فصل ) شروط التيمم عشرة: أن يكون بتراب وان يكون التراب طاھرا وأن ال يكون مستعمال\nوال يخالطه دقيق ونحوه وأن يقصده وأن يمسح وجھه ويديه بضربتين وأن يزيل النجاسة أوال\n وأن يجتھد في القبلة قبله وأن يكون التيمم بعد دخول الوقت وأن يتيمم لكل فرض",
       "translation": "Fasal : Syarat-syarat Tayammum, ada 10 : \n1. Harus dengan debu \n2. Harus dengan (debu) yang suci \n3. Debu tersebut bukan debu yang musta’mal \n4. Debu tidak tercampuri dengan tepung atau lainnya \n5. Orang tersebut bermaksud menggunakan debu untuk bertayammum \n6. Harus dengan dua kali meletakkan telapak tangan ke debu, satu kali untuk mengusap kedua telapak tangan \n7. Sebelum harus membersihkan najid di basan \n8. Ijtihad mencari kiblat \n9. Tayammum harus setelah masuk waktu shalat \n10. Satu kali tayammum untuk satu kali shalat fardhu"
     },
     {
-      "id": "safinah-019",
+      "id": "safinah-an-najah-20",
       "title": "Bab Thaharah — Rukun Tayammum",
       "arabic": "(فصل) فروض التيمم خمسة : األول : نقل التراب ، الثاني : النية ، الثالث : مسح الوجه ، \n الرابع : مسح اليدين إلى المرفقين ، الخامس : الترتيب بين المسحتين\n",
       "translation": "Fasal : Fardhu Tayammum ada 5 : \n1. Memindahkan debu \n2. Niat \n3. Mengusap wajah \n4. Mengusah kedua tangan hingga ke siku \n5. Tertip diantara usapan tersebut (muka kemudian tangan)"
     },
     {
-      "id": "safinah-020",
+      "id": "safinah-an-najah-21",
       "title": "Bab Thaharah — Pembatal Tayammum",
       "arabic": "(فصل) مبطالت التيمم أربعة : ما أبطل الوضوء والردة وتوھم الماء إن تيمم لفقده والشك",
       "translation": "Fasal : Batalnya Tayammum : \n1. Setiap perkara yang membatalkan pada wudlu \n2. Murtad \n3. Menduga ada air jika tayammunya karena ketiadaan air"
     },
     {
-      "id": "safinah-021",
+      "id": "safinah-an-najah-22",
       "title": "Bab Thaharah — Najis yang Bisa Suci",
       "arabic": "(فصل) الذي يظھر من النجاسة ثالثة : الخمر إذا تخللت بنفسھا . وجلد الميتة إذا دبغ وماصارا حيوانا",
       "translation": "Fasal : Benda-benda najis yang bisa menjadi suci, 3 : \n1. Khamar (arak) yang berubah dengan sendirinya menjadi cuka \n2. Kulit bangkai jika sudah di samak \n3. Hewan sembelihan"
     },
     {
-      "id": "safinah-022",
+      "id": "safinah-an-najah-23",
       "title": "Bab Thaharah — Pembagian Najis",
       "arabic": "(فصل) النجاسة ثالثه : مغلظة ومخففة ومتوسطة . المغلظة : نجاسة الكلب والخنزير وفرع أحدھما . والمخففة : بول الصبي الذي لم يطعم غير اللبن ولم يبلغ الحولين. والمتوسطة : سائرالنجاسات",
       "translation": "Fasal : Najis ada 3 : \n1. Najis Mughalladhah \n2. Najis Mukhaffafah \n3. Najis Mutawassithah \n\nNajis Mughalladhah adalah najisnya anjing dan babi serta najisnya keturunan dari kedua binatang tersebut \n\nNajis Mukhaffafah adalah najisnya air kencing anak laki-laki yang belum berusia dua tahun dan belum makan kecuali air susu ibu \n\nNajis Mutawassithah adalah semua najis (selain Mughalladhah dan Mukhaffafah)"
     },
     {
-      "id": "safinah-023",
+      "id": "safinah-an-najah-24",
       "title": "Bab Thaharah — Cara Menghilangkan Najis",
       "arabic": "(فصل) المغلظة : تطھر بسبع غسالت بعد إزالة عينھا ،إحداھن بتراب .\nوالمخففة : تطھر برش الماء عليھا مع الغلبة وإزالة عينھا\n\nوالمتوسطة تنقسم إلى قسمين: عينية وحكميه . العينية : التي لھا لون وريح وطعم فال بد من\nإزالة لونھا وريحھا وطعمھا . والحكمية : التي ال لون لھا وال ريح والطعم لھا يكفيك جري\n الماء عليھا",
       "translation": "Fasal : (Cara Mensucikan) Najis Mughalladhah : \nDengan cara mencucinya harus dibasuh dengan 7 kali basuhan dimana salah satunya dicampur dengan debu yang suci. \nNajis Mukhaffafah : cukup disiram dengan air sehingga najisnya hilang\n\nNajis Mutawassithah dibagi menjadi 2 : \n1. Najis Mutawassithah Ainiyy \n2. Najis Mutawassithah Hukmiyyah \n\nAini : najis yang masih ada warna, bau dan rasanya, maka najis seperti ini harus dihilangkan warna, bau dan rasanya \nHukmi : najis yang berbau dan berwarna serta rasanya sudah tidak ada (tinggal hukumnya saja) maka cara mensucikannya cukup dengan mengalirkan air saja ke najasah."
     },
     {
-      "id": "safinah-024",
+      "id": "safinah-an-najah-25",
       "title": "Bab Thaharah — Haid dan Nifas",
       "arabic": "(فصل) أقل الحيض : يوم وليله وغالبة ستة أوسبع وأكثره خمسة عشرة يوما بلياليھا . أقل الطھر بين الحيضتين خمسة عشرة يوما وغالبه أربعة وعشرون يوما أو ثالثة وعشرون يوما\nوالحد ألكثرة .أقل النفاس مجة وغالبة أربعون يوما وأكثرة ستون يوما",
       "translation": "Fasal : Paling sedikit (masa) Haid, sehari-semalam. Sedangkan yang lumrah adalah 6 (hari) atau 7 (seminggu) dan paling lama adalah 15 hari dan malam.\nAdapun paling sedikitnya masa suci \nantara 2 kali haid adalah 15 hari, lumrahnya 24 atau 23 hari dan paling lama tiada batasnya."
     },
     {
-      "id": "safinah-025",
+      "id": "safinah-an-najah-26",
       "title": "Bab Shalat — Udzur Shalat",
       "arabic": "( فصل ) أعذار الصالة اثنان : النوم والنسيان",
       "translation": "Fasal : Udzur shalat karena 2 perkara : tidur dan lupa."
     },
     {
-      "id": "safinah-026",
+      "id": "safinah-an-najah-27",
       "title": "Bab Shalat — Syarat Shalat",
       "arabic": "(فصل) شروط الصالة ثمانية : طھارة الحدثين والطھارة عن النجاسة في الثوب والبدن والمكان وستر العورة واستقبال القبلة ودخول الوقت والعلم بفريضتة وأن اليعتقد فرضا من فروضھا سنة واجتناب المبطالت",
       "translation": "Fasal : Syarat-syarat shalat ada 8 : \n1. Suci dari dua hadats \n2. Suci dari najis pada pakaian, badan dan tempat shalat \n3. Menutup aurat \n4. Menghadap kiblat \n5. Masuk waktu shalat 6. Mengetahui fardhu shalat \n7. Tidak boleh menyakini (menganggap) kefardhuan dari salah satu fardhu shalat sebagai sunnah \n8. Meninggalkan hal-hal yang sekiranya membatalkan shalaat"
     },
     {
-      "id": "safinah-027",
+      "id": "safinah-an-najah-28",
       "title": "Bab Shalat — Pembagian Hadats",
       "arabic": " (فصل) ألحداث اثنان : أصغر وأكبر . فاألصغر ماأوجب الوضوء . واألكبر ماأوجب الغسل",
       "translation": "Fasal : Hadats itu ada 2 macam : \n1. Hadats kecil : hadats yang mewajibkan wudlu’ \n2. Hadats besar : hadats yang mewajibkan mandi (jinabat)"
     },
     {
-      "id": "safinah-028",
+      "id": "safinah-an-najah-29",
       "title": "Bab Shalat — Pembagian Aurat",
       "arabic": "(فصل) العورات أربع : عورة الرجل مطلقا والأمة في الصلاة ما بين السرة والركبة ",
       "translation": "Fasal : Aurat dibagi menjadi 4 : \n1. Aurat laki-laki didalam shalat maupun diluar shalat adalah antara pusar dan lutut, demikian juga dengan budah laki-laki \n2. Aurat perempuan diwaktu shalat adalah seluruh anggota tubuh kecuali wajah dan kedua telapak tangan \n3. Aurat perempuan yang merdeka dan budak perempuan dihadapan laki-laki lain (bukan mahramnya) adalah seluruh anggota badan \n4. Dan bila dihadapan mahramnya atau sama-sama perempuannya maka auratnya antara pusar dan lutut."
     },
     {
-      "id": "safinah-029",
+      "id": "safinah-an-najah-30",
       "title": "Bab Shalat — Rukun Shalat",
       "arabic": "(فصل) أركان الصلاة سبعة عشر : الأول النية ،الثاني تكبيرة الإحرام ، الثالث القيام على القادر في الفرض ،الرابع قراءة الفاتحة ، الخامس الركوع ، السادس الطمأنينة فية ، السابع الإعتدال ،الثامن الطمأنينة فيه ، التاسع السجود مرتين ،العاشر الطمأنينة فية ، الحادي عشر الجلوس بين السجدتين ، الثاني عشر الطمأنينة فية ،الثالث عشر التشهد الأخير ،الرابع عشر القعود فيه ،الخامس عشر : الصلاة على النبي صلى الله عليه وسلم ،السادس عشر السلام ،السابع عشر الترتيب .",
       "translation": "Fasal : Rukun shalat ada 17 : \n1. Niat \n2. Takbiratul ihram \n3. Berdiri bagi yang mampu dalam shalat fardhu \n4. Membaca al-Fatihah \n5. Rukuk \n6. Tuma’ninah diwaktu ruku 7. I’tidah \n8. Tuma’ninah diwaktu I’tidal \n9. Sujud \n10. Tuma’ninah diwaktu sujud \n11. Duduk diantara dua sujud \n12. Tuma’ninah diwaktu duduk diantara dua sujud \n13. Tasyahud akhir \n14. Duduk untuk membaca tasyahud \n15. Membaca shalawat Nabi \n16. Salam \n17. Tertib"
     },
     {
-      "id": "safinah-030",
+      "id": "safinah-an-najah-31",
       "title": "Bab Shalat — Niat Shalat",
       "arabic": "(فصل) النيه ثلاث درجات : إن كانت الصلاة فرضا وجب قصد الفعل والتعيين والفرضية وإن كانت نافلة مؤقتة كراتبة او ذات سبب وجب قصد الفعل والتعيين ، وان كانت نافلة مطلقة وجب قصد الفعل فقط.\n\nعل :أصلي والتعيين: ظهرا أو عصرا و الفرضية : فرضا .",
       "translation": "Fasal : Tingkatan niat ada 3 : \n- Manakala shalat itu fardhu maka wajib bermaksud mengerjakan (الفعل قصد), menentukan jenis shalat dan menerangkan kefardhuannya \n- Manakala shalat sunnah, yang terbatas oleh waktu seperti shalat rawatib atau shalat sunnah yang terikat sebab maka wajib menyengaja mengerjakannya (الفعل قصد) dan menentukan shalat (التعيين)\n- Manakala shalat sunnah mutlak, maka hanya wajib bermaksud (menyengaja) mengerjakannya (saja)\n\n(Adapun) mengenai “أصلي“/ushalli/aku shalat” (itu adalah menyengaja (qashdul fi’li/ الفعل قصد) sedangkan ta’yin/menentukan jenis shalaat, sepeti dzuhur dan asar. Sedangkan fardhiyah \nadalah menyatakan fardhu."
     },
     {
-      "id": "safinah-031",
+      "id": "safinah-an-najah-32",
       "title": "Bab Shalat — Syarat Takbiratul Ihrom",
       "arabic": "(فصل) شروط تكبيرة الإحرام : ستة عشرة أن تقع حالة القيام في الفرض وأن تكون بالعربيه وأن تكون بلفظ الجلالة وبلفظ أكبر والترتيب بين اللفظتين وأن لايمد همزة الجلالة وعدم مد باء أكبر وأن لا يشدد الباء وأن لايزيد واواً ساكنة أو متحركة بين الكلمتين ، وأن لايزيد واوا قبل الجلالة وأن لايقف بين كلمتي التكبير وقفة طويلة ولا قصيرة ، وأن يسمع نفسة جميع حروفها ودخول الوقت في المؤقت وإيقاعها حال الإستقبال وأن لا يخل بحرف من حروفها وتأخير تكبيرة المأموم عن تكبيرة الإمام.",
       "translation": "Fasal : Syarat takbiratul Ihram ada 6 : \n1. Harus dibaca ketika berdiri jika shalat fardhu \n2. Harus dengan bahasa arab \n3. Harus dengan lafadz Jalalah “الله “\n4. Harus dengan lafadz “Akbar/ أكبر “ \n5. Tertib antara 2 lafadz tersebut yaitu أكبر الله \n6. Hamzah pada lafadz “Allah/ الله “ tidak boleh dibaca panjang \n7. Ba’ (ب ) pada lafadz “akbaru/ أكبر “ tidak boleh dibaca panjang \n8. Ba’ (ب) pada lafadz “akbaru/ أكبر “ tidak boleh dibaca tasydid \n9. Sebelum lafadz “Allah/ الله “ tidak boleh ditambah “wa” \n10. Diantara lafadz “Allah/ الله “ dan “Akbaru/ أكبر “ tidak boleh berhenti lama \n11. Tidak boleh berhenti sebentar \n12. Seluruh huruf-huruf takbiratul Ihram harus bisa didengar oleh telinga di Mushalli sendiri \n13. Lafadz “أكبر الله“ harus diucapkan ketika menghadap kiblat \n14. Tidak boleh merusak atau mengubah satu huruf dari huruf-huruf takbiratul Ihram \n15. Bila sebagai makmum, takbiratul Ihram harus sesudah Imam"
     },
     {
-      "id": "safinah-032",
+      "id": "safinah-an-najah-33",
       "title": "Bab Shalat — Syarat Al-Fatihah",
       "arabic": "(فصل) شروط الفاتحة عشرة : الترتيب والموالاة ومراعاة تشديداتها وأن لا يسكت سكتة طويلة ولا قصيرة يقصد قطع القراءة وقراءة كل آياتها ومنها البسملة وعدم اللحن المخل بالمعنى وأن تكون حالة القيام في الفرض ، وأن يسمع نفسة القراءة وأن لا يتخللها ذكر أجنبي . ",
       "translation": "Fasal : Syarat membaca Al-Fatihah 10 : \n1. Tertib \n2. Beurut-urutan \n3. Menjaga huruf-hurufnya \n4. Menjaga tasyid-tasydidnya 5. Diantara ayat-ayat fatihah, ketika membaca tidak boleh \nberhenti terlalu lama atau sebentar dengan maksud memotong bacaan \n6. Harus membaca semau ayat, basmalah termasuk ayat Al-Fatihah \n7. Tidak boleh ada bacaan yang salah (Lahn) yang dapat merusak makna Al-Fatihah \n8. Al-Fatihah harus dibaca ketika berdiri shalat fardhu \n9. Seluruh bacaan Al-Fatihah harus didengar oleh si Mushalli sendiri \n10. Diantara ayat-ayat Fatihan jangan sampai diselingi oleh dzikir yang lain"
     },
     {
-      "id": "safinah-033",
+      "id": "safinah-an-najah-34",
       "title": "Bab Shalat — Tasydid Al-Fatihah",
       "arabic": "(فصل) تشديدات الفاتحة أربع عشرة : بسم الله فوق اللام ، الرَّحمن فوق الراء ، الرَّحيم فوق الراء ، الحمد لله فوق لام الجلالة ، ربُّ العالمين فوق الباء ، الرَّحمن فوق الراء ،مالك يوم الدِّين فوق الدال ، إيَّاك نعبد فوق الياء ، إيَّاك نستعين فوق الياء ، اهدنا الصِّراط المستقيم فوق الصاد ، صراط الَّذين فوق اللام ، أنعمت عليهم غير المغضوب عليهم ولا الضَّالِّين فوق الضاد واللام .",
       "translation": "Fasal : Tasydid pada surat Al-Fatihah ada 14 : \n1. Basmalaha tasydidnya diatas Lam \n2. Ar-rahman tasyidnya diatas Ro’ \n3. Arrahim tasydidnya diatas Ro’ \n4. Alhamdulillah tasydidnya diatas Lam Jalalah \n5. Rabbil ‘Alamin tasydidnya diatas Ba’ \n6. Ar-rahman tasyidnya diatas Ro’ \n7. Arrahim tasydidnya diatas Ro’ \n8. Maaliki Yaumiddin tasyidnya diatas Dal \n9. Iyyaka na’budu tasyidnya diatas Ya’ \n10. Waiyyaka nasta’in tasyidnya diatas Ya’ \n11. Ihdhinash shirathal Mustaqim tasyidnya diatas Shad \n12. Sharathal ladzina tasyidnya diatas Lam \n13. An’amta alayhim ghairil maghdubi alaihim waladldlollina tasyidnya diatas Dal \n14. dan Lam"
     },
     {
-      "id": "safinah-034",
+      "id": "safinah-an-najah-35",
       "title": "Bab Shalat — Takbiratul Ihram",
       "arabic": "(فصل) يسن رفع اليدين في أربعة مواضع: عند تكبيرة الإحرام وعند الركوع وعند الإعتدال وعند القيام من التشهد الأول . ",
       "translation": "Fasal : Sunnah mengangkat tangan : \n1. Ketika takbiratul Ihram \n2. Ketika akan rukuk \n3. Ketika akan I’tidal \n4. Ketika berdiri dari tasyahud awal"
     },
     {
-      "id": "safinah-035",
+      "id": "safinah-an-najah-36",
       "title": "Bab Shalat — Syarat Sujud",
       "arabic": "(فصل) شروط السجود سبعة : أن يسجد على سبعة أعضاء وأن تكون جبهته مكشوفة والتحامل برأسة وعدم الهوى لغيره وأن لايسجد على شيء يتحرك بحركته وارتفاع أسافلة على أعالية والطمأنينة فية.",
       "translation": "Fasal : Syarat Sujud ada 7 ; \n1. Harus dengan 7 anggota badan (sebagaimana keterangan dibawah ini) \n2. Harus dengan dahi terbuka \n3. Kepala harus ditekan (ketika meletakkan di tempat sujud) \n4. Tidak boleh ada tujuan lain ketika membungkuk kecuali untuk sujud \n5. Tidak boleh sujud diatas sesuatu yang bergerak bila bergerak ketika untuk sujud \n6. Kepalanya harus lebih rendah daripada pantat \n7. Harus tuma’ninah"
     },
     {
-      "id": "safinah-036",
+      "id": "safinah-an-najah-37",
       "title": "Bab Shalat — Anggota Sujud",
       "arabic": "(خاتمة) أعضاء السجود سبعة : الجبهة وبطون الكفين والركبتان وبطون الأصابع والرجلين.",
       "translation": "Khotimah: Anggota sujud ada 7  :\ndahi, kedua telapak tangan, kedua lutut, dan jari-jari kedua kaki yang dalam."
     },
     {
-      "id": "safinah-037",
+      "id": "safinah-an-najah-38",
       "title": "Bab Shalat — Tasydid Tasyahhud",
       "arabic": "(فصل) تشديدات التشهد إحدى وعشرون : خمس في أكمله وستة عشر في أقلة : التحيات على التاء والياء المباركات الصلوات على الصاد ، الطيبات على الطاء والياء ، لله على لام الجلالة ، السلام على السين ، عليك أيها النبي على الياء والنون والياء ، ورحمه الله على لام الجلاله ، وبركاته السلام على السين ، علينا وعلى عباد الله على لام الجلاله ، الصالحين على الصاد، أشهد أن لاإله على لام ألف ،إلا الله على لام ألف ولام الجلاله، وأشهدأن على النون ، محمدا رسول الله على ميم محمدا وعلى الراء وعلى لام الجلاله.",
       "translation": "Fasal : Tasyid-tasyid pada tasyahud ada 21, itu (karena) ditambah 5 jika dibaca dengan sempurna, dan 16 ada pada bacaan yang paling \nsingkat. Maksudnya bila dibaca dengan sempurna maka tasydidnya ada 21, bila disingkat ada 16 : \n- التحيات tas’yidnya ada pada Ta’ dan Ya’ \n-  المباركات الصلوات ada pada Shad \n- الطيبات ada pada Tha’ dan Ya’ \n- لله ada pada lam Jalalah \n- السالم ada pada Sin \n- عليك أيھا النبي ada pada Ya’ dan Nun \n- ورحمه الله  ، ada pada Lam Jalalah \n- وبركاته السالم  ada pada Sin \n- علينا وعلى عباد الله ada pada Lam Jalalah\n- الصالحين ada pada Shad \n- أشھد أن الإله ada pada lam Alif (karena Idgam) \n-  إلا لله ada pada Lam alif dan Jalalah \n- وأشھدأن ، ada pada Nun \n- محمدا رسول الله ada pada mim lafadz “Muhammad”, Ro’ (karena Idgham) dan ada pada Lam jalalah"
     },
     {
-      "id": "safinah-038",
+      "id": "safinah-an-najah-39",
       "title": "Bab Shalat — Tasydid Shalawat",
       "arabic": "(فصل) تشديدات أقل الصلاة على النبي أربع : اللهم على اللام والميم ، صل على اللام ، على محمد على الميم .",
       "translation": "Fasal : tasydid-tasydid pada bacaan Shalawat kepada Nabi paling pendeknya ada 4 : \n- اللھم ada ada Lam Jalalh dan Mim \n- صل ada pada Lam \n- على محمد  ada pada Mim"
     },
     {
-      "id": "safinah-039",
+      "id": "safinah-an-najah-40",
       "title": "Bab Shalat — Salam Minimal",
       "arabic": "(فصل) أقل السلام : السلام عليكم تشديد السلام على السين ",
       "translation": "Fasal : paling pendeknya salam adalah السالم عليكم yang dibaca tasydid pada huruf Sin"
     },
     {
-      "id": "safinah-040",
+      "id": "safinah-an-najah-41",
       "title": "Bab Shalat — Waktu Shalat",
       "arabic": "(فصل) أوقات الصلاة خمس: أول وقت الظهر زوال الشمس ، وآخره مصير ظل الشيء مثله غير ظل الإستواء ، وأول وقت العصر إذا صار ظل كل شيء مثلة وزاد قليلا ، وآخره غروب الشمس . وأول وقت المغرب غروب الشمس وآخره غروب الشفق الأحمر ، وآخره طلوع الفجر الصادق وآخره طلوع الشمس .",
       "translation": "Fasal : Waktu Shalat ada 5 : \n1. Waktu shalat dhuhur : mulai dari tergelincirnya matahari sampai terjadinya bayangan sama persis dengan panjang benda tersebut. \n2. Shalat Asar : mulai dari akhir shalat dhuhur hingga terbenam matahari \n3. Shalat Maghrib : mulai dari terbenamnya matahari sampai dengan terbenamnya mega merah. \n4. Shalat Isya’ : mulai dari menghilangnya mega merah hingga terbitnya fajar shadiq \n5. Shalat Shubuh : munculnya fajar shadiq hingga terbit matahari"
     },
     {
-      "id": "safinah-041",
+      "id": "safinah-an-najah-42",
       "title": "Bab Shalat — Pembagian Mega",
       "arabic": "الأشفاق ثالثة : أحمر وأصفر وأبيض .الأحمر مغرب ولاصفر والأبيض عشاء . ويندب تأخيرصاله العشاء إلى أن يغيب الشفق الأحمر والأبيض",
       "translation": "Mega ada 3 : Kuning, putih dan merah. \nMega merah untuk tanda waktu maghrib, dan putih untuk waktu Isya’. \nShalat Isya’ disunnahkan diakhirkan hingga mega kuning dan putih telah hilang."
     },
     {
-      "id": "safinah-042",
+      "id": "safinah-an-najah-43",
       "title": "Bab Shalat — Waktu Larangan Shalat",
       "arabic": "(فصل) تحرم الصلاة التي ليس لها سبب متقدم ولا مقارن في خمسة أوقات : عند طلوع الشمس حتى ترتفع قدر رمح وعند الإستواء في غير يوم الجمعة حتى تزول ، وعند الإصفرار حتى تطلع الشمس وبعد صلاة العصر حتى تغرب",
       "translation": "Fasal : Haramnya shalat yang tidak memiliki sebab yang mendahului atau menyertainya, adapun waktu yang haram untuk shalat ada 5 : \n- Ketika terbit matahari hingga matahari meninggi kira-kira setinggi satu tombak\n- Ketika Istiwa’ kecuali hari jum’at hingga matahari condong (kesebelah barat) \n- Ketika matahari kekuning-kuningan (akan terbenam) hingga matahari terbenam \n- Setelah shalat shubuh hingga terbit matahari"
     },
     {
-      "id": "safinah-043",
+      "id": "safinah-an-najah-44",
       "title": "Bab Shalat — Saktah Shalat",
       "arabic": "(فصل) سكتات الصلاة ستة : بين تكبيرة الإحرام ودعاء الإفتتاح والتعوذ، وبين الفاتحة والتعوذ، وبين آخر الفاتحة وآمين ، وبين آمين والسوره ، وبين السورة والركوع .",
       "translation": "Fasal : Saktah (berhenti sebentar) dalam shalat ada 6 : \n- Antara takbiratul Ihram dan Iftitah \n- Antara fatihan dan ta’awudz \n- Antara membaca Fatihah dan membaca Ta’awudz \n- Antara membaca Amin dan akhir fatihah \n- Antara membaca amin dan membaca surat \n- Antara membaca surat dan rukuk"
     },
     {
-      "id": "safinah-044",
+      "id": "safinah-an-najah-45",
       "title": "Bab Shalat — Rukun Thuma’ninah",
       "arabic": "(فصل) الأركان التي تلزمه فيها الطمأنينة أربعة : الركوع والإعتدال والسجود والجلوس بين السجدتين . \nالطمأنينة هي : سكون بعد حركة بحيث يستقر كل عضو محله بقدر سبحان الله .",
       "translation": "Rukun-rukun (shalat) yang wajib melakukan tuma’ninah (4) : \n- Rukuk \n- I’tidal \n- Sujud \n- Duduk diantara dua sujud\n\nTuma’ninah adalah tenang (berhenti/ tidak bergerak) setelah \nbergerak dengan kira-kira semua anggota badan sudah diam \npada tempatnya, kira-kiran seukuran membaca “Subhanallah”"
     },
     {
-      "id": "safinah-045",
+      "id": "safinah-an-najah-46",
       "title": "Bab Shalat — Sebab Sujud Sahwi",
       "arabic": "(فصل) أسباب سجود السهو أربعة :الأول ترك بعض من أبعاض الصلاة أو بعض البعض ، الثاني فعل مايبطل عمده ولايبطل سهوه إذا فعله ناسيا ، الثالث نقل ركن قولي إلى غير محله ، الرابع إيقاع ركن فعلي مع احتمال الزيادة .",
       "translation": "( Fasal ) Sebab-sebab sujud Syahwi : \n1. Meninggalkan bagian atau sebagian dari bagian sunnah ab’ad shalat \n2. Mengerjakan sesuatu yang bila disengaja dapat membatalkan shalat tapi tidak membatalkan jika sedang lupa \n3. Memindah rukun ucapan ditempat yang tidak semestinya \n4. Mengerjakan rukun yang bersifat fi’liyyah (perbuatan) dengan dugaan sedang menambah"
     },
     {
-      "id": "safinah-046",
+      "id": "safinah-an-najah-47",
       "title": "Bab Shalat — Ab’ad Shalat",
       "arabic": "(فصل) أبعاض الصلاة سبعة : التشهد الأول وقعوده والصلاه على النبي صلى الله عليه وسلم فيه ، والصلاه على الآل التشهد الأخير، والقنوت ،والصلاة على النبي صلى الله علية وسلم وآله فيه.",
       "translation": "(Fasal) (Sunnah) Ab’ad shalat ada 7 : \n- Tasyahud awal \n- Duduk untuk tasyahud awal \n- Membaca shalwat nabi pada tasyahud awal \n- Membaca shalawat kepada keluarga Nabi pada tasyahud akhir \n- Membaca Qunut \n- Membaca shalawat salam kepada Nabi pada Qunut \n- Membaca shalawat kepada keluarga Nabi pada Qunut"
     },
     {
-      "id": "safinah-047",
+      "id": "safinah-an-najah-48",
       "title": "Bab Shalat — Pembatal Shalat",
       "arabic": "(فصل) تبطل الصلاة بأربع عشرة خصلة : بالحدث وبوقوع النجاسة إن لم تلق حالا من غير حمل ، وانكشاف العورة إن لم تستر حالا، والنطق بحرفين أو حرف مفهم عمدا ، وبالمفطر عمدا ، والأكل الكثير ناسيا ،أوثلاث حركات متواليات ولو سهوا والوثبة الفاحشة والضربة المفرطة ، وزيادة ركن فعلي عمدا ، والتقدم على إمامه بركنين فعليين ، والتخلف بهما بغير عذر ، ونية قطع الصلاة ، وتعليق قطعها بشيء والتردد في قطعها .",
       "translation": "( Fasal ) Batalnya shalat ada 14 : \n1. Kejatuhan najis kecuali jika langsung dibuang tanpa dibwa \n2. Aurat terbuka kecuali bila langsung ditutup \n3. Berbicara dengan dua huruf atau satu huruh yang bisa dipahami \n4. Sengaja melakukan hal-hal yang bisa membatalkan puasa \n5. Makan banyak sekalipun dalam keadaan lupa \n6. Tiga kali bergerak secara berturut-turut walaupun dalam keadaan lupa \n7. Melompat yang terlalu keras \n8. Memukul yang terlalu keras \n9. Sengaja menambah rukun yang bersifat Fi’liyah \n10. Mendahului Imam dengan 3 rukun yang bersifat fi’li / perbuatan \n11. Ketinggalan Imam dengan dua rukun fi’li tanpa adanya udzur \n12. Niat membatalkan shalat \n13. Menggantungkan (membatalkan) shalat; (contoh, jika turun hujan akan membatalkan shalat) \n14. Ragu-ragu dalam membatalkan shalat"
     },
     {
-      "id": "safinah-1793728899753",
+      "id": "safinah-an-najah-49",
       "title": "Bab Shalat — Niat Menjadi Imam",
       "arabic": " (فصل) الذي يلزم فية نية الإمامة أربع : الجمعة والمعاداة والمنذورة جماعة والمتقدمة في المطر .",
       "translation": "( Fasal ) (Shalat Berjama'ah) yang Imamnya wajib berniat menjadi Imam, ada 4 : \n1. Shalat Jum’at \n2. Shalat Mu’ada (mengulang shalat) berjamaah \n3. Shalat Nadar berjamaah \n4. Shalat yang dijamak taqdim karena turun hujan (secara berjamaah)"
     },
     {
-      "id": "safinah-048",
+      "id": "safinah-an-najah-50",
       "title": "Bab Shalat — Pembagian Makmum",
       "arabic": "(فصل) شروط القدوة أحد عشر : أن لايعلم بطلان صلاة إمامة بحدث أو غيرة , وأن لايعتقد وجوب قضائها عليه وأن لا يكون مأموما ولا أميا وأن لايتقدم علية في الموقف وأن يعلم انتقالات إمامة وأن يجتمعا في مسجد أو في ثلثمائة ذراع تقريبا وأن ينوي القدوة أو الجماعة وأن يتوافق نظم صلاتيهما وأن لا يخالفه في سنة فاحشة المخالفة وأن يتابعة .",
       "translation": "( Fasal ) Syarat mengikuti seseorang imam (menjadi makmum) ada 11 : \n1. Harus tidak mengetahui bahwa shalatnya imam batal, karena hadats atau karena yang lainnya \n2. Tidak boleh ada anggapan bahwa shalatnya harus diulang (karena tidak sah) \n3. Imam tidak menjadi makmum \n4. Tidak ada seseorang yang Ummiy (tidak bisa membaca dan menulis) \n5. Bagi makmum tidak boleh lebih kedepan dari pada Imam dalam hal tempat \n6. Makmum harus mengetahui perpindahan Imam (rangkaian/prakteknya) \n7. Imam dan makmum harus berkumpul dalam satu masjid atau kira-kira 300 hira’ (bila diluar masjid) \n8. Makmum harus berniat mengikuti Imam atau jamaah \n9. Shalat yang dikerjakan Imam dan makmum harus sama urutannya \n10. Bagi Makmum tidak boleh meninggalkan sunnah yang dikerjakan Imam, yang kelihatan buruk jika tidak mengikuti \n11. Harus mengikuti Imam walau kita menjadi makmum"
     },
     {
-      "id": "safinah-049",
+      "id": "safinah-an-najah-51",
       "title": "Bab Shalat — Mengikuti Imam",
       "arabic": "(فصل) صور القدوة تسع تصح في خمس : قدوة رجل برجل وقدوة امرأه برجل وقدوة خنثى برجل وقدوة امرأة بخنثى وقدوة امرأة بامرأة ، وتبطل في أربع : قدوة رجل بامرأة وقدوة رجل بخنثى",
       "translation": "(Fasal) (Contoh) mengikuti (Imam) ada 9 dan yang 5 dihukumi Sah yaitu : \n1. Orang laki-laki bermakmum kepada Imam laki-laki \n2. Perempuan bermakmum kepada laki-laki \n3. Waria bermakmum kepada laki-laki \n4. Wanita bermakmum kepada imam waria \n5. Perempuan bermakmum kepada perempuan\n\nSedangkan yang empat nya lagi tidak sah : \n- Laki-laki bermakmum kepada perempuan \n- Imam waria, makmum laki-laki \n- Imam perempuan, makmum waria \n- Imam dan makmum sama-sama waria"
     },
     {
-      "id": "safinah-1793729537199",
+      "id": "safinah-an-najah-52",
       "title": "Bab Shalat — Syarat Jama' Takdim",
       "arabic": "(فصل) شروط جمع التقديم أربعة : البداءة بالأولى ونية الجمع والموالاة بينهما ودوام العذر .",
       "translation": "(Fasal) Syarat Jama’ Takdim ada 4 : \n1. Harus dimulai dengan shalat yang pertama \n2. Harus niat jamak ketika mengerjakan shalat yang pertama \n3. Antara shalat yang pertama dan kedua harus berturut-turut \n4. Berlangsungnya udzur (halangan)"
     },
     {
-      "id": "safinah-050",
+      "id": "safinah-an-najah-53",
       "title": "Bab Shalat — Syarat Jama' Takhir",
       "arabic": "(فصل) شروط جمع التأخير إثنان : نية التأخير وقد بقي من وقت الأولى مايسعها ودوام العذر إلى تمام الثانية .",
       "translation": "(Fasal) Syarat Jama’ Ta’khir ada 2 : \n- Niat jama’ ta’khir ketika masih ada waktu shalat yang pertama, kira-kira cukup untuk mengerjakan shalat yang pertama \n- Berlangsungnya udzur sampai selesai mengerjakan shalat yang kedua"
     },
     {
-      "id": "safinah-051",
+      "id": "safinah-an-najah-54",
       "title": "Bab Shalat — Syarat Qoshor",
       "arabic": "(فصل) شروط القصر سبعة : أن يكون سفره مرحلتين وأن يكون مباحا والعلم بجواز القصر ونيه القصر عند الإحرام وأن لايقتدي بمتم في جزء من صلاتة .",
       "translation": "(Fasal) Syarat Shalat Qashar, ada 7 : \n1. Bepergian yang mencapai 3 marhalah (kurang lebih 89 km) \n2. Bepergian yang diperbolehkan \n3. Harus tahu bolehnya mengqashar \n4. Harus berniat mengqashar pada saat Takbiratul Ihram \n5. Shalat yang 4 rakaat \n6. Bepergian tersebut masih berlangsung hingga mengerjakan shalat sempurna \n7. Tidak boleh bermakmum kepada Imam yang shalatnya sempurna (tidak mengqashar) walaupun hanya sebagian dari shalat"
     },
     {
-      "id": "safinah-052",
+      "id": "safinah-an-najah-55",
       "title": "Bab Shalat — Syarat Shalat Jumat",
       "arabic": "(فصل) شروط الجمعة ستة : أن تكون كلها في وقت الظهر وأن تقام في خطة البلد وأن تصلي جماعة وأن يكونوا أربعين أحرارا ذكورا بالغين مستوطنين وأن لا تسبقها ولا تقارنها جمعة في تلك البلد وأن يتقدمها خطبتان .",
       "translation": "(Fasal) Syarat shalat Jum’at ada 6 : \n1. Harus dilakukan waktu dzuhur \n2. Harus didirikan dalam perbatasan daerah \n3. Harus dilaksanakan dengan berjamaah \n4. Orang yang shalat jum’at harus ada 40 orang laki-laki baligh, semua bermukim dan orang yang merdeka \n5. Tidak didahului atau dibarengi dengan shalat jum’at yang lain dalam satu daerah itu \n6. Sebelum shalat jum’at harus membaca 2 Khutbah"
     },
     {
-      "id": "safinah-053",
+      "id": "safinah-an-najah-56",
       "title": "Bab Shalat — Rukun 2 Khutbah",
       "arabic": "(فصل)أركان الخطبتين خمسة: حمد الله فيهما والصلاة على النبي صلى الله علية وسلم فيهما والوصية بالتقوى فيهما وقراءة آية من القرآن في أحداهما والدعاء للمؤمنين والمؤمنات في الأخيرة .",
       "translation": "(Fasal) Rukun 2 khutbah ada 5 : \n1. Memuji Allah pada khutbah pertama dan kedua \n2. Membaca shalawat kepada nabi Muhammad pada kedua khutbah \n3. Berwasiatat agar bertakwa \n4. Membaca ayat dari al-Qur’an \n5. Membaca do’a untuk mukminin dan mukminat pada khutbah kedua"
     },
     {
-      "id": "safinah-054",
+      "id": "safinah-an-najah-57",
       "title": "Bab Shalat — Syarat 2 Khutbah",
       "arabic": "(فصل) شروط الخطبتين عشرة : الطهارة عن الحدثين الأصغر والأكبر والطهارة عن النجاسة في الثوب والبدن والمكان وستر العورة والقيام على القادر والجلوس بينهما فوق طمأنينة الصلاة والموالاة بينهما وبين الصلاة وأن تكون بالعربية وأن يسمعها أربعون وأن تكون كلها في وقت الظهر ",
       "translation": "Syarat 2 khabat ada 10 : \n1. Suci dari hadats 2, hadat besar \n2. dan hadats kecil \n3. Suci dari najis pada pakaian, badan dan tempat shalat \n4. Menutup aurat \n5. Berdiri bagi yang mampu \n6. Duduk diantara dua khutbah \n7. Antara 2 khutbah dan shalat harus berturut-turut \n8. Khutbah harus berbahasa arab \n9. Bagi khatib harus berusaha memperdengarkan khotbahnya kepada 40 orang tersebut \n10. Khutbah harus pada waktu dzuhur"
     },
     {
-      "id": "safinah-055",
+      "id": "safinah-an-najah-58",
       "title": "Bab Jenazah — Mengurus Jenazah",
       "arabic": "(فصل)الذي يلزم للميت أربع خصال : غسلة وتكفينة والصالة علية ودفنه\n",
       "translation": "(Fasal) Empat hal yang harus dilakukan kepada\nmayit (orang mati), yaitu : [1] memandikannya, [2]mengkafaninya, [3] menyolatinya, dan [4] menguburkannya"
     },
     {
-      "id": "safinah-1793730712152",
+      "id": "safinah-an-najah-59",
       "title": "Bab Jenazah — Memandikan Jenazah",
       "arabic": "(فصل)أقل الغسل : تعميم بدنه بالماء. وأكمله أن يغسل سوأتيه وأن يزيل القذر من أنفه وأن\nيوضئه وأن يدلك بدنه بالسدر وأن يصب الماء عليه ثالثا.",
       "translation": "(Fasal) Memandikan Jenazah, dengan meratakan seluruh badan dengan air, sedangkan paling sempurnanya dalam memandikan adalah :\n- Qubul dan dubur harus dibersihkan \n- Kotoran dari hidung harus di hilangkan \n- Mewudlu’kan mayyit \n- Dimandikan dengan daun bidara \n- Disiram dengan air 3 kali"
     },
     {
-      "id": "safinah-056",
+      "id": "safinah-an-najah-60",
       "title": "Bab Jenazah — Kafan",
       "arabic": "(فصل) أقل الكفن : ثوب يعمه،. وأكمله للرجال ثالث لفائف ، وللمرأة قميص وخمار وإزار ولفافتان.\n",
       "translation": "(Fasal) Paling sedikitnya mengkafani adalah satu pakaian yang mencukupi. Adapun bagi laki-laki yang sempurna adalah 3 lapis kain, dan untuk perempuan adalah baju kurung dan dua lapis pakaian."
     },
     {
-      "id": "safinah-057",
+      "id": "safinah-an-najah-61",
       "title": "Bab Jenazah — Rukun Shalat Jenazah",
       "arabic": "(فصل) أركان صالة الجنازة سبعة :األول النية ،الثاني أربع تكبيرات ، الثالث القيام على\nالقادر ، الرابع قراءة الفاتحة ،الخامس الصالة على النبي صلى الله علية وسلم بعد الثانية،السادس الدعاء للميت بعد الثالثة ،السابع السالم.",
       "translation": "(Fasal) Rukun shalat jenazah ada 7 : \n- Niat \n- 4 kali takbir \n- Berdiri bagi yang mampu \n- Membaca al-Fatihah \n- Membaca shalawat setelah takbir kedua \n- Membaca do’a bagi mayyit setelah takbir ketiga \n- Salam"
     },
     {
-      "id": "safinah-058",
+      "id": "safinah-an-najah-62",
       "title": "Bab Jenazah — Mengubur Jenazah",
       "arabic": "(فصل)أقل الدفن : حفرة تكتم رائحته وتحرسه من السباع .وأكمله قامة وبسطة، ويوضع خده\n على التراب ويجب توجيھه إلى القبلة",
       "translation": "Paling sedikitnya mengubur jenazah : cukup dengan lubang yang dapat mencegah bau mayyit dan dapat melindunginya dari serbuan binatang buas. \nSedangkan yang paling sempurna adalah \nbagian sedalam ukuran manusia ditambah acuangan tangan keatas. \nKemudian pipi si mayyit diletakkan di tanah dan wajid dihadapkan ke arah kiblat."
     },
     {
-      "id": "safinah-059",
+      "id": "safinah-an-najah-63",
       "title": "Bab Jenazah — Pembongkaran Makam",
       "arabic": "(فصل) ينبش الميت ألربع خصال : للغسل إذا لم يتغير ولتوجيھه إلى القبلة وللمال إذا دفن معه ، والمرأة إذا دفن جنينھا وأمكنت حياته.",
       "translation": "(Fasal) Pembongkaran (makam) mayyit diperbolehkan jika ada sebab yang 4 : \n1. Untuk dimandikan jika jasadnya belum berubah \n2. Untuk dihadapkan kearah kiblat \n3. Untuk mengambil harta yang tertanam bersama mayyit \n4. Untuk menyelamatkan kandungan yang dikubur bersama mayyit bila ada kemungkinan janin masih hidup"
     },
     {
-      "id": "safinah-061",
+      "id": "safinah-an-najah-64",
       "title": "Bab Zakat — Harta yang Dizakati",
       "arabic": "(فصل) الأموال التي تلزم فيھا الزكاة ستة أنواع: النعم والنقدان والمعشرات وأموال\nالتجارة ، وواجبھا ربع عشر قيمة عروض التجارة والركاز والمعدن.",
       "translation": "Harta yang wajid dikeluarkan zakarnya ada 6 : \n- Binatang ternak\n- Emas dan perak \n- Buah-buahan dan tanaman makanan pokok \n- Barang simpanan \n- Logam (barang tambang)\n- Harta dagangan\nAdapun zakat harta dagangan adalah seperempat dari 10 (2,5%) dari jumlah harta dagangan."
     },
     {
-      "id": "safinah-062",
+      "id": "safinah-an-najah-65",
       "title": "Bab Puasa — Kapan Wajib Puasa?",
       "arabic": "(فصل) يجب صوم رمضان بأحد أمور خمسة : (أحدھا ) بكمال شعبان ثالثين يوما (وثانيھا)\nبرؤية الھالل في حق من رآه وان كان فاسقا (وثالثا) بثبوته في حق من لم يره بعدل شھادة\n(ورابعا) بإخبار عدل رواية موثوق به سواء وقع في القلب صدق أم ال أوغيره موثوق به إن وقع في القلب صدقه (وخامسھا) بظن دخول رمضان باإلجتھاد فيمن اشتبه عليه ذلك.",
       "translation": "(Fasal) Wajib puasa ramadhan dengan ketentuan-ketentuan berikut ini  : \n- Dengan mencukupkan bulan sya’yban 30 hari \n- Dengan melihat bulan, bagi yang melihatnya sendiri \n- Dengan melihat bulan yang disaksikan oleh orang yang adil di hadapan hakim \n- Dengan khabat dari orang yang adil riwayatnya juga dipercaya kebenarannya, baik yang mendengarkan kabar tersebut membenarkan atau tidak, atau tidak dipercaya akan tetapi orang yang mendengar membenarkannya. \n- Dengan berijtihad masuknya bulan ramadhan bagi orang yang meragukan dengan hal tersebut."
     },
     {
-      "id": "safinah-063",
+      "id": "safinah-an-najah-66",
       "title": "Bab Puasa — Syarat Sah Puasa",
       "arabic": "(فصل) شروط صحته أربعة أشياء : إسالم وعقل ونقاء من نحو حيض وعلم بكون الوقت قبال\n . للصوم\n",
       "translation": "(Fasal) Syarat sah puasa ada 4 : \n1. Islam \n2. Berakal \n3. Suci, seumpama dari darah haid \n4. Dalam waktu yang memang diperbolehkan untuk berpuasa"
     },
     {
-      "id": "safinah-064",
+      "id": "safinah-an-najah-67",
       "title": "Bab Puasa — Syarat Wajib Puasa",
       "arabic": "(فصل) شروط وجوبه خمسة اشياء : اسالم وتكليف وإطاقة وصحه وإقامة",
       "translation": "(Fasal) Syarat wajib puasa : \n1. Islam \n2. Taklif (dibebankan untuk berpuasa) \n3. Kuat berpuasa \n4. Sehat\n5. Iqamah (tidak berpergian)"
     },
     {
-      "id": "safinah-065",
+      "id": "safinah-an-najah-68",
       "title": "Bab Puasa — Rukun Puasa",
       "arabic": "(فصل)أركانه ثالثة أشياء: نية ليال لكل يوم في الفرض وترك مفطر ذاكرا مختارا غير جاھل معذور وصائم",
       "translation": "(Fasal) Rukun puasa ada 3 : \n- Niat pada malamnya yaitu setiap malam pada bulan ramadhan \n- Menahan diri dari segala yang membatalkan puasa ketika masih dalam keadaan ingat, bisa memilih (tidak ada paksaan) dan tidak bodoh yang ma’dzur \n- Orang yang berpuasa"
     },
     {
-      "id": "safinah-066",
+      "id": "safinah-an-najah-69",
       "title": "Bab Puasa — Qodho dan Kaffarot",
       "arabic": "(فصل) يجب مع القضاء للصوم الكفارة العظمى والتعزير على من أفسد صومه في رمضان يوما كامال بجماع تام آثم به للصوم.\n\nويجب مع القضاء الإمساك للصوم في ستة مواضع:الأمضان الفي غيره على متعد\nبفطره، والثاني على تارك النية ليال في الفرض، والثالث على من تسحر ظانا بقاء الليل فبان\nخالفة أيضا ، والرابع على من افطر ظانا الغروب فبان خالفه ايضا ، والخامس على من بان له يوم ثالثين من شعبان أنه من رمضان ، والسادس على من سبقه ماء المبالغة من مضمضة واستنشاق.",
       "translation": "(Fasal) Diwajibkan mengqadha’ puasa, membayar kafarat dan teguran terhadap orang yang membatalkan puasa di bulan ramadhan satu hari penuh dengan sebab berjima’ , lagi berdosa bagi orang yang berpuasa.\n\nDan di wajibkan berserta qadha’ ketika bagi orang uang puasa pada 6 perkara : \n1. Didalam bulan ramadhan dan yang lainnya, terhadap orang yang sengaja membatalkannya \n2. Terhadap orang yang meninggalkan niat pada malam hari untuk puasa fardhu \n3. Terhadap orang yang bersahur karena menyangka masih malam, kemudian diketahui bahwa fajar telah terbit \n4. Terhadap orang yang berbukan karena menduga matahari telah tenggelam kemudian diketahui bahwa matahari belum tenggelam \n5. Terhadap orang yang menyakini bahwa hari tersebut akhri sya’ban tangga tiga puluh , kemudian diketahui bahwa awal ramadhan telah tiba \n6. Terhadap orang yang terlanjut meminum air dari kumur-kumur atau dari air yang dimasukkan ke hidung"
     },
     {
-      "id": "safinah-067",
+      "id": "safinah-an-najah-70",
       "title": "Bab Puasa — Pembatal Puasa",
       "arabic": "(فصل) يبطل الصوم : بردة وحيض ونفاس أو والدة وجنون ولو لحظة وبإغماء وسكر تعدى\n به إن َّعما جميع النھار.",
       "translation": "(Fasal) Batalnya puasa : \n1. Murtad \n2. Haid \n3. Nifas \n4. Melahirkan \n5. Gila walau hanya sebentar \n6. Pingsan atau mabuk yang disengaja jika terjadi pada siang hari pada umumnya"
     },
     {
-      "id": "safinah-068",
+      "id": "safinah-an-najah-71",
       "title": "Bab Puasa — Ifthor",
       "arabic": "(فصل) الإفطار في رمضان أربعة انواع : واجب كما في الحائض والنفساء، وجائز كما في\nالمسافر والمريض والوالكما في المجنون، ومحرم كمن أخر قضاء رمضان تمكنه حتى ضاق الوقت عنه.",
       "translation": "Membatalkan puasa (berbuka) di siang hari pasa bulan ramadhan terbagi 4 ; \n1. Diwajibkan, terhadap wanita yang haid dan nifas \n2. Dibolehkan, sebagaiman orang yang berlayar atau sakit \n3. Tidak diwajibkan, tidak diharuskan sebagaimana orang yang gila \n4. Diharamkan, sebagaimana orang yang menunda qadha’ ramadhan padahal mungkin untuk dikerjakan sampai waktu qadha’ tersebut tidak mencukupi."
     },
     {
-      "id": "safinah-069",
+      "id": "safinah-an-najah-72",
       "title": "Bab Puasa — Pembagian Ifthor",
       "arabic": "وأقسام اإلفطار أربعة : أيضا ما يلزم فية القضاء والفدية وھو اثنان:األول اإلفطار لخوف على\nغيرة ، والثاني اإلفطار مع تأخير قضاء مع إمكانه حتى يأتي رمضان آخر ، وثانيھا مايلزم\nفية القضاء دون الفدية وھو يكثر كمغمى علية ، وثالثھما ما يلزم فيه الفدية دون القضاء\n . وھوشيخ كبير ، ورابعھا لا و الا وھو المجنون الذي لم يتعد بجنونه",
       "translation": "Orang yang membatalkan puasanya dibagi menjadi 4 : \n1. Orang yang diwajibkan qadha; dan membayar fidyah, seperti perempuan yang membatalkan puasanya karena mengkhawatirkan orang lain yaitu bayi, dan seperti orang yang menunda qadha’ puasanya sampai tiba ramadhan berikutnya. \n2. Orang yang diwajibkan qadha’ tanpa membayar fidyah, yaitu seperti orang yang pingsan \n3. Orang yang diwajibkan membayar fidyah tanpa qadha’, seperti orang yang sangat tua yang tidak puasa \n4. Orang yang tidak diwajibkan membayar fidyah dan tidak diwajibkan mengqadha’ seperti orang yang gila yang tidak disengaja"
     },
     {
-      "id": "safinah-070",
+      "id": "safinah-an-najah-73",
       "title": "Bab Puasa — Bukan Pembatal Puasa",
       "arabic": "(فصل) الذي ال ِ يفطر مما يصل إلى الجوف سبعة أفراد : مايصل إلى الجوف بنسيان أو جھل أو إكراة وبجريان ريق بما بين أسنانه وقد عجز عن مجه لعذره وما وصل إلى الجوف وكان غبار طريق ، وما وصل إلية وكان غربلة دقيق ، أوذبابا طائرا أو نحوه",
       "translation": "(Fasal) Yang tidak membatalkan puasa sesudah sampai kerongga mulut , ada 7 macam :\n1. Ketika kemasukan sesuatu seperti makanan ke rongga mulut yang tidak disengaja \n2. Atau tidak tahu hukumnya \n3. Atau dipaksa orang lain \n4. Ketika kemasukan sesuatu kerongga mulut , sebab air liur yang mengalir diantara gigi-giginya, sedangkan ia tidak mungkin mengeluarkannya \n5. Ketika kemasukan debu jalanan kedalamrongga mulut \n6. Ketika kemasukan sesuatu dari ayakan tepung ke dalam rongga mulut \n7. Ketika kemasukan lalat yang sedang terbang kedalam rongga mulut"
     },
     {
-      "id": "safinah-1793733194293",
+      "id": "safinah-an-najah-74",
       "title": "Penutup",
       "arabic": "والله اعلم بالصواب. نسأل الله الكريم بجاه نبيه الوسيم، أن يخرجني من الدنيا\nمسلما، ووالدي وأحبائي ومن إلي انتمي، وان يغفر لي ولھم مقحمات ولمما ،\nوصلى الله على سيدنا محمد بن عبد الله بن عبد المطلب بن ھاشم بن عبد مناف\nرسول الله إلى كافة الخلق رسول المالحم ،حبيب الله الفاتح الخاتم ،وآله وصحبه أجمعين والحمدلله رب العالمين.\n تم بعون الله تعالى متن سفينة النجا.",
       "translation": "Akhir kata sebagai kata penutup (epilog) kitab as-Safinah an-Najah ini, penulis kitab ini mengatakan dengan penuh kerendahan hatinya bahwa hanya Allah yang maha mengetahui hakikat kebenaran. Kami memohon kepada Allah, dengan ditempatkan bersama Nabi dan para rasulNya yang agung, agar Allah mengeluarkan kami dari dunia dalam keadaan muslim, demikian juga kedua orang tua, dan kami berharap supaya Allah memberikan maaf dan ampunannya pada kami, para kekasih dan orang-orang yang sebangsa dan setanah air dengan kami atas dosa-dosa besar dan dosa-dosa kecil yang telah kami perbuat."
