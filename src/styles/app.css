@@ -1145,3 +1145,19 @@ body.theme-dark .prayer-dialog-auto{background:#304337;color:#f0e5c8;border-colo
 .home-download-link strong,.home-download-link small{display:block}
 .home-download-link strong{font-size:13px}.home-download-link small{font-size:11px;color:#887c68;margin-top:2px}
 .home-download-arrow{margin-left:auto;font-size:19px;color:#9b7b42}
+
+
+/* Native Android app update prompt */
+.app-update-overlay{position:fixed;z-index:10000;inset:0;display:grid;place-items:center;padding:22px;background:#071d1bc9;backdrop-filter:blur(5px)}
+.app-update-card{width:min(100%,390px);padding:24px 21px 19px;border:1px solid #d5c49b;border-radius:20px;background:#fbf7ec;color:#203b2d;box-shadow:0 18px 55px #0005}
+.app-update-card h2{margin:0 0 10px;font-family:inherit;font-size:21px;color:#123d2e}
+.app-update-card p{margin:0 0 12px;font-size:13px;line-height:1.6}
+.app-update-card .app-update-notes{max-height:120px;overflow:auto;padding:10px 12px;border-radius:10px;background:#f0eadb;color:#665c49;font-size:12px;white-space:pre-wrap}
+.app-update-actions{display:flex;gap:9px;margin-top:18px}
+.app-update-actions button{min-height:43px;border-radius:11px;padding:10px 13px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.app-update-later{flex:1;border:1px solid #cfc4aa;background:#eee8da;color:#52604f}
+.app-update-download{flex:1.5;border:1px solid #9a7a40;background:#174a36;color:#fff7e5}
+body.theme-dark .app-update-card{background:#1d3026;color:#f2ead8;border-color:#6e795b}
+body.theme-dark .app-update-card h2{color:#f4e5bd}
+body.theme-dark .app-update-card .app-update-notes{background:#293d31;color:#e1d7c2}
+body.theme-dark .app-update-later{background:#304337;color:#eee4d0;border-color:#60745f}

@@ -15,10 +15,13 @@ import { splitSectionForScreen } from './features/reader/pagination.js';
 import { renderReadingList } from './features/home/reading-list.js';
 import { findCollectionStart } from './features/collections/navigation.js';
 import { initPrayerTimes } from './features/prayer/prayer-times.js';
+import { checkForAppUpdate } from './services/app-update.js';
 
 mountAppShell();
 initPrayerTimes();
 registerOfflineSupport();
+// Check the latest signed Android release without blocking app startup or offline reading.
+checkForAppUpdate();
 
 const $=id=>document.getElementById(id);
 let pages=[],index=0,sectionStarts=[],layoutPass=0,readerViewRequested=false,pendingReaderSection=null,pendingCollection=null,readerContentReady=false;

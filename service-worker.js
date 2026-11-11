@@ -1,7 +1,8 @@
-const CACHE_NAME = 'e-moeslife-shell-v5';
+const CACHE_NAME = 'e-moeslife-shell-v6';
 const CORE_ASSETS = [
   '/', '/index.html', '/manifest.webmanifest',
   '/src/app.js', '/src/styles/app.css',
+  '/src/services/app-update.js',
   '/src/features/prayer/prayer-times.js',
   '/src/components/app-shell.js',
   '/src/components/shell/header.js',
