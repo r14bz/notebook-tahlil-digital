@@ -7,6 +7,7 @@ on:
       - feature/prayer-times-dynamic-banner
       - fix/android-native-geolocation
       - feat/android-release-signing
+      - feat/e-moeslife-v2
   workflow_dispatch:
 
 permissions:
@@ -33,6 +34,28 @@ jobs:
         run: npm run prepare:mobile
       - name: Add Android platform
         run: npx cap add android
+      - name: Set Android app version
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("android/app/build.gradle")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          found_code = found_name = False
+          for index, line in enumerate(lines):
+              indent = line[:len(line) - len(line.lstrip())]
+              key = line.strip()
+              if key.startswith("versionCode "):
+                  lines[index] = indent + "versionCode 2"
+                  found_code = True
+              elif key.startswith("versionName "):
+                  lines[index] = indent + 'versionName "2.0.0"'
+                  found_name = True
+          if not found_code or not found_name:
+              raise SystemExit("Could not set Android versionCode/versionName")
+          path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print("Android version set to versionCode 2 / versionName 2.0.0")
+          PY
       - name: Ensure Android location permissions
         run: |
           python3 - <<'PY'

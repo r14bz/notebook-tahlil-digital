@@ -48,6 +48,8 @@ export function createReaderAudioController({
   voiceLabel,
   audioDescription,
   qariButton,
+  qariPauseButton,
+  qariStopButton,
   readPreference,
   writePreference,
   statusElement
@@ -160,13 +162,23 @@ export function createReaderAudioController({
     }
   }
 
-  function playQari(page) {
+  async function playQari(page) {
     const surah = Number(page?.quranSurah);
     if (!QURAN_CHAPTERS[surah] || !audioElement) {
       setStatus('Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman.');
       return false;
     }
     stopSpeech();
+    if (currentSurah === surah && qariUrls.length && audioElement.paused) {
+      try {
+        await audioElement.play();
+        setStatus('Melanjutkan murattal ' + QURAN_CHAPTERS[surah].title + ' · Ayat ' + (qariIndex + 1));
+        return true;
+      } catch {
+        setStatus('Audio murattal tidak dapat dilanjutkan. Periksa koneksi internet.');
+        return false;
+      }
+    }
     stopQari();
     currentSurah = surah;
     qariUrls = buildQariAyahUrls(surah);
@@ -174,6 +186,18 @@ export function createReaderAudioController({
     setStatus('Menyiapkan rekaman ' + QURAN_CHAPTERS[surah].title + '…');
     playNextAyah();
     return true;
+  }
+
+  function pauseQari() {
+    if (!audioElement || !qariUrls.length || audioElement.paused) return false;
+    audioElement.pause();
+    setStatus('Murattal dijeda · tekan Putar untuk melanjutkan.');
+    return true;
+  }
+
+  function stopQariPlayback() {
+    stopQari();
+    setStatus('Murattal dihentikan dan posisi dikembalikan ke awal.');
   }
 
   if (audioElement) {
@@ -199,6 +223,8 @@ export function createReaderAudioController({
   return {
     speak,
     playQari,
+    pauseQari,
+    stopQari: stopQariPlayback,
     stop() {
       stopSpeech();
       stopQari();
@@ -215,8 +241,10 @@ export function createReaderAudioController({
         : 'TTS tersedia untuk teks Arab; rekaman qari tersedia pada Surah Yasin dan Ar-Rahman.';
       if (qariButton) {
         qariButton.disabled = !supported;
-        qariButton.title = supported ? 'Putar rekaman qari untuk ' + QURAN_CHAPTERS[nextSurah].title : 'Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman';
+        qariButton.title = supported ? 'Putar atau lanjutkan murattal ' + QURAN_CHAPTERS[nextSurah].title : 'Rekaman qari tersedia untuk Surah Yasin dan Ar-Rahman';
       }
+      if (qariPauseButton) qariPauseButton.disabled = !supported;
+      if (qariStopButton) qariStopButton.disabled = !supported;
     },
     refreshVoices,
     getAvailableVoices: availableArabicVoices
