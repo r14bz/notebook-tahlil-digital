@@ -3,6 +3,7 @@ let apiBooks = [];
 const normalizeBookName = value => String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('id').replace(/[^a-z0-9]+/g, ' ').trim();
 const BOOKS = [
   { file: 'safinah-an-najah.json', slug: 'safinah-an-najah', title: 'Safinah An-Najah', category: 'Fiqih' },
+  { file: 'safinah-reading-library.json', slug: 'safinah-reading-library', title: 'Safinah An-Najah — Edisi Baru', category: 'Fiqih', format: 'structured' },
   { file: 'aqidatul-awam.json', slug: 'aqidatul-awam', title: 'Aqidatul Awam', category: 'Aqidah' },
   { file: 'arbain.json', slug: 'arbain', title: 'Arba’in Nawawi', category: 'Hadis' },
   { file: 'bidayatul.json', slug: 'bidayatul', title: 'Bidayatul Hidayah', category: 'Tasawuf' },
@@ -222,6 +223,14 @@ export function mountLocalKitabLibrary() {
     .local-kitab-paper h2{margin:0 0 8px;color:#174532;font:700 24px 'Amiri',serif}
     .local-kitab-intro{color:#827865;font-size:12px;line-height:1.7}
     .local-kitab-entry{padding:18px 0;border-bottom:1px solid #e4dac5}
+    .local-kitab-bab{margin:22px 0 8px;padding:10px 12px;border-left:3px solid #bd9854;background:rgba(189,152,84,.10);color:#174532;font-size:13px;font-weight:700}
+    .local-kitab-section-kicker{margin:0 0 6px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .local-kitab-structured-arabic{direction:rtl;text-align:right;unicode-bidi:plaintext;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:clamp(24px,4vw,29px);line-height:2.15;white-space:pre-wrap;margin:12px 0 18px}
+    .local-kitab-structured-translation{direction:ltr;text-align:left;font-size:14px;line-height:1.95;font-style:italic;white-space:pre-wrap;margin:8px 0 14px;color:#554d40}
+    .local-kitab-translation-label{margin:16px 0 4px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .local-kitab-structured-mixed{direction:auto;text-align:start;font-size:15px;line-height:2;white-space:pre-wrap;margin:10px 0}
+    body.theme-dark .local-kitab-bab{color:#f4e5bd;background:rgba(189,152,84,.13)}
+    body.theme-dark .local-kitab-structured-translation{color:#e3d9c5}
     .local-kitab-entry h3{font-size:15px;color:#174532;margin:0 0 12px}
     .local-kitab-arabic{font-family:'Amiri','Noto Naskh Arabic',serif;font-size:27px;line-height:2.15;direction:rtl;unicode-bidi:plaintext;text-align:right;white-space:pre-wrap;margin:10px 0 20px}
     .local-kitab-latin,.local-kitab-translation{font-size:14px;line-height:2;white-space:pre-wrap;margin:10px 0}
@@ -325,15 +334,36 @@ export function mountLocalKitabLibrary() {
       paper.append(notice);
     }
     const list = element('div', '');
-    activeChapters.forEach((chapter, index) => {
-      const entry = element('article', 'local-kitab-entry');
-      entry.append(element('h3', '', (index + 1) + '. ' + chapter.title));
-      const open = element('button', 'local-kitab-open', 'Baca bagian');
-      open.type = 'button';
-      open.addEventListener('click', () => renderChapter(index));
-      entry.append(open);
-      list.append(entry);
-    });
+    if (activeBook.format === 'structured') {
+      let lastBab = '';
+      activeChapters.forEach((section, index) => {
+        if (section.chapterTitle !== lastBab) {
+          lastBab = section.chapterTitle;
+          list.append(element('h3', 'local-kitab-bab', lastBab));
+        }
+        const entry = element('article', 'local-kitab-entry');
+        entry.append(element('h3', '', section.title));
+        const open = element('button', 'local-kitab-open', 'Baca bagian');
+        open.type = 'button';
+        open.addEventListener('click', () => renderChapter(index));
+        entry.append(open);
+        list.append(entry);
+      });
+    } else {
+      activeChapters.forEach((chapter, index) => {
+        const entry = element('article', 'local-kitab-entry');
+        entry.append(element('h3', '', (index + 1) + '. ' + chapter.title));
+        const open = element('button', 'local-kitab-open', 'Baca bagian');
+        open.type = 'button';
+        open.addEventListener('click', () => renderChapter(index));
+        entry.append(open);
+        list.append(entry);
+      });
+    }
+    if (activeBook.format === 'structured') {
+      paper.append(list, element('p', 'local-kitab-intro', 'Edisi ini berdiri terpisah dari Safinah lama. Teks Arab dan terjemahan ditampilkan mengikuti urutan naskah DOCX sumber.'));
+      return;
+    }
     const actions = element('div', 'local-kitab-actions');
     const edit = element('button', 'primary', '✎ Edit naskah');
     edit.type = 'button';
@@ -434,6 +464,26 @@ export function mountLocalKitabLibrary() {
     paper.replaceChildren(element('h2', '', chapter.title));
     stopLazy();
     foldOpenAll = false;
+    if (activeBook.format === 'structured') {
+      paper.append(element('p', 'local-kitab-section-kicker', chapter.chapterTitle));
+      for (const block of chapter.blocks || []) {
+        if (block.type === 'translation-label') {
+          paper.append(element('p', 'local-kitab-translation-label', block.text));
+        } else if (block.type === 'arabic') {
+          const node = element('p', 'local-kitab-structured-arabic', block.text);
+          node.dir = 'rtl';
+          paper.append(node);
+        } else if (block.type === 'translation') {
+          const node = element('p', 'local-kitab-structured-translation', block.text);
+          node.dir = 'ltr';
+          paper.append(node);
+        } else {
+          const node = element('p', 'local-kitab-structured-mixed', block.text);
+          node.dir = 'auto';
+          paper.append(node);
+        }
+      }
+    } else {
     const resolved = resolveView(chapter, readViewPrefs());
     if (resolved.options.length) {
       const bar = element('div', 'local-kitab-viewbar');
@@ -464,15 +514,16 @@ export function mountLocalKitabLibrary() {
     if (!chapter.arabic && !chapter.translation && !chapter.latin) {
       paper.append(element('p', 'local-kitab-intro', 'Bagian ini tidak memiliki field teks yang dikenali. Naskah JSON asli tetap dipertahankan.'));
     }
+    }
     chapterNav.replaceChildren();
-    const listButton = element('button', '', 'Daftar Bab');
+    const listButton = element('button', '', activeBook.format === 'structured' ? 'Daftar Isi' : 'Daftar Bab');
     listButton.type = 'button';
     listButton.addEventListener('click', renderChapterList);
-    const previous = element('button', '', '← Bab Sebelumnya');
+    const previous = element('button', '', activeBook.format === 'structured' ? '← Bagian Sebelumnya' : '← Bab Sebelumnya');
     previous.type = 'button';
     previous.disabled = index === 0;
     previous.addEventListener('click', () => renderChapter(index - 1));
-    const next = element('button', 'primary', 'Bab Selanjutnya →');
+    const next = element('button', 'primary', activeBook.format === 'structured' ? 'Bagian Selanjutnya →' : 'Bab Selanjutnya →');
     next.type = 'button';
     next.disabled = index >= activeChapters.length - 1;
     next.addEventListener('click', () => renderChapter(index + 1));
@@ -485,11 +536,25 @@ export function mountLocalKitabLibrary() {
       const response = await fetch('./data/' + book.file);
       if (!response.ok) throw new Error('File ' + book.file + ' tidak dapat dimuat (' + response.status + ').');
       const documentData = await response.json();
-      const rawChapters = arrayAt(documentData);
-      if (!rawChapters.length) throw new Error('Struktur naskah ' + book.file + ' belum dikenali.');
-      activeChapters = rawChapters.map(normalizeChapter);
+      if (book.format === 'structured') {
+        if (!Array.isArray(documentData.chapters) || !documentData.chapters.length) throw new Error('Struktur BAB Safinah belum dikenali.');
+        activeChapters = documentData.chapters.flatMap((bab, babIndex) =>
+          (Array.isArray(bab.sections) ? bab.sections : []).map((section, sectionIndex) => ({
+            title: section.title || ('Bagian ' + (sectionIndex + 1)),
+            chapterTitle: bab.title || ('BAB ' + (babIndex + 1)),
+            chapterNumber: bab.number || String(babIndex + 1),
+            blocks: Array.isArray(section.blocks) ? section.blocks : []
+          }))
+        );
+        if (!activeChapters.length) throw new Error('Naskah Safinah belum memiliki bagian bacaan.');
+      } else {
+        const rawChapters = arrayAt(documentData);
+        if (!rawChapters.length) throw new Error('Struktur naskah ' + book.file + ' belum dikenali.');
+        activeChapters = rawChapters.map(normalizeChapter);
+      }
       activeLocalCopyAt = '';
       try {
+        if (book.format === 'structured') throw new Error('Edisi terstruktur memakai naskah sumber tetap.');
         const saved = JSON.parse(localStorage.getItem(manualKey(book.slug)) || 'null');
         if (shouldUseLocalCopy(saved, documentData)) {
           activeChapters = saved.chapters.map(normalizeChapter);
@@ -533,7 +598,7 @@ export function mountLocalKitabLibrary() {
         element('span', 'card-index', String(index + 1).padStart(2, '0') + ' / KITAB KLASIK'),
         iconWrap,
         element('span', 'collection-title', book.title),
-        element('span', 'collection-desc', book.source === 'local' ? 'Baca naskah kitab yang tersimpan di aplikasi.' : 'Baca kitab melalui sumber API sementara.'),
+        element('span', 'collection-desc', book.format === 'structured' ? 'Edisi baru · 6 BAB · 63 bagian, terpisah dari naskah lama.' : (book.source === 'local' ? 'Baca naskah kitab yang tersimpan di aplikasi.' : 'Baca kitab melalui sumber API sementara.')),
         bottom
       );
       card.addEventListener('click', () => {
