@@ -224,11 +224,11 @@ export function mountLocalKitabLibrary() {
     .local-kitab-intro{color:#827865;font-size:12px;line-height:1.7}
     .local-kitab-entry{padding:18px 0;border-bottom:1px solid #e4dac5}
     .local-kitab-bab{margin:22px 0 8px;padding:10px 12px;border-left:3px solid #bd9854;background:rgba(189,152,84,.10);color:#174532;font-size:13px;font-weight:700}
-    .local-kitab-section-kicker{margin:0 0 6px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
-    .local-kitab-structured-arabic{direction:rtl;text-align:right;unicode-bidi:plaintext;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:clamp(24px,4vw,29px);line-height:2.15;white-space:pre-wrap;margin:12px 0 18px}
-    .local-kitab-structured-translation{direction:ltr;text-align:left;font-size:14px;line-height:1.95;font-style:italic;white-space:pre-wrap;margin:8px 0 14px;color:#554d40}
-    .local-kitab-translation-label{margin:16px 0 4px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
-    .local-kitab-structured-mixed{direction:auto;text-align:start;font-size:15px;line-height:2;white-space:pre-wrap;margin:10px 0}
+    .local-kitab-section-kicker{margin:0 0 4px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .local-kitab-structured-arabic{direction:rtl;text-align:right;unicode-bidi:plaintext;font-family:'Amiri','Noto Naskh Arabic',serif;font-size:clamp(24px,4vw,29px);line-height:1.75;white-space:pre-wrap;margin:6px 0 8px}
+    .local-kitab-structured-translation{direction:ltr;text-align:left;font-size:14px;line-height:1.7;font-style:italic;white-space:pre-wrap;margin:3px 0 8px;color:#554d40}
+    .local-kitab-translation-label{margin:8px 0 2px;color:#9a824f;font-size:11px;font-weight:700;letter-spacing:.04em}
+    .local-kitab-structured-mixed{direction:auto;text-align:start;font-size:15px;line-height:1.7;white-space:pre-wrap;margin:6px 0}
     body.theme-dark .local-kitab-bab{color:#f4e5bd;background:rgba(189,152,84,.13)}
     body.theme-dark .local-kitab-structured-translation{color:#e3d9c5}
     .local-kitab-entry h3{font-size:15px;color:#174532;margin:0 0 12px}
